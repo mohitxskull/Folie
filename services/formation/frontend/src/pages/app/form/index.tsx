@@ -1,15 +1,17 @@
 import { AppLayout } from "@/components/layout/app";
-import { QueryLoader } from "@/components/query_loader";
+import { LocalQueryLoader } from "@/components/query_loader";
 import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
-import { DataTable } from "mantine-datatable";
-import { IconEye, IconListTree, IconForms } from "@tabler/icons-react";
-import { ICON_SIZE } from "@folie/cobalt";
 import { formatDate } from "@/lib/helpers/date";
-import { ActionIcon, Button, Tooltip } from "@mantine/core";
-import { useRouter } from "next/router";
+import { Button, MenuItem } from "@mantine/core";
 import Link from "next/link";
-import { ActionGroup, PageContainer, PageHeader } from "@folie/cobalt/components";
+import {
+  PageContainer,
+  PageHeader,
+  ActionMenu,
+} from "@folie/cobalt/components";
+import { LocalDataTable } from "@/components/data_table";
+import { useRouter } from "next/router";
 
 export const getServerSideProps = cobaltServer.secure();
 
@@ -37,12 +39,10 @@ export default function Page() {
               </Button>
             </PageHeader>
 
-            <QueryLoader query={listQ}>
+            <LocalQueryLoader query={listQ}>
               {(paginatedData) => (
                 <>
-                  <DataTable
-                    borderRadius="sm"
-                    withTableBorder
+                  <LocalDataTable
                     fetching={listQ.isFetching}
                     page={paginatedData.meta.page}
                     onPageChange={(p) => {
@@ -55,8 +55,12 @@ export default function Page() {
                     }}
                     totalRecords={paginatedData.meta.total.object}
                     recordsPerPage={paginatedData.meta.limit}
-                    highlightOnHover
                     records={paginatedData.data}
+                    onCellClick={({ record, column }) => {
+                      if (column.accessor === "name") {
+                        router.push(`/app/form/${record.id}`);
+                      }
+                    }}
                     columns={[
                       { accessor: "name" },
                       { accessor: "status" },
@@ -77,48 +81,28 @@ export default function Page() {
                         title: "",
                         textAlign: "right",
                         render: (file) => (
-                          <ActionGroup>
-                            <Tooltip label="View">
-                              <ActionIcon
-                                size="sm"
-                                variant="subtle"
-                                onClick={() =>
-                                  router.push(`/app/form/${file.id}`)
-                                }
-                              >
-                                <IconEye size={ICON_SIZE.XS} />
-                              </ActionIcon>
-                            </Tooltip>
+                          <ActionMenu>
+                            <MenuItem
+                              component={Link}
+                              href={`/app/form/${file.id}/submission`}
+                            >
+                              Submissions
+                            </MenuItem>
 
-                            <Tooltip label="Submissions">
-                              <ActionIcon
-                                size="sm"
-                                variant="subtle"
-                                onClick={() =>
-                                  router.push(`/app/form/${file.id}/submission`)
-                                }
-                              >
-                                <IconListTree size={ICON_SIZE.XS} />
-                              </ActionIcon>
-                            </Tooltip>
-
-                            <Tooltip label="Submit">
-                              <ActionIcon
-                                size="sm"
-                                variant="subtle"
-                                onClick={() => router.push(`/form/${file.id}`)}
-                              >
-                                <IconForms size={ICON_SIZE.XS} />
-                              </ActionIcon>
-                            </Tooltip>
-                          </ActionGroup>
+                            <MenuItem
+                              component={Link}
+                              href={`/form/${file.id}`}
+                            >
+                              Submit
+                            </MenuItem>
+                          </ActionMenu>
                         ),
                       },
                     ]}
                   />
                 </>
               )}
-            </QueryLoader>
+            </LocalQueryLoader>
           </PageContainer>
         </>
       </AppLayout>

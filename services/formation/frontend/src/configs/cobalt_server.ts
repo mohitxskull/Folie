@@ -3,11 +3,10 @@ import { api } from "./api";
 import { routes } from "./routes";
 import { COOKIE_KEY } from "@/lib/cookie";
 import { CobaltKeys } from ".";
-import { RouteKeys } from "@folie/blueprint-lib";
 
 export const cobaltServer = new CobaltServer<
   typeof routes,
-  RouteKeys<typeof routes>,
+  "V1_AUTH_SESSION",
   CobaltKeys
 >({
   api,

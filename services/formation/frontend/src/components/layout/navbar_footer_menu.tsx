@@ -4,7 +4,7 @@ import { Avatar, Group, Menu, Stack, Text } from "@mantine/core";
 import { askConfirmation } from "@/lib/helpers/confirmation_modal";
 import React from "react";
 import Link from "next/link";
-import { QueryLoader } from "../query_loader";
+import { LocalQueryLoader } from "../query_loader";
 import { setting } from "@/configs/setting";
 
 export const NavbarFooterMenu = () => {
@@ -14,7 +14,7 @@ export const NavbarFooterMenu = () => {
 
   return (
     <>
-      <QueryLoader query={session}>
+      <LocalQueryLoader query={session}>
         {(user) => (
           <>
             <Menu
@@ -72,7 +72,7 @@ export const NavbarFooterMenu = () => {
             </Menu>
           </>
         )}
-      </QueryLoader>
+      </LocalQueryLoader>
     </>
   );
 };

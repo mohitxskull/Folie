@@ -1,37 +1,46 @@
 import { AppLayout } from "@/components/layout/app";
-import { QueryLoader } from "@/components/query_loader";
+import { LocalQueryLoader } from "@/components/query_loader";
 import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
-import { DataTable, DataTableColumn } from "mantine-datatable";
+import { DataTableColumn } from "mantine-datatable";
 import { formatDate } from "@/lib/helpers/date";
 import { getProperty } from "dot-prop";
 import { Box } from "@mantine/core";
-import { PageHeader, VerticalTable } from "@folie/cobalt/components";
+import {
+  PageContainer,
+  PageHeader,
+  VerticalTable,
+} from "@folie/cobalt/components";
+import { LocalDataTable } from "@/components/data_table";
+import { InferGetServerSidePropsType } from "next";
 
-export const getServerSideProps = cobaltServer.secure();
+export const getServerSideProps = cobaltServer.server(
+  async ({ params, api }) => {
+    const formId = params("formId");
 
-export default function Page() {
-  const { isReady, param } = cobalt.useParams();
-
-  const formId = param.bind(null, "formId");
-
-  const formQ = cobalt.useQuery({
-    endpoint: "V1_FORM_SHOW",
-    input: {
+    const res = await api.endpoint("V1_FORM_SHOW").call({
       params: {
-        formId: formId(),
+        formId: formId,
       },
-    },
-    props: {
-      enabled: isReady,
-    },
-  });
+    });
 
+    return {
+      props: {
+        form: res,
+      },
+    };
+  },
+  true,
+);
+
+export default function Page(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
   const [listQ, [Body, setBody]] = cobalt.useList({
     endpoint: "V1_SUBMISSION_LIST",
     input: {
       params: {
-        formId: formId(),
+        formId: props.form.id,
       },
       query: {
         limit: 10,
@@ -39,82 +48,76 @@ export default function Page() {
         schemaVersion: 1,
       },
     },
-    props: {
-      enabled: isReady,
-    },
   });
 
   return (
     <>
       <AppLayout fullHeight>
         <>
-          <QueryLoader query={formQ}>
-            {(form) => (
-              <>
-                <PageHeader title="Submissions" description={form.name} />
-              </>
-            )}
-          </QueryLoader>
+          <PageContainer>
+            <PageHeader
+              title="Submissions"
+              description={props.form.name}
+              withBackBtn
+            />
 
-          <QueryLoader query={listQ}>
-            {(paginatedData) => (
-              <>
-                <DataTable
-                  borderRadius="sm"
-                  withTableBorder
-                  fetching={listQ.isFetching}
-                  page={paginatedData.meta.page}
-                  onPageChange={(p) => {
-                    setBody({
-                      query: {
-                        ...Body.query,
-                        page: p,
-                      },
-                    });
-                  }}
-                  totalRecords={paginatedData.meta.total.object}
-                  recordsPerPage={paginatedData.meta.limit}
-                  highlightOnHover
-                  records={paginatedData.data}
-                  columns={paginatedData.schema.fields.reduce<
-                    DataTableColumn<(typeof paginatedData)["data"][0]>[]
-                  >(
-                    (columns, field) => {
-                      return [
-                        {
-                          accessor: field.key,
-                          title: field.name,
-                          render: (record) => {
-                            return getProperty(record.fields, field.key);
-                          },
+            <LocalQueryLoader query={listQ}>
+              {(paginatedData) => (
+                <>
+                  <LocalDataTable
+                    fetching={listQ.isFetching}
+                    page={paginatedData.meta.page}
+                    onPageChange={(p) => {
+                      setBody({
+                        query: {
+                          ...Body.query,
+                          page: p,
                         },
-                        ...columns,
-                      ];
-                    },
-                    [
-                      {
-                        accessor: "createdAt",
-                        render: (record) => formatDate(record.createdAt),
+                      });
+                    }}
+                    totalRecords={paginatedData.meta.total.object}
+                    recordsPerPage={paginatedData.meta.limit}
+                    records={paginatedData.data}
+                    rowExpansion={{
+                      content: ({ record }) => (
+                        <>
+                          <Box p="md">
+                            <VerticalTable
+                              label="Metadata"
+                              autoCase
+                              value={record.meta ?? {}}
+                            />
+                          </Box>
+                        </>
+                      ),
+                    }}
+                    columns={paginatedData.schema.fields.reduce<
+                      DataTableColumn<(typeof paginatedData)["data"][0]>[]
+                    >(
+                      (columns, field) => {
+                        return [
+                          {
+                            accessor: field.key,
+                            title: field.name,
+                            render: (record) => {
+                              return getProperty(record.fields, field.key);
+                            },
+                          },
+                          ...columns,
+                        ];
                       },
-                    ],
-                  )}
-                  rowExpansion={{
-                    content: ({ record }) => (
-                      <>
-                        <Box p="md">
-                          <VerticalTable
-                            label="Metadata"
-                            autoCase
-                            value={record.meta ?? {}}
-                          />
-                        </Box>
-                      </>
-                    ),
-                  }}
-                />
-              </>
-            )}
-          </QueryLoader>
+                      [
+                        {
+                          accessor: "createdAt",
+                          render: (record) => formatDate(record.createdAt),
+                        },
+                      ],
+                    )}
+                  />
+                </>
+              )}
+            </LocalQueryLoader>
+          </PageContainer>
         </>
       </AppLayout>
     </>

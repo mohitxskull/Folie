@@ -1,8 +1,5 @@
-import {
-  QueryLoaderProps,
-  QueryLoader as CobaltQueryLoader,
-} from "@folie/cobalt/components";
+import { QueryLoaderProps, QueryLoader } from "@folie/cobalt/components";
 
-export const QueryLoader = <OUT,>(props: QueryLoaderProps<OUT>) => {
-  return <CobaltQueryLoader {...props} />;
+export const LocalQueryLoader = <OUT,>(props: QueryLoaderProps<OUT>) => {
+  return <QueryLoader {...props} />;
 };

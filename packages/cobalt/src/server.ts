@@ -118,18 +118,17 @@ export class CobaltServer<
    *
    * @example
    * // Secure a page, redirecting to '/login' if no session
-   * export const getServerSideProps = server.secure()(() => {
-   *   return { props: {}};
-   * });
+   * export const getServerSideProps = server.secure();
    *
    * @example
-   * // Secure a page with a custom checkpoint
-   * export const getServerSideProps = server.secure({
-   *   checkpoint: ({ session }) => {
-   *     return { allow: session?.role === 'admin', redirect: '/unauthorized' };
-   *   }
-   * })(() => {
-   *   return { props: {}};
+   * // Redirect user if logged in
+   * export const getServerSideProps = cobaltServer.secure({
+   *  checkpoint: ({ session }) => {
+   *    return {
+   *      allow: !session,
+   *      redirect: "/app",
+   *    };
+   *  },
    * });
    */
   secure = (params?: {
@@ -137,7 +136,9 @@ export class CobaltServer<
       ctx: GetServerSidePropsContext
       session: ROUTES[SCERK]['io']['output'] | null
     }) => CheckpointParams
-  }): GetServerSideProps => {
+  }): GetServerSideProps<{
+    session: ROUTES[SCERK]['io']['output']
+  }> => {
     return async (ctx: GetServerSidePropsContext) => {
       const session = await this.#session(ctx)
 
@@ -154,7 +155,11 @@ export class CobaltServer<
         }
       }
 
-      return { props: {} }
+      return {
+        props: {
+          session,
+        },
+      }
     }
   }
 
