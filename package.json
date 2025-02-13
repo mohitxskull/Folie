@@ -1,0 +1,44 @@
+{
+  "name": "folie",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "turbo build",
+    "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt && turbo build --filter=./packages/cobalt",
+    "dev": "turbo dev",
+    "dev:service:formation": "turbo dev --filter=./services/formation/*",
+    "lint": "turbo lint",
+    "typecheck": "turbo typecheck",
+    "format": "turbo format",
+    "check": "turbo format && turbo lint typecheck",
+    "prepare": "husky",
+    "changelog": "nr build:pkg && changeset add",
+    "release": "changeset version && ./release.ts && changeset publish ; ./release.ts --cleanup",
+    "dev:docs": "vitepress dev docs",
+    "build:docs": "vitepress build docs",
+    "preview:docs": "vitepress preview docs"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.11",
+    "husky": "^9.1.7",
+    "prettier": "^3.2.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.6"
+  },
+  "dependencies": {
+    "vitepress": "^1.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "resolutions": {
+    "strtok3": "8.0.1"
+  },
+  "pnpm": {
+    "overrides": {
+      "strtok3": "8.0.1"
+    }
+  },
+  "folie": {},
+  "packageManager": "pnpm@9.15.1+sha512.1acb565e6193efbebda772702950469150cf12bcc764262e7587e71d19dc98a423dff9536e57ea44c49bdf790ff694e83c27be5faa23d67e0c033b583be4bfcf"
+}

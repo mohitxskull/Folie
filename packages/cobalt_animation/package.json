@@ -1,0 +1,67 @@
+{
+  "name": "@folie/cobalt-animation",
+  "description": "",
+  "version": "0.0.6",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "type": "module",
+  "files": [
+    "build",
+    "!build/bin",
+    "!build/tests"
+  ],
+  "exports": {
+    ".": "./build/index.js",
+    "./cobalt-animation.css": "./build/cobalt-animation.css"
+  },
+  "scripts": {
+    "clean": "del-cli build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "c8 nr quick:test",
+    "prebuild": "nr clean",
+    "build": "tsc && folie transform ./build --minify && npx tailwindcss -i ./src/styles/global.css -o ./build/cobalt-animation.css -m",
+    "quick:test": "tsx bin/test.ts",
+    "playground": "tsx bin/playground.ts"
+  },
+  "devDependencies": {
+    "@adonisjs/eslint-config": "^2.0.0-beta.7",
+    "@adonisjs/prettier-config": "^1.3.0",
+    "@adonisjs/tsconfig": "^1.3.0",
+    "@japa/assert": "^3.0.0",
+    "@japa/runner": "^3.1.4",
+    "@types/lodash": "^4.17.14",
+    "@types/node": "^20.14.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "c8": "^10.1.2",
+    "del-cli": "^5.1.0",
+    "eslint": "^9",
+    "prettier": "^3.3.2",
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.6"
+  },
+  "peerDependencies": {
+    "next": "15.1.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "motion": "^11.16.0"
+  },
+  "author": "MohitXSkull, Folie",
+  "license": "Apache-2.0",
+  "prettier": "@adonisjs/prettier-config",
+  "publishConfig": {
+    "access": "public"
+  },
+  "c8": {
+    "exclude": [
+      "tests/**"
+    ]
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.6.0"
+  }
+}

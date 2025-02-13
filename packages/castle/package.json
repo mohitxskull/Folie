@@ -1,0 +1,85 @@
+{
+  "name": "@folie/castle",
+  "description": "",
+  "version": "0.0.10",
+  "engines": {
+    "node": ">=20.6.0"
+  },
+  "type": "module",
+  "files": [
+    "build",
+    "!build/bin",
+    "!build/tests"
+  ],
+  "exports": {
+    ".": "./build/index.js",
+    "./column/*": "./build/src/columns/*.js",
+    "./exception/*": "./build/src/exceptions/*.js",
+    "./service/*": "./build/src/service/*.js",
+    "./helpers/*": "./build/src/helpers/*.js",
+    "./extension/*": "./build/src/extension/*.js",
+    "./middleware/*": "./build/src/middleware/*.js",
+    "./provider/*": "./build/src/providers/*.js",
+    "./validator/*": "./build/src/validators/*.js",
+    "./miscellaneous/*": "./build/src/miscellaneous/*.js"
+  },
+  "scripts": {
+    "clean": "del-cli build",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "test": "c8 nr quick:test",
+    "prebuild": "nr clean",
+    "build": "tsc && folie transform ./build --minify",
+    "quick:test": "tsx bin/test.ts",
+    "playground": "tsx bin/playground.ts"
+  },
+  "devDependencies": {
+    "@adonisjs/eslint-config": "^2.0.0-beta.7",
+    "@adonisjs/prettier-config": "^1.3.0",
+    "@adonisjs/tsconfig": "^1.3.0",
+    "@japa/assert": "^3.0.0",
+    "@japa/runner": "^3.1.4",
+    "@types/luxon": "3.4.2",
+    "@types/node": "^20.14.5",
+    "c8": "^10.1.2",
+    "del-cli": "^5.1.0",
+    "eslint": "^9.12.0",
+    "prettier": "^3.3.3",
+    "typescript": "^5.6"
+  },
+  "peerDependencies": {
+    "@adonisjs/bouncer": "^3.1.4",
+    "@adonisjs/core": "^6.14.1",
+    "@adonisjs/limiter": "^2.3.2",
+    "@adonisjs/lucid": "^21.3.0",
+    "@vinejs/vine": "^3.0.0",
+    "@adonisjs/cache": "^1.1.0",
+    "luxon": "^3.5.0",
+    "zod": "^3.24"
+  },
+  "peerDependenciesMeta": {
+    "zod": {
+      "optional": true
+    }
+  },
+  "author": "MohitXSkull, Folie",
+  "license": "Apache-2.0",
+  "keywords": [],
+  "prettier": "@adonisjs/prettier-config",
+  "publishConfig": {
+    "access": "public"
+  },
+  "c8": {
+    "exclude": [
+      "tests/**"
+    ]
+  },
+  "dependencies": {
+    "axios": "^1.7.9",
+    "decimal.js": "^10.4.3",
+    "superjson": "^2.2.1",
+    "tinyexec": "^0.3.1",
+    "ts-morph": "^24.0.0"
+  }
+}

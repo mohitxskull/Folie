@@ -1,0 +1,31 @@
+import "@folie/cobalt/cobalt.css";
+import "@folie/cobalt-animation/cobalt-animation.css";
+import "@mantine/nprogress/styles.css";
+
+import type { AppProps } from "next/app";
+
+import { CobaltConfig } from "@/configs";
+import { MantineTheme } from "@/configs/theme";
+import { CobaltContext } from "@folie/cobalt";
+import { NextSeo } from "next-seo";
+import { useRouter } from "next/router";
+
+export default function App({ Component, pageProps }: AppProps) {
+  const router = useRouter();
+
+  return (
+    <>
+      <NextSeo
+        title="{{ project.name }}"
+        description="{{ project.description }}"
+      />
+      <CobaltContext
+        config={CobaltConfig}
+        mantine={MantineTheme}
+        router={router}
+      >
+        <Component {...pageProps} />
+      </CobaltContext>
+    </>
+  );
+}

@@ -1,0 +1,16 @@
+@layer mantine, mantine-datatable, mantine-contextmenu;
+
+::selection {
+  color: var(--mantine-color-white);
+  background: var(--mantine-color-dark-9);
+}
+
+.blink {
+  animation: blinker 1s linear infinite;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
