@@ -1,26 +1,79 @@
 import { AppLayout } from "@/components/layout/app";
-import { QueryLoader } from "@/components/query_loader";
 import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
-import { FormUpdateForm } from "@/components/ui/form/update_form";
-import { FormWrapper, PageContainer, PageHeader } from "@folie/cobalt/components";
+import {
+  Form,
+  FormWrapper,
+  PageContainer,
+  PageHeader,
+  RightGroup,
+} from "@folie/cobalt/components";
+import { InferGetServerSidePropsType } from "next";
+import { useState } from "react";
+import { Button, Switch, TextInput } from "@mantine/core";
+import { notifications } from "@mantine/notifications";
 
-export const getServerSideProps = cobaltServer.secure();
+export const getServerSideProps = cobaltServer.server(
+  async ({ params, api }) => {
+    const formId = params("formId");
 
-export default function Page() {
-  const { isReady, param } = cobalt.useParams();
-
-  const formId = param.bind(null, "formId");
-
-  const formQ = cobalt.useQuery({
-    endpoint: "V1_FORM_SHOW",
-    input: {
+    const res = await api.endpoint("V1_FORM_SHOW").call({
       params: {
-        formId: formId(),
+        formId: formId,
+      },
+    });
+
+    return {
+      props: {
+        form: res,
+      },
+    };
+  },
+  true,
+);
+
+export default function Page(
+  props: InferGetServerSidePropsType<typeof getServerSideProps>,
+) {
+  const [captcha, setCaptcha] = useState(false);
+
+  const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
+    endpoint: "V1_FORM_UPDATE",
+    form: {
+      values: {
+        params: {
+          formId: props.form.id,
+        },
+        name: props.form.name,
+        active: props.form.status === "active",
+        captcha: {
+          private: "",
+          public: props.form.captcha?.public ?? "",
+        },
       },
     },
-    props: {
-      enabled: isReady,
+    onSuccess: (updatedData) => {
+      notifications.show({
+        message: updatedData.message,
+      });
+
+      return {
+        input: {
+          ...updatedData.form,
+          params: {
+            formId: updatedData.form.id,
+          },
+          captcha: {
+            private: "",
+            public: updatedData.form.captcha?.public ?? "",
+          },
+          active: updatedData.form.status === "active",
+        },
+        queryKeys: (qk) => [
+          qk("V1_FORM_SHOW", { formId: updatedData.form.id }),
+          qk("V1_FORM_LIST", undefined),
+        ],
+      };
     },
   });
 
@@ -35,17 +88,70 @@ export default function Page() {
               withBackBtn
             />
 
-            <QueryLoader query={formQ}>
-              {(form) => (
-                <>
-                  <FormWrapper>
-                    <>
-                      <FormUpdateForm form={form} />
-                    </>
-                  </FormWrapper>
-                </>
-              )}
-            </QueryLoader>
+            <FormWrapper>
+              <Form
+                mutation={mutation}
+                submit={(f) => {
+                  submit({
+                    ...f,
+                    captcha: captcha ? f.captcha : null,
+                  });
+                }}
+                form={form}
+              >
+                {({ dirty, loading }) => (
+                  <>
+                    <TextInput
+                      label="Name"
+                      {...iProps(["name"])}
+                      key={iKey(["name"])}
+                    />
+
+                    <Switch
+                      label="Captcha"
+                      description="Only Cloudflare Turnstile is supported."
+                      checked={captcha}
+                      onChange={(event) =>
+                        setCaptcha(event.currentTarget.checked)
+                      }
+                    />
+
+                    {captcha && (
+                      <>
+                        <TextInput
+                          label="Captcha"
+                          placeholder="Turnstile Captcha Private Key"
+                          {...iProps(["captcha", "private"])}
+                          key={iKey(["captcha", "private"])}
+                        />
+
+                        <TextInput
+                          label="Captcha"
+                          placeholder="Turnstile Captcha Public Key"
+                          {...iProps(["captcha", "public"])}
+                          key={iKey(["captcha", "public"])}
+                        />
+                      </>
+                    )}
+
+                    <Switch
+                      label="Active"
+                      description="Only active forms can accept submission"
+                      {...iProps(["active"], {
+                        type: "checkbox",
+                      })}
+                      key={iKey(["active"])}
+                    />
+
+                    <RightGroup>
+                      <Button type="submit" loading={loading} disabled={!dirty}>
+                        Update
+                      </Button>
+                    </RightGroup>
+                  </>
+                )}
+              </Form>
+            </FormWrapper>
           </PageContainer>
         </>
       </AppLayout>

@@ -1,4 +1,3 @@
-/** eslint-disable react-hooks/exhaustive-deps */
 import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
 import { InferGetServerSidePropsType } from "next";
@@ -7,21 +6,23 @@ import { useMemo } from "react";
 import { Form, PageContainer, RightGroup } from "@folie/cobalt/components";
 import { Button, TextInput, NumberInput, Center, Box } from "@mantine/core";
 
-export const getServerSideProps = cobaltServer.server(async ({ params }) => {
-  const formId = params("formId");
+export const getServerSideProps = cobaltServer.server(
+  async ({ params, api }) => {
+    const formId = params("formId");
 
-  const res = await cobaltServer.api.endpoint("V1_PUBLIC_FORM_SHOW").call({
-    params: {
-      formId: formId,
-    },
-  });
+    const res = await api.endpoint("V1_PUBLIC_FORM_SHOW").call({
+      params: {
+        formId: formId,
+      },
+    });
 
-  return {
-    props: {
-      form: res,
-    },
-  };
-});
+    return {
+      props: {
+        form: res,
+      },
+    };
+  },
+);
 
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
@@ -37,7 +38,7 @@ export default function Page(
       },
       {},
     );
-  }, []);
+  }, [props.form.fields]);
 
   const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
     endpoint: "V1_PUBLIC_SUBMISSION_CREATE",
