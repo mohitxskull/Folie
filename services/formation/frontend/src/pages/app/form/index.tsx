@@ -12,6 +12,7 @@ import {
 } from "@folie/cobalt/components";
 import { LocalDataTable } from "@/components/data_table";
 import { useRouter } from "next/router";
+import { capitalCase } from "case-anything";
 
 export const getServerSideProps = cobaltServer.secure();
 
@@ -33,7 +34,10 @@ export default function Page() {
       <AppLayout fullHeight>
         <>
           <PageContainer>
-            <PageHeader title="Form" description="Manage your forms">
+            <PageHeader
+              title="Forms"
+              description="You can manage your forms here."
+            >
               <Button component={Link} href="/app/form/create">
                 Create
               </Button>
@@ -57,13 +61,16 @@ export default function Page() {
                     recordsPerPage={paginatedData.meta.limit}
                     records={paginatedData.data}
                     onCellClick={({ record, column }) => {
-                      if (column.accessor === "name") {
+                      if (column.accessor !== "actions") {
                         router.push(`/app/form/${record.id}`);
                       }
                     }}
                     columns={[
                       { accessor: "name" },
-                      { accessor: "status" },
+                      {
+                        accessor: "status",
+                        render: (f) => capitalCase(f.status),
+                      },
                       {
                         accessor: "captcha",
                         render: (f) => (f.captcha ? "Enabled" : "Disabled"),

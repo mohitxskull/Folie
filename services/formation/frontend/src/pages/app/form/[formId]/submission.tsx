@@ -5,7 +5,7 @@ import { cobaltServer } from "@/configs/cobalt_server";
 import { DataTableColumn } from "mantine-datatable";
 import { formatDate } from "@/lib/helpers/date";
 import { getProperty } from "dot-prop";
-import { Box } from "@mantine/core";
+import { Box, Select } from "@mantine/core";
 import {
   PageContainer,
   PageHeader,
@@ -43,7 +43,7 @@ export default function Page(
         formId: props.form.id,
       },
       query: {
-        limit: 10,
+        limit: 20,
         page: 1,
         schemaVersion: 1,
       },
@@ -56,10 +56,27 @@ export default function Page(
         <>
           <PageContainer>
             <PageHeader
-              title="Submissions"
-              description={props.form.name}
+              title={props.form.name}
+              description="Form submissions."
               withBackBtn
-            />
+            >
+              <Select
+                placeholder="Select version"
+                value={String(Body.query.schemaVersion)}
+                onChange={(v) => {
+                  setBody({
+                    query: {
+                      ...Body.query,
+                      schemaVersion: Number(v ?? 1),
+                    },
+                  });
+                }}
+                data={props.form.schema.map((s) => ({
+                  label: `Version ${s.version}`,
+                  value: String(s.version),
+                }))}
+              />
+            </PageHeader>
 
             <LocalQueryLoader query={listQ}>
               {(paginatedData) => (
@@ -108,7 +125,8 @@ export default function Page(
                       },
                       [
                         {
-                          accessor: "createdAt",
+                          accessor: "form-submitted-at",
+                          title: "Submitted At",
                           render: (record) => formatDate(record.createdAt),
                         },
                       ],
