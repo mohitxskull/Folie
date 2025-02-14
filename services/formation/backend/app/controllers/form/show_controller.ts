@@ -17,7 +17,12 @@ export default class Controller {
     input: this.input,
 
     handle: async ({ payload }) => {
-      const form = await Form.findOne({ _id: payload.params.formId })
+      const form = await Form.findOne({
+        _id: payload.params.formId,
+        status: {
+          $ne: 'deleted',
+        },
+      })
 
       if (!form) {
         throw new ProcessingException('Form not found')

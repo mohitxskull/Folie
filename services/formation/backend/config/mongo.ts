@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
+import { getFormSchema } from '#helpers/get_schema'
 import env from '#start/env'
 import { FieldSchema } from '#validators/field'
 import { MongoClient, ObjectId, WithId } from 'mongodb'
@@ -37,7 +38,6 @@ export const serializeSubmission = (object: WithId<SubmissionCollectionSchema>) 
 export type FormCollectionSchema = {
   status: 'inactive' | 'active' | 'deleted'
 
-  slug: string
   name: string
 
   captcha: {
@@ -52,8 +52,6 @@ export type FormCollectionSchema = {
     createdAt: Date
     updatedAt: Date
   }[]
-
-  activeSchema: number
 
   createdAt: Date
   updatedAt: Date
@@ -94,12 +92,12 @@ export const serializeForm = (object: WithId<FormCollectionSchema>) => {
 export const serializePublicForm = (object: WithId<FormCollectionSchema>) => {
   const serialized = serializeForm(object)
 
-  const activeSchema = serialized.schema.find((e) => e.version === serialized.activeSchema)
+  const latestSchema = getFormSchema(object.schema)
 
-  if (!activeSchema) {
+  if (!latestSchema) {
     throw new Error("Active schema can't be found", {
       cause: {
-        formId: serialized.slug,
+        formId: serialized.id,
       },
     })
   }
@@ -107,6 +105,6 @@ export const serializePublicForm = (object: WithId<FormCollectionSchema>) => {
   return {
     id: serialized.id,
     captcha: serialized.captcha,
-    fields: activeSchema.fields,
+    fields: latestSchema.fields,
   }
 }

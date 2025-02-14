@@ -59,7 +59,7 @@ export default function Page(
       notifications.show({
         message: updatedData.message,
       });
-      
+
       captchaRef.current?.reset();
       setCaptchaToken(null);
 

@@ -7,6 +7,7 @@ import { ObjectIdSchema } from '#miscellaneous/object_id_rule'
 import { CaptchaService } from '@folie/castle/service/captcha_service'
 import { Secret } from '@adonisjs/core/helpers'
 import { compileFields } from '#helpers/compile_fields'
+import { getFormSchema } from '#helpers/get_schema'
 
 export default class Controller {
   input = vine.compile(
@@ -31,18 +32,11 @@ export default class Controller {
     handle: async ({ payload, ctx }) => {
       const form = await Form.findOne({
         _id: payload.params.formId,
+        status: 'active',
       })
 
       if (!form) {
         throw new ProcessingException('Form not found')
-      }
-
-      if (form.status !== 'active') {
-        throw new ProcessingException('Form not found', {
-          meta: {
-            reason: 'Form is not active',
-          },
-        })
       }
 
       if (form.captcha) {
@@ -69,8 +63,9 @@ export default class Controller {
         }
       }
 
-      const activeSchema = form.schema.find((s) => s.version === form.activeSchema)
+      const activeSchema = getFormSchema(form.schema)
 
+      // Precautionary measure to ensure that the active schema is not null or undefined
       if (!activeSchema) {
         throw new Error('Active schema not found', {
           cause: {

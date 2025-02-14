@@ -126,7 +126,7 @@ export class Gate<ROUTES extends Routes> {
     EP extends ROUTES[RK],
     IN extends EP['io']['input'],
     OUT extends EP['io']['output'],
-  >(endpointKey: RK, input: IN): Promise<[OUT | null, GateError | null]> {
+  >(endpointKey: RK, input: IN): Promise<[OUT, null] | [null, GateError]> {
     try {
       const res = await this.#call(endpointKey, input)
 

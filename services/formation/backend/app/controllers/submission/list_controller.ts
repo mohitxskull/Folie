@@ -36,6 +36,9 @@ export default class Controller {
             version: payload.query.schemaVersion,
           },
         },
+        status: {
+          $ne: 'deleted',
+        },
       })
 
       if (!form) {

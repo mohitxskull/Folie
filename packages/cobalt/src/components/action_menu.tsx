@@ -13,7 +13,7 @@ type Props = {
 export const ActionMenu = (props: Props) => {
   return (
     <>
-      <Menu width={200} position="bottom-end" trigger='click-hover' {...props.props?.root}>
+      <Menu width={200} position="bottom-end" trigger="click-hover" {...props.props?.root}>
         <Menu.Target>
           <ActionIcon variant="transparent" c="dimmed" size="sm" {...props.props?.actionIcon}>
             <IconMenu2 size={ICON_SIZE.XS} />

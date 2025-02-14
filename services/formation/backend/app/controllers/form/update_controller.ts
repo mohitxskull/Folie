@@ -10,7 +10,7 @@ import { MatchKeysAndValues } from 'mongodb'
 import { FieldArraySchema } from '#validators/field'
 import { CaptchaSchema } from '#validators/captcha'
 import { TextSchema } from '@folie/castle/validator/index'
-import { slugify } from '@folie/castle/helpers/slugify'
+import { getFormSchema } from '#helpers/get_schema'
 
 export default class Controller {
   input = vine.compile(
@@ -39,9 +39,7 @@ export default class Controller {
       let updates: MatchKeysAndValues<FormCollectionSchema> = {}
 
       if (payload.name !== undefined && form.name !== payload.name) {
-        const slug = slugify(payload.name)
-
-        const exist = await Form.findOne({ slug, _id: { $ne: form._id } })
+        const exist = await Form.findOne({ name: payload.name, _id: { $ne: form._id } })
 
         if (exist) {
           throw new ProcessingException('Form with this name already exists', {
@@ -49,12 +47,10 @@ export default class Controller {
           })
         }
 
-        form.slug = slug
         form.name = payload.name
 
         updates = {
           ...updates,
-          slug: form.slug,
           name: form.name,
         }
       }
@@ -103,27 +99,18 @@ export default class Controller {
       }
 
       if (payload.fields !== undefined) {
-        const activeSchema = form.schema.find((s) => s.version === form.activeSchema)
+        const latestSchema = getFormSchema(form.schema)
 
-        if (!activeSchema) {
-          throw new Error('Active schema not found', {
-            cause: {
-              formId: payload.params.formId,
-              activeSchema: form.activeSchema,
-            },
-          })
-        }
-
-        const isSchemaChanged = md5(payload.fields) !== md5(activeSchema.fields)
+        const isSchemaChanged = md5(payload.fields) !== md5(latestSchema.fields)
 
         if (isSchemaChanged) {
-          const isSchemaHashChanged = activeSchema.hash !== fieldHash(payload.fields)
+          const payloadSchemaHash = fieldHash(payload.fields)
+
+          const isSchemaHashChanged = latestSchema.hash !== payloadSchemaHash
 
           if (isSchemaHashChanged) {
             if (form.schema.length > 4) {
-              const oldestSchema = form.schema.reduce((oldest, current) => {
-                return oldest.version < current.version ? oldest : current
-              })
+              const oldestSchema = getFormSchema(form.schema, 'oldest')
 
               await Submission.deleteMany({
                 formId: payload.params.formId,
@@ -133,32 +120,21 @@ export default class Controller {
               form.schema = form.schema.filter((s) => s.version !== oldestSchema.version)
             }
 
-            const latestSchema = form.schema.reduce((latest, current) => {
-              return latest.version > current.version ? latest : current
-            })
-
             const newVersion = latestSchema.version + 1
 
             form.schema.push({
               version: newVersion,
-              hash: fieldHash(payload.fields),
+              hash: payloadSchemaHash,
               fields: payload.fields,
               createdAt: DateTime.utc().toJSDate(),
               updatedAt: DateTime.utc().toJSDate(),
             })
 
-            form.activeSchema = newVersion
-
             updates = {
               ...updates,
               schema: form.schema,
-              activeSchema: form.activeSchema,
             }
           } else {
-            const latestSchema = form.schema.reduce((latest, current) => {
-              return latest.version > current.version ? latest : current
-            })
-
             form.schema = form.schema.map((s) => {
               if (s.version === latestSchema.version) {
                 if (!payload.fields) {

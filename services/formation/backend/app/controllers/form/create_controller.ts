@@ -1,19 +1,16 @@
 import vine from '@vinejs/vine'
 import { safeRoute } from '@folie/castle'
-import ProcessingException from '@folie/castle/exception/processing_exception'
 import { Form } from '#config/mongo'
 import { DateTime } from 'luxon'
 import { TextSchema } from '@folie/castle/validator/index'
-import { slugify } from '@folie/castle/helpers/slugify'
 import { fieldHash } from '#helpers/field_hash'
-import { CaptchaSchema } from '#validators/captcha'
 import { FieldArraySchema } from '#validators/field'
+import ProcessingException from '@folie/castle/exception/processing_exception'
 
 export default class Controller {
   input = vine.compile(
     vine.object({
       name: TextSchema,
-      captcha: CaptchaSchema,
       fields: FieldArraySchema,
     })
   )
@@ -22,31 +19,27 @@ export default class Controller {
     input: this.input,
 
     handle: async ({ payload }) => {
-      const slug = slugify(payload.name)
+      const exists = await Form.findOne({ name: payload.name })
 
-      const exist = await Form.findOne({ slug })
-
-      if (exist) {
-        throw new ProcessingException('Form with this name already exists', {
+      if (exists) {
+        throw new ProcessingException('Form already exists with the same name', {
           source: 'name',
         })
       }
 
       await Form.insertOne({
         status: 'inactive',
-        slug,
         name: payload.name,
         schema: [
           {
-            version: 1,
+            version: 0,
             hash: fieldHash(payload.fields),
             fields: payload.fields,
             createdAt: DateTime.utc().toJSDate(),
             updatedAt: DateTime.utc().toJSDate(),
           },
         ],
-        activeSchema: 1,
-        captcha: payload.captcha || null,
+        captcha: null,
         createdAt: DateTime.utc().toJSDate(),
         updatedAt: DateTime.utc().toJSDate(),
         deletedAt: null,

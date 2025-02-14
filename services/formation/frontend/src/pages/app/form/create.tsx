@@ -36,7 +36,6 @@ export default function Page() {
       values: {
         name: "",
         fields,
-        captcha: null,
       },
     },
     onSuccess: (updatedData) => {

@@ -17,18 +17,10 @@ export default class Controller {
     input: this.input,
 
     handle: async ({ payload }) => {
-      const form = await Form.findOne({ _id: payload.params.formId })
+      const form = await Form.findOne({ _id: payload.params.formId, status: 'active' })
 
       if (!form) {
         throw new ProcessingException('Form not found')
-      }
-
-      if (form.status !== 'active') {
-        throw new ProcessingException('Form not found', {
-          meta: {
-            reason: 'Form is not active',
-          },
-        })
       }
 
       return serializePublicForm(form)
