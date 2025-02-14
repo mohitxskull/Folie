@@ -30,7 +30,7 @@ export const getServerSideProps = cobaltServer.server(
       },
     };
   },
-  true,
+  { secure: true },
 );
 
 export default function Page(
