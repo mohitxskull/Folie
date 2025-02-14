@@ -1,5 +1,11 @@
 # @folie/gate
 
+## 0.0.7
+
+### Patch Changes
+
+- Major changes but still in beta testing
+
 ## 0.0.6
 
 ### Patch Changes

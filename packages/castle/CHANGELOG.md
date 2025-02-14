@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.11
+
+### Patch Changes
+
+- Major changes but still in beta testing
+
 ## 0.0.10
 
 ### Patch Changes

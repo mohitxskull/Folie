@@ -1,5 +1,13 @@
 # @folie/cobalt
 
+## 0.0.21
+
+### Patch Changes
+
+- Major changes but still in beta testing
+- Updated dependencies
+  - @folie/gate@0.0.7
+
 ## 0.0.20
 
 ### Patch Changes
