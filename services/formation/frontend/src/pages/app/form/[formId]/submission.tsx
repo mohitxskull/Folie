@@ -30,7 +30,7 @@ export const getServerSideProps = cobaltServer.server(
       },
     };
   },
-  true,
+  { secure: true },
 );
 
 export default function Page(
@@ -95,6 +95,7 @@ export default function Page(
                     totalRecords={paginatedData.meta.total.object}
                     recordsPerPage={paginatedData.meta.limit}
                     records={paginatedData.data}
+                    idAccessor="id"
                     rowExpansion={{
                       content: ({ record }) => (
                         <>

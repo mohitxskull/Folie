@@ -163,61 +163,6 @@ export class CobaltServer<
     }
   }
 
-  /**
-   * Creates a higher-order function to handle server-side rendering logic with session management, security, and error handling.
-   * This method is the core of CobaltServer, providing a streamlined way to implement `getServerSideProps` in Next.js.
-   * It automatically handles session retrieval, security checks, route parameter extraction, and centralized error handling.
-   *
-   * @method server
-   * @template T - The type of the `props` object that will be passed to your page component. This defines the data your page expects to receive from `getServerSideProps`.
-   * @template CTX - The type of the context object. Defaults to `GetServerSidePropsContext` from Next.js, but can be extended if needed for custom context augmentation.
-   * @param {function} callback - The main server-side logic function where you implement your data fetching and processing.
-   *                              This function is executed within the `getServerSideProps` context and provides access to session data, request context, route parameters, and the API client.
-   * @param {object} callback.params - An object containing parameters passed to the callback function.
-   * @param {ROUTES[SCERK]['io']['output'] | null} callback.params.session - The session data, automatically retrieved and validated by CobaltServer.
-   *                                         Will be `null` if no valid session is found or if session retrieval fails.
-   * @param {CTX} callback.params.ctx - The Next.js `GetServerSidePropsContext` object, providing access to request, response, query parameters, and more.
-   * @param {function} callback.params.params - A function to safely extract route parameters by key.
-   *                                            Call `callback.params('paramKey')` to get the string value of the route parameter 'paramKey'.
-   *                                            Throws a `NextServerError` with a 404 status if the parameter is not found.
-   * @param {Gate<ROUTES>} callback.params.api -  The configured `Gate` API client instance, pre-set with the session token (if available).
-   *                                               Use this to make API requests to your backend services.
-   * @param {boolean | function} [secure] - Optional security configuration to protect the route.
-   *                                     - `true`: Enables basic security. If no valid session is found, the user will be redirected to the URL specified in `secureConfig.redirect`.
-   *                                     - `function`: Provides a custom checkpoint function for more complex authorization logic.
-   *                                                   This function should conform to the same signature as the `checkpoint` function in the `secure()` method,
-   *                                                   allowing for fine-grained control over route access based on session data and context.
-   *                                     - `undefined` (or omitted): Disables security for this route. No session check or security enforcement will be applied.
-   * @returns {GetServerSideProps<T>} - Returns a Next.js `GetServerSideProps` function.
-   *                                    This function encapsulates the server-side logic, session management, security checks, and error handling,
-   *                                    and is ready to be exported from your Next.js page.
-   *
-   * @example
-   * // Basic server-side props fetching without security
-   * export const getServerSideProps = server.server(async ({ params: { session, p, api } }) => {
-   *   const itemId = p('itemId');
-   *   const item = await api.endpoint("V1_ITEM_SHOW").call({ itemId }); // Example API call using the provided api client
-   *   return { props: { item } }; // Return fetched item as props
-   * });
-   *
-   * @example
-   * // Secure server-side props fetching, redirecting to login if no session
-   * export const getServerSideProps = server.server(async ({ params: { session, p, api } }) => {
-   *   const itemId = p('itemId');
-   *   const item = await api.endpoint("V1_ITEM_SHOW").call({ itemId }); // Example API call
-   *   return { props: { item } };
-   * }, true); // Enable basic security - redirects to secureConfig.redirect if no session
-   *
-   * @example
-   * // Server-side props fetching with custom security checkpoint based on user role
-   * export const getServerSideProps = server.server(async ({ params: { session, p, api } }) => {
-   *   const itemId = p('itemId');
-   *   const item = await api.endpoint("V1_ITEM_SHOW").call({ itemId }); // Example API call
-   *   return { props: { item } };
-   * }, ({ session }) => { // Custom security checkpoint function
-   *   return { allow: session?.role === 'admin', redirect: '/unauthorized' }; // Allow only admins, redirect unauthorized users
-   * });
-   */
   server = <T extends { [key: string]: any }>(
     callback: (params: {
       session: ROUTES[SCERK]['io']['output'] | null
@@ -225,20 +170,22 @@ export class CobaltServer<
       params: (key: KEYS) => string
       api: Gate<ROUTES>
     }) => Promise<GetServerSidePropsResult<T>>,
-    secure?:
-      | ((params: {
-          ctx: GetServerSidePropsContext
-          session: ROUTES[SCERK]['io']['output'] | null
-        }) => CheckpointParams)
-      | true
+    options?: {
+      secure?:
+        | ((params: {
+            ctx: GetServerSidePropsContext
+            session: ROUTES[SCERK]['io']['output'] | null
+          }) => CheckpointParams)
+        | true
+    }
   ): GetServerSideProps<T> => {
     return async (ctx: GetServerSidePropsContext): Promise<GetServerSidePropsResult<T>> => {
       try {
         const session = await this.#session(ctx)
 
-        if (secure) {
-          if (typeof secure === 'function') {
-            const condition = secure({ ctx, session })
+        if (options?.secure) {
+          if (typeof options?.secure === 'function') {
+            const condition = options?.secure({ ctx, session })
 
             if (condition.allow === false) {
               return {

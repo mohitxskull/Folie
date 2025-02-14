@@ -94,6 +94,7 @@ export default class Controller {
         submittedAt: DateTime.utc().toJSDate(),
         meta: {
           ip: ctx.request.ip(),
+          captcha: !!form.captcha,
         },
       })
 

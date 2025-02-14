@@ -2,9 +2,10 @@ import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
 import { InferGetServerSidePropsType } from "next";
 import { notifications } from "@mantine/notifications";
-import { useMemo } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Form, PageContainer, RightGroup } from "@folie/cobalt/components";
 import { Button, TextInput, NumberInput, Center, Box } from "@mantine/core";
+import { Turnstile, TurnstileInstance } from "@marsidev/react-turnstile";
 
 export const getServerSideProps = cobaltServer.server(
   async ({ params, api }) => {
@@ -27,6 +28,10 @@ export const getServerSideProps = cobaltServer.server(
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
+  const captchaRef = useRef<TurnstileInstance>(undefined);
+
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+
   const fields = useMemo(() => {
     return props.form.fields.reduce<Record<string, string | number | null>>(
       (acc, curr) => {
@@ -54,6 +59,9 @@ export default function Page(
       notifications.show({
         message: updatedData.message,
       });
+      
+      captchaRef.current?.reset();
+      setCaptchaToken(null);
 
       return {
         input: {
@@ -64,6 +72,12 @@ export default function Page(
         },
       };
     },
+    mutation: {
+      onErr: () => {
+        captchaRef.current?.reset();
+        setCaptchaToken(null);
+      },
+    },
   });
 
   return (
@@ -71,7 +85,19 @@ export default function Page(
       <PageContainer>
         <Center>
           <Box miw={400}>
-            <Form mutation={mutation} submit={submit} form={form}>
+            <Form
+              mutation={mutation}
+              submit={(v) => {
+                submit({
+                  ...v,
+                  query: {
+                    ...v.query,
+                    captcha: props.form.captcha ? captchaToken : undefined,
+                  },
+                });
+              }}
+              form={form}
+            >
               {({ dirty, loading }) => (
                 <>
                   {props.form.fields.map((field) => {
@@ -110,8 +136,45 @@ export default function Page(
                     }
                   })}
 
+                  {props.form.captcha && (
+                    <>
+                      <Turnstile
+                        ref={captchaRef}
+                        siteKey={props.form.captcha.public}
+                        onSuccess={(t) => {
+                          setCaptchaToken(t);
+                        }}
+                        onExpire={() => {
+                          notifications.show({
+                            title: "Captcha Expired",
+                            message: "Complete it again",
+                          });
+
+                          setCaptchaToken(null);
+                        }}
+                        onError={() => {
+                          notifications.show({
+                            title: "Captcha Error",
+                            message: "Please try again",
+                          });
+
+                          setCaptchaToken(null);
+                        }}
+                        options={{
+                          size: "flexible",
+                        }}
+                      />
+                    </>
+                  )}
+
                   <RightGroup>
-                    <Button type="submit" loading={loading} disabled={!dirty}>
+                    <Button
+                      type="submit"
+                      loading={loading}
+                      disabled={
+                        !dirty || (!!props.form.captcha && !captchaToken)
+                      }
+                    >
                       Submit
                     </Button>
                   </RightGroup>

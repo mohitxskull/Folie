@@ -10,7 +10,7 @@ import {
 } from "@folie/cobalt/components";
 import { InferGetServerSidePropsType } from "next";
 import { useState } from "react";
-import { Button, Switch, TextInput } from "@mantine/core";
+import { Alert, Button, Switch, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
 export const getServerSideProps = cobaltServer.server(
@@ -29,13 +29,13 @@ export const getServerSideProps = cobaltServer.server(
       },
     };
   },
-  true,
+  { secure: true },
 );
 
 export default function Page(
   props: InferGetServerSidePropsType<typeof getServerSideProps>,
 ) {
-  const [captcha, setCaptcha] = useState(false);
+  const [captcha, setCaptcha] = useState(!!props.form.captcha);
 
   const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
     endpoint: "V1_FORM_UPDATE",
@@ -111,25 +111,42 @@ export default function Page(
                       label="Captcha"
                       description="Only Cloudflare Turnstile is supported."
                       checked={captcha}
-                      onChange={(event) =>
-                        setCaptcha(event.currentTarget.checked)
-                      }
+                      onChange={(event) => {
+                        const res = event.currentTarget.checked;
+
+                        if (res === false) {
+                          form.setValues((prev) => ({
+                            ...prev,
+                            captcha: {
+                              private: "",
+                              public: "",
+                            },
+                          }));
+                        }
+
+                        setCaptcha(res);
+                      }}
                     />
 
                     {captcha && (
                       <>
+                        <Alert>
+                          Ensure the Formation domain is included in the
+                          HostName to enable proper functionality of the widget.
+                        </Alert>
+
                         <TextInput
-                          label="Captcha"
-                          placeholder="Turnstile Captcha Private Key"
-                          {...iProps(["captcha", "private"])}
-                          key={iKey(["captcha", "private"])}
+                          label="Public Captcha"
+                          placeholder="Turnstile Captcha Public Key ( Site Key )"
+                          {...iProps(["captcha", "public"])}
+                          key={iKey(["captcha", "public"])}
                         />
 
                         <TextInput
-                          label="Captcha"
-                          placeholder="Turnstile Captcha Public Key"
-                          {...iProps(["captcha", "public"])}
-                          key={iKey(["captcha", "public"])}
+                          label="Private Captcha"
+                          placeholder="Turnstile Captcha Private Key ( Secret Key )"
+                          {...iProps(["captcha", "private"])}
+                          key={iKey(["captcha", "private"])}
                         />
                       </>
                     )}

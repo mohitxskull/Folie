@@ -7,7 +7,7 @@ import {
 } from "@mantine/core";
 import { Logo } from "../logo";
 import { setting } from "@/configs/setting";
-import { Icon, IconForms, IconHome, IconHttpPost } from "@tabler/icons-react";
+import { Icon, IconForms, IconHome } from "@tabler/icons-react";
 import { Children } from "react";
 import { ICON_SIZE } from "@folie/cobalt";
 import { NavbarFooterMenu } from "./navbar_footer_menu";

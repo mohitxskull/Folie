@@ -89,10 +89,7 @@ export default class Controller {
 
             updates = {
               ...updates,
-              captcha: {
-                private: payload.captcha.private,
-                public: payload.captcha.public,
-              },
+              captcha: form.captcha,
             }
           }
         } else {

@@ -5,17 +5,19 @@ import { cobaltServer } from "@/configs/cobalt_server";
 import { useListState } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useRouter } from "next/router";
-import { Form, FormWrapper, PageHeader, RightGroup } from "@folie/cobalt/components";
-import { Button, TextInput, Switch } from "@mantine/core";
-import { useState } from "react";
+import {
+  Form,
+  FormWrapper,
+  PageHeader,
+  RightGroup,
+} from "@folie/cobalt/components";
+import { Button, TextInput } from "@mantine/core";
 import { FieldSchema } from "@folie/service-formation-backend/types";
 
 export const getServerSideProps = cobaltServer.secure();
 
 export default function Page() {
   const router = useRouter();
-
-  const [captcha, setCaptcha] = useState(false);
 
   const [fields, fieldHandlers] = useListState<FieldSchema>([
     {
@@ -80,7 +82,6 @@ export default function Page() {
                   submit({
                     ...e,
                     fields: fields,
-                    captcha: captcha ? e.captcha : null,
                   });
                 }}
                 form={form}
@@ -93,33 +94,6 @@ export default function Page() {
                       {...iProps(["name"])}
                       key={iKey(["name"])}
                     />
-
-                    <Switch
-                      label="Captcha"
-                      description="Only Cloudflare Turnstile is supported."
-                      checked={captcha}
-                      onChange={(event) =>
-                        setCaptcha(event.currentTarget.checked)
-                      }
-                    />
-
-                    {captcha && (
-                      <>
-                        <TextInput
-                          label="Private Key"
-                          placeholder="Turnstile private Key"
-                          {...iProps(["captcha", "private"])}
-                          key={iKey(["captcha", "private"])}
-                        />
-
-                        <TextInput
-                          label="Public Key"
-                          placeholder="Turnstile public Key"
-                          {...iProps(["captcha", "public"])}
-                          key={iKey(["captcha", "public"])}
-                        />
-                      </>
-                    )}
 
                     <RightGroup>
                       <Button type="submit" loading={loading} disabled={!dirty}>

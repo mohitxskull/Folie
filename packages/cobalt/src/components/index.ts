@@ -10,7 +10,6 @@ export { If } from './if.js'
 export { RenderAfter } from './render_after.js'
 export { Show } from './show.js'
 
-export { ActionGroup } from './action_group.js'
 export { FormWrapper } from './form_wrapper.js'
 export { LeftGroup, RightGroup } from './group.js'
 export { NavigationLoadingBase } from './navigation_loading_base.js'

@@ -78,6 +78,7 @@ export default class Controller {
       return {
         schema: selectedSchema,
         data: submissions.map((s) => ({
+          id: s._id.toString(),
           formId: s.formId,
           meta: s.meta,
           fields: s.fields,

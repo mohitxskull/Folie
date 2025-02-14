@@ -48,7 +48,7 @@ export const VerticalTable = (props: {
                       case 'boolean': {
                         return (
                           <>
-                            <Text size="sm">{value ? String(value) : '-'}</Text>
+                            <Text size="sm">{value ? capitalCase(String(value)) : '-'}</Text>
                           </>
                         )
                       }
