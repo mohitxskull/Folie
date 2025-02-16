@@ -173,9 +173,6 @@ importers:
       ts-morph:
         specifier: ^24.0.0
         version: 24.0.0
-      zod:
-        specifier: ^3.24
-        version: 3.24.1
     devDependencies:
       '@adonisjs/eslint-config':
         specifier: ^2.0.0-beta.7
@@ -8164,7 +8161,7 @@ snapshots:
     dependencies:
       '@types/cookiejar': 2.1.5
       '@types/methods': 1.1.4
-      '@types/node': 22.13.1
+      '@types/node': 20.17.17
       form-data: 4.0.1
 
   '@types/unist@3.0.3': {}

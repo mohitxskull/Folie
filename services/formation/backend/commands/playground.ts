@@ -11,5 +11,21 @@ export default class Playground extends BaseCommand {
 
   async run() {
     this.logger.info('Welcome to playground!')
+
+    function generateShortId() {
+      const characters = 'abcdefghijklmnopqrstuvwxyz'
+      const length = Math.floor(Math.random() * 10) + 1 // Length between 1 and 10
+
+      let result = ''
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * characters.length)
+        result += characters.charAt(randomIndex)
+      }
+
+      return result
+    }
+
+    console.log(generateShortId())
   }
 }

@@ -55,13 +55,7 @@
     "@adonisjs/lucid": "^21.3.0",
     "@vinejs/vine": "^3.0.0",
     "@adonisjs/cache": "^1.1.0",
-    "luxon": "^3.5.0",
-    "zod": "^3.24"
-  },
-  "peerDependenciesMeta": {
-    "zod": {
-      "optional": true
-    }
+    "luxon": "^3.5.0"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",

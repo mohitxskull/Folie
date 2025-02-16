@@ -3,15 +3,12 @@ import { safeRoute } from '@folie/castle'
 import { Form } from '#config/mongo'
 import { DateTime } from 'luxon'
 import { TextSchema } from '@folie/castle/validator/index'
-import { fieldHash } from '#helpers/field_hash'
-import { FieldArraySchema } from '#validators/field'
 import ProcessingException from '@folie/castle/exception/processing_exception'
 
 export default class Controller {
   input = vine.compile(
     vine.object({
       name: TextSchema,
-      fields: FieldArraySchema,
     })
   )
 
@@ -28,21 +25,12 @@ export default class Controller {
       }
 
       await Form.insertOne({
-        status: 'inactive',
+        status: { value: 'inactive', updatedAt: DateTime.utc().toJSDate() },
         name: payload.name,
-        schema: [
-          {
-            version: 0,
-            hash: fieldHash(payload.fields),
-            fields: payload.fields,
-            createdAt: DateTime.utc().toJSDate(),
-            updatedAt: DateTime.utc().toJSDate(),
-          },
-        ],
+        schema: {},
         captcha: null,
         createdAt: DateTime.utc().toJSDate(),
         updatedAt: DateTime.utc().toJSDate(),
-        deletedAt: null,
       })
 
       return { message: 'Form created' }

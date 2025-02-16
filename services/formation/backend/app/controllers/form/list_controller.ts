@@ -29,13 +29,13 @@ export default class Controller {
         filter = {
           ...filter,
           deletedAt: { $ne: null },
-          status: 'deleted',
+          status: { value: 'deleted' },
         }
       } else {
         filter = {
           ...filter,
           deletedAt: null,
-          status: { $in: ['active', 'inactive'] },
+          status: { value: { $in: ['active', 'inactive'] } },
         }
       }
 

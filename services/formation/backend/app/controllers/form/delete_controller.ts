@@ -20,8 +20,7 @@ export default class Controller {
     handle: async ({ payload }) => {
       const form = await Form.findOne({
         _id: payload.params.formId,
-        status: { $ne: 'deleted' },
-        deletedAt: null,
+        status: { value: { $ne: 'deleted' } },
       })
 
       if (!form) {
@@ -29,8 +28,7 @@ export default class Controller {
       }
 
       form.updatedAt = DateTime.utc().toJSDate()
-      form.deletedAt = DateTime.utc().toJSDate()
-      form.status = 'deleted'
+      form.status = { value: 'deleted', updatedAt: form.updatedAt }
 
       await Form.updateOne(
         {
@@ -38,9 +36,8 @@ export default class Controller {
         },
         {
           $set: {
-            updatedAt: form.updatedAt,
-            deletedAt: form.deletedAt,
             status: form.status,
+            updatedAt: form.updatedAt,
           },
         }
       )

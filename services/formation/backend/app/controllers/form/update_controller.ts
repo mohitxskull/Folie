@@ -2,15 +2,14 @@ import vine from '@vinejs/vine'
 import { safeRoute } from '@folie/castle'
 import ProcessingException from '@folie/castle/exception/processing_exception'
 import { ObjectIdSchema } from '#miscellaneous/object_id_rule'
-import { Form, FormCollectionSchema, serializeForm, Submission } from '#config/mongo'
+import { Form, FormCollectionSchema, serializeForm } from '#config/mongo'
 import { DateTime } from 'luxon'
-import { fieldHash } from '#helpers/field_hash'
-import { md5 } from '#helpers/md5'
 import { MatchKeysAndValues } from 'mongodb'
-import { FieldArraySchema } from '#validators/field'
+import { DBFieldSchema, FieldArraySchema } from '#validators/field'
 import { CaptchaSchema } from '#validators/captcha'
 import { TextSchema } from '@folie/castle/validator/index'
-import { getFormSchema } from '#helpers/get_schema'
+import { slugify } from '@folie/castle/helpers/slugify'
+import { md5 } from '#helpers/md5'
 
 export default class Controller {
   input = vine.compile(
@@ -21,7 +20,13 @@ export default class Controller {
 
       name: TextSchema.optional(),
       captcha: CaptchaSchema.optional(),
+
+      // Form can't be active if there is no published schema
       active: vine.boolean().optional(),
+
+      // Turns Draft into Published Schema
+      publish: vine.accepted().optional(),
+
       fields: FieldArraySchema.optional(),
     })
   )
@@ -30,10 +35,18 @@ export default class Controller {
     input: this.input,
 
     handle: async ({ payload }) => {
-      const form = await Form.findOne({ _id: payload.params.formId })
+      const form = await Form.findOne({
+        _id: payload.params.formId,
+      })
 
       if (!form) {
         throw new ProcessingException('Form not found')
+      }
+
+      if (form.status.value === 'deleted') {
+        throw new ProcessingException(
+          'Deleted forms cannot be updated, please restore the form first'
+        )
       }
 
       let updates: MatchKeysAndValues<FormCollectionSchema> = {}
@@ -56,21 +69,27 @@ export default class Controller {
       }
 
       if (payload.active !== undefined) {
-        if (payload.active === true && form.status !== 'active') {
-          form.status = 'active'
+        if (payload.active === true && form.status.value !== 'active') {
+          if (!form.schema.published) {
+            throw new ProcessingException('Form schema must be published before activating', {
+              source: 'active',
+            })
+          }
+
+          form.status = { value: 'active', updatedAt: DateTime.utc().toJSDate() }
 
           updates = {
             ...updates,
-            status: 'active',
+            status: form.status,
           }
         }
 
-        if (payload.active === false && form.status !== 'inactive') {
-          form.status = 'inactive'
+        if (payload.active === false && form.status.value !== 'inactive') {
+          form.status = { value: 'inactive', updatedAt: DateTime.utc().toJSDate() }
 
           updates = {
             ...updates,
-            status: 'inactive',
+            status: form.status,
           }
         }
       }
@@ -99,64 +118,85 @@ export default class Controller {
       }
 
       if (payload.fields !== undefined) {
-        const latestSchema = getFormSchema(form.schema)
+        const dbFields: DBFieldSchema[] = []
 
-        const isSchemaChanged = md5(payload.fields) !== md5(latestSchema.fields)
+        if (form.schema.draft && md5(payload.fields) !== md5(form.schema.draft)) {
+          const formFieldKeys = form.schema.draft.map((field) => field.key)
+          const payloadFieldKeys: number[] = []
 
-        if (isSchemaChanged) {
-          const payloadSchemaHash = fieldHash(payload.fields)
-
-          const isSchemaHashChanged = latestSchema.hash !== payloadSchemaHash
-
-          if (isSchemaHashChanged) {
-            if (form.schema.length > 4) {
-              const oldestSchema = getFormSchema(form.schema, 'oldest')
-
-              await Submission.deleteMany({
-                formId: payload.params.formId,
-                schemaVersion: oldestSchema.version,
-              })
-
-              form.schema = form.schema.filter((s) => s.version !== oldestSchema.version)
-            }
-
-            const newVersion = latestSchema.version + 1
-
-            form.schema.push({
-              version: newVersion,
-              hash: payloadSchemaHash,
-              fields: payload.fields,
-              createdAt: DateTime.utc().toJSDate(),
-              updatedAt: DateTime.utc().toJSDate(),
-            })
-
-            updates = {
-              ...updates,
-              schema: form.schema,
-            }
-          } else {
-            form.schema = form.schema.map((s) => {
-              if (s.version === latestSchema.version) {
-                if (!payload.fields) {
-                  throw new Error('Schema is required', {
-                    cause: {
-                      reason: 'Schema was checked for undefined value',
-                    },
-                  })
-                }
-
-                s.fields = payload.fields
-                s.updatedAt = DateTime.utc().toJSDate()
-              }
-
-              return s
-            })
-
-            updates = {
-              ...updates,
-              schema: form.schema,
+          for (const field of payload.fields) {
+            if (field.key) {
+              payloadFieldKeys.push(field.key)
             }
           }
+
+          const missingKeys = formFieldKeys.filter((key) => !payloadFieldKeys.includes(key))
+
+          if (missingKeys.length > 0) {
+            throw new ProcessingException('Some fields are missing', {
+              meta: {
+                missingKeys,
+                formId: form._id,
+              },
+            })
+          }
+
+          const extraKeys = payloadFieldKeys.filter((key) => !formFieldKeys.includes(key))
+
+          for (const field of payload.fields) {
+            const fieldKey = field.key
+
+            if (!fieldKey || (fieldKey && extraKeys.includes(fieldKey))) {
+              const newKey = Math.max(...formFieldKeys) + 1
+
+              formFieldKeys.push(newKey)
+            }
+
+            if (!fieldKey) {
+              throw new Error('Field key already exists')
+            }
+
+            return {
+              ...field,
+              slug: slugify(field.name),
+              key: fieldKey,
+            }
+          }
+        } else {
+          for (const [fieldIndex, field] of payload.fields.entries()) {
+            dbFields.push({
+              ...field,
+              slug: slugify(field.name),
+              key: fieldIndex + 1,
+            })
+          }
+        }
+
+        form.schema = {
+          ...form.schema,
+          draft: dbFields,
+        }
+
+        updates = {
+          ...updates,
+          schema: form.schema,
+        }
+      }
+
+      if (payload.publish !== undefined) {
+        if (!form.schema.draft) {
+          throw new ProcessingException('There is no draft version of the form to publish')
+        }
+
+        form.schema = {
+          ...form.schema,
+          published: form.schema.draft,
+          draft: undefined,
+        }
+
+        updates = {
+          ...updates,
+          schema: form.schema,
         }
       }
 

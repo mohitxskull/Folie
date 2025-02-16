@@ -1,8 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { getFormSchema } from '#helpers/get_schema'
 import env from '#start/env'
-import { FieldSchema } from '#validators/field'
+import { DBFieldSchema } from '#validators/field'
 import { MongoClient, ObjectId, WithId } from 'mongodb'
 
 export const mongo = new MongoClient(env.get('MONGO_DB_URI'))
@@ -36,7 +35,7 @@ export const serializeSubmission = (object: WithId<SubmissionCollectionSchema>) 
 }
 
 export type FormCollectionSchema = {
-  status: 'inactive' | 'active' | 'deleted'
+  status: { value: 'inactive' | 'active' | 'deleted'; updatedAt: Date }
 
   name: string
 
@@ -46,16 +45,12 @@ export type FormCollectionSchema = {
   } | null
 
   schema: {
-    version: number
-    hash: string
-    fields: FieldSchema[]
-    createdAt: Date
-    updatedAt: Date
-  }[]
+    published?: DBFieldSchema[]
+    draft?: DBFieldSchema[]
+  }
 
   createdAt: Date
   updatedAt: Date
-  deletedAt: Date | null
 }
 
 export const Form = db.collection<FormCollectionSchema>('forms')
@@ -67,6 +62,11 @@ export const serializeForm = (object: WithId<FormCollectionSchema>) => {
     ...rest,
     id: _id.toString(),
 
+    status: {
+      value: rest.status.value,
+      updatedAt: rest.status.updatedAt.toISOString(),
+    },
+
     captcha: rest.captcha
       ? {
           public: rest.captcha.public,
@@ -75,36 +75,15 @@ export const serializeForm = (object: WithId<FormCollectionSchema>) => {
 
     createdAt: rest.createdAt.toISOString(),
     updatedAt: rest.updatedAt.toISOString(),
-
-    schema: rest.schema.map(({ version, hash, fields, createdAt, updatedAt }) => ({
-      version,
-      hash,
-      fields,
-
-      createdAt: createdAt.toISOString(),
-      updatedAt: updatedAt.toISOString(),
-    })),
-
-    deletedAt: rest.deletedAt ? rest.deletedAt.toISOString() : null,
   }
 }
 
 export const serializePublicForm = (object: WithId<FormCollectionSchema>) => {
   const serialized = serializeForm(object)
 
-  const latestSchema = getFormSchema(object.schema)
-
-  if (!latestSchema) {
-    throw new Error("Active schema can't be found", {
-      cause: {
-        formId: serialized.id,
-      },
-    })
-  }
-
   return {
     id: serialized.id,
     captcha: serialized.captcha,
-    fields: latestSchema.fields,
+    fields: serialized.schema,
   }
 }

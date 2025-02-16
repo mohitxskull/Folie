@@ -2,12 +2,9 @@ import vine from '@vinejs/vine'
 import { Infer } from '@vinejs/vine/types'
 
 const BaseSchema = {
-  key: vine
-    .string()
-    .regex(/^[a-z-]+$/)
-    .minLength(1)
-    .maxLength(20),
+  key: vine.number().positive().min(0).max(100).optional(),
   name: vine.string().minLength(1).maxLength(20),
+  deleted: vine.boolean().optional(),
 }
 
 const StringEmailSchema = {
@@ -81,16 +78,16 @@ const NumberSchema = {
     .optional(),
 }
 
-const fiscalHost = vine.group([
-  vine.group.if((data) => data.type === 'string', StringSchema),
-  vine.group.if((data) => data.type === 'number', NumberSchema),
-])
-
 export const FieldSchema = vine
   .object({
     type: vine.enum(['string', 'number']),
   })
-  .merge(fiscalHost)
+  .merge(
+    vine.group([
+      vine.group.if((data) => data.type === 'string', StringSchema),
+      vine.group.if((data) => data.type === 'number', NumberSchema),
+    ])
+  )
 
 export const FieldArraySchema = vine
   .array(FieldSchema.clone())
@@ -99,3 +96,5 @@ export const FieldArraySchema = vine
   .distinct('key')
 
 export type FieldSchema = Infer<typeof FieldSchema>
+
+export type DBFieldSchema = FieldSchema & { key: number; slug: string }
