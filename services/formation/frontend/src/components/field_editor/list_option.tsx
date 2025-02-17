@@ -83,6 +83,7 @@ export const ListOption = <T extends FieldSchema>(props: {
       ))}
 
       <Button
+        variant="outline"
         onClick={() => {
           props.onChange(
             setProperty(props.value, `${props.path}`, [

@@ -12,7 +12,7 @@ type Props<T extends FieldSchema = FieldSchema> = {
   fieldHandler: UseListStateHandlers<T>;
 };
 
-export const FormEditor = (props: Props) => {
+export const FieldEditor = (props: Props) => {
   return (
     <>
       <Stack>
@@ -150,6 +150,7 @@ export const FormEditor = (props: Props) => {
                                         label="Blacklisted chars"
                                         description="will reject emails that include any of the characters in the string, in the name part"
                                         path="sub.options.blacklisted_chars"
+                                        placeholder="e.g. @#$%^&*()_+"
                                         value={field}
                                         onChange={setDirect}
                                       />
@@ -282,7 +283,6 @@ export const FormEditor = (props: Props) => {
           onClick={() => {
             props.fieldHandler.append({
               type: "string",
-              key: "",
               name: "",
               sub: {
                 type: "none",
@@ -290,7 +290,7 @@ export const FormEditor = (props: Props) => {
             });
           }}
         >
-          Add
+          Add Field
         </Button>
       </Stack>
     </>

@@ -37,7 +37,7 @@ export default function Page(
       (acc, curr) => {
         return {
           ...acc,
-          [curr.key]:
+          [curr.slug]:
             curr.type === "string" ? "" : curr.type === "number" ? null : "",
         };
       },
@@ -111,8 +111,8 @@ export default function Page(
                               minLength={field.options?.minLength}
                               maxLength={field.options?.maxLength}
                               required={field.options?.required}
-                              {...iProps(["fields", field.key])}
-                              key={iKey(["fields", field.key])}
+                              {...iProps(["fields", field.slug])}
+                              key={iKey(["fields", field.slug])}
                             />
                           </>
                         );
@@ -127,8 +127,8 @@ export default function Page(
                               min={field.options?.min}
                               max={field.options?.max}
                               required={field.options?.required}
-                              {...iProps(["fields", field.key])}
-                              key={iKey(["fields", field.key])}
+                              {...iProps(["fields", field.slug])}
+                              key={iKey(["fields", field.slug])}
                             />
                           </>
                         );

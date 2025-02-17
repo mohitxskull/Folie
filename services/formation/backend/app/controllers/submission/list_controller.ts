@@ -16,8 +16,6 @@ export default class Controller {
       }),
 
       query: vine.object({
-        schemaVersion: vine.number().min(1).max(100000),
-
         page: PageSchema.optional(),
         limit: LimitSchema.optional(),
       }),
@@ -30,14 +28,13 @@ export default class Controller {
     handle: async ({ payload }) => {
       const form = await Form.findOne({
         _id: payload.params.formId,
-        schema: {
-          $elemMatch: {
-            // Use $elemMatch to match within the array
-            version: payload.query.schemaVersion,
-          },
-        },
         status: {
           $ne: 'deleted',
+        },
+        schema: {
+          published: {
+            $exists: true,
+          },
         },
       })
 
@@ -45,24 +42,11 @@ export default class Controller {
         throw new ProcessingException('Form not found')
       }
 
-      const selectedSchema = form.schema.find(
-        (schema) => schema.version === payload.query.schemaVersion
-      )
-
-      if (!selectedSchema) {
-        throw new Error('Schema not found', {
-          cause: {
-            formId: payload.params.formId,
-          },
-        })
-      }
-
       const page = payload.query.page ?? 1
       const limit = payload.query.limit ?? 10
 
       const filter: Filter<SubmissionCollectionSchema> = {
         formId: payload.params.formId,
-        schemaVersion: payload.query.schemaVersion,
       }
 
       const skip = (page - 1) * limit
@@ -79,7 +63,6 @@ export default class Controller {
       ])
 
       return {
-        schema: selectedSchema,
         data: submissions.map((s) => ({
           id: s._id.toString(),
           formId: s.formId,

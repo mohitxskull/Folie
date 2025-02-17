@@ -28,14 +28,12 @@ export default class Controller {
       if (payload.query.deleted) {
         filter = {
           ...filter,
-          deletedAt: { $ne: null },
-          status: { value: 'deleted' },
+          status: 'deleted',
         }
       } else {
         filter = {
           ...filter,
-          deletedAt: null,
-          status: { value: { $in: ['active', 'inactive'] } },
+          status: { $ne: 'deleted' },
         }
       }
 

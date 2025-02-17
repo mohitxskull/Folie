@@ -40,15 +40,6 @@ export const BaseField = <T extends FieldSchema>(props: {
 
         <SimpleGrid cols={2}>
           <TextInput
-            label="Key"
-            placeholder="first-name"
-            value={field.key}
-            onChange={(e) =>
-              onChange(setProperty(field, "key", e.target.value))
-            }
-          />
-
-          <TextInput
             label="Name"
             placeholder="First Name"
             value={field.name}
@@ -56,9 +47,7 @@ export const BaseField = <T extends FieldSchema>(props: {
               onChange(setProperty(field, "name", e.target.value))
             }
           />
-        </SimpleGrid>
 
-        <SimpleGrid cols={field.type === "string" ? 2 : 1}>
           <Select
             label="Type"
             data={[
@@ -88,39 +77,39 @@ export const BaseField = <T extends FieldSchema>(props: {
               onChange(res);
             }}
           />
-
-          {field.type === "string" && (
-            <>
-              <Select
-                label="Sub Type"
-                data={[
-                  {
-                    label: "None",
-                    value: "none",
-                  },
-                  {
-                    label: "Email",
-                    value: "email",
-                  },
-                  {
-                    label: "URL",
-                    value: "url",
-                  },
-                ]}
-                value={getProperty(field, "sub.type", "none")}
-                onChange={(e) => {
-                  const res = setProperty(field, "sub.type", e ?? "none");
-
-                  if (getProperty(res, "sub.type") === "none") {
-                    deleteProperty(res, "sub.options");
-                  }
-
-                  onChange(res);
-                }}
-              />
-            </>
-          )}
         </SimpleGrid>
+
+        {field.type === "string" && (
+          <>
+            <Select
+              label="Sub Type"
+              data={[
+                {
+                  label: "None",
+                  value: "none",
+                },
+                {
+                  label: "Email",
+                  value: "email",
+                },
+                {
+                  label: "URL",
+                  value: "url",
+                },
+              ]}
+              value={getProperty(field, "sub.type", "none")}
+              onChange={(e) => {
+                const res = setProperty(field, "sub.type", e ?? "none");
+
+                if (getProperty(res, "sub.type") === "none") {
+                  deleteProperty(res, "sub.options");
+                }
+
+                onChange(res);
+              }}
+            />
+          </>
+        )}
 
         {props.children}
       </Stack>

@@ -25,7 +25,7 @@ export default class Controller {
       }
 
       await Form.insertOne({
-        status: { value: 'inactive', updatedAt: DateTime.utc().toJSDate() },
+        status: 'inactive',
         name: payload.name,
         schema: {},
         captcha: null,

@@ -10,6 +10,7 @@ export const TextOption = <T extends FieldSchema>(props: {
   default?: string;
   value: T;
   onChange: (value: T) => void;
+  placeholder?: string;
 }) => {
   const defaultValue = props.default ?? "";
 
@@ -18,6 +19,7 @@ export const TextOption = <T extends FieldSchema>(props: {
       label={props.label}
       description={props.description}
       value={getProperty(props.value, props.path, defaultValue)}
+      placeholder={props.placeholder}
       onChange={(e) => {
         props.onChange(
           setObjectProperty(

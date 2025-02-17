@@ -3,16 +3,11 @@ import { LocalQueryLoader } from "@/components/query_loader";
 import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
 import { formatDate } from "@/lib/helpers/date";
-import { Button, MenuItem } from "@mantine/core";
-import Link from "next/link";
-import {
-  PageContainer,
-  PageHeader,
-  ActionMenu,
-} from "@folie/cobalt/components";
+import { PageContainer, PageHeader } from "@folie/cobalt/components";
 import { LocalDataTable } from "@/components/data_table";
 import { useRouter } from "next/router";
 import { capitalCase } from "case-anything";
+import { FormCreateModalForm } from "@/components/ui/form/create_modal_form";
 
 export const getServerSideProps = cobaltServer.secure();
 
@@ -38,9 +33,7 @@ export default function Page() {
               title="Forms"
               description="You can manage your forms here."
             >
-              <Button component={Link} href="/app/form/create">
-                Create
-              </Button>
+              <FormCreateModalForm refetch={listQ.refetch} />
             </PageHeader>
 
             <LocalQueryLoader query={listQ}>
@@ -60,10 +53,8 @@ export default function Page() {
                     totalRecords={paginatedData.meta.total.object}
                     recordsPerPage={paginatedData.meta.limit}
                     records={paginatedData.data}
-                    onCellClick={({ record, column }) => {
-                      if (column.accessor !== "actions") {
-                        router.push(`/app/form/${record.id}`);
-                      }
+                    onCellClick={({ record }) => {
+                      router.push(`/app/form/${record.id}`);
                     }}
                     columns={[
                       { accessor: "name" },
@@ -82,28 +73,6 @@ export default function Page() {
                       {
                         accessor: "updatedAt",
                         render: (record) => formatDate(record.updatedAt),
-                      },
-                      {
-                        accessor: "actions",
-                        title: "",
-                        textAlign: "right",
-                        render: (file) => (
-                          <ActionMenu>
-                            <MenuItem
-                              component={Link}
-                              href={`/app/form/${file.id}/submission`}
-                            >
-                              Submissions
-                            </MenuItem>
-
-                            <MenuItem
-                              component={Link}
-                              href={`/form/${file.id}`}
-                            >
-                              Submit
-                            </MenuItem>
-                          </ActionMenu>
-                        ),
                       },
                     ]}
                   />

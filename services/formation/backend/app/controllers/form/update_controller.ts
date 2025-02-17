@@ -43,7 +43,7 @@ export default class Controller {
         throw new ProcessingException('Form not found')
       }
 
-      if (form.status.value === 'deleted') {
+      if (form.status === 'deleted') {
         throw new ProcessingException(
           'Deleted forms cannot be updated, please restore the form first'
         )
@@ -69,14 +69,14 @@ export default class Controller {
       }
 
       if (payload.active !== undefined) {
-        if (payload.active === true && form.status.value !== 'active') {
+        if (payload.active === true && form.status !== 'active') {
           if (!form.schema.published) {
             throw new ProcessingException('Form schema must be published before activating', {
               source: 'active',
             })
           }
 
-          form.status = { value: 'active', updatedAt: DateTime.utc().toJSDate() }
+          form.status = 'active'
 
           updates = {
             ...updates,
@@ -84,8 +84,8 @@ export default class Controller {
           }
         }
 
-        if (payload.active === false && form.status.value !== 'inactive') {
-          form.status = { value: 'inactive', updatedAt: DateTime.utc().toJSDate() }
+        if (payload.active === false && form.status !== 'inactive') {
+          form.status = 'inactive'
 
           updates = {
             ...updates,
@@ -156,18 +156,18 @@ export default class Controller {
               throw new Error('Field key already exists')
             }
 
-            return {
+            dbFields.push({
               ...field,
               slug: slugify(field.name),
               key: fieldKey,
-            }
+            })
           }
         } else {
           for (const [fieldIndex, field] of payload.fields.entries()) {
             dbFields.push({
               ...field,
-              slug: slugify(field.name),
               key: fieldIndex + 1,
+              slug: slugify(field.name),
             })
           }
         }

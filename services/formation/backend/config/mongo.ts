@@ -10,10 +10,10 @@ const db = mongo.db('formation')
 
 export type SubmissionCollectionSchema = {
   formId: ObjectId
-  schemaVersion: number
 
-  meta?: {
-    ip?: string
+  meta: {
+    ip: string | null
+    captcha: boolean
     [key: string]: string | number | boolean | null | undefined
   }
 
@@ -35,7 +35,7 @@ export const serializeSubmission = (object: WithId<SubmissionCollectionSchema>) 
 }
 
 export type FormCollectionSchema = {
-  status: { value: 'inactive' | 'active' | 'deleted'; updatedAt: Date }
+  status: 'inactive' | 'active' | 'deleted'
 
   name: string
 
@@ -62,11 +62,6 @@ export const serializeForm = (object: WithId<FormCollectionSchema>) => {
     ...rest,
     id: _id.toString(),
 
-    status: {
-      value: rest.status.value,
-      updatedAt: rest.status.updatedAt.toISOString(),
-    },
-
     captcha: rest.captcha
       ? {
           public: rest.captcha.public,
@@ -81,9 +76,22 @@ export const serializeForm = (object: WithId<FormCollectionSchema>) => {
 export const serializePublicForm = (object: WithId<FormCollectionSchema>) => {
   const serialized = serializeForm(object)
 
+  const { published } = serialized.schema
+
+  if (!published) {
+    throw new Error(
+      "Form does not have a published schema, It should't have been passed to serializePublicForm if it's not active",
+      {
+        cause: {
+          form: serialized,
+        },
+      }
+    )
+  }
+
   return {
     id: serialized.id,
     captcha: serialized.captcha,
-    fields: serialized.schema,
+    fields: published,
   }
 }

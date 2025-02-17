@@ -28,7 +28,7 @@ export default class Controller {
       }
 
       form.updatedAt = DateTime.utc().toJSDate()
-      form.status = { value: 'inactive', updatedAt: form.updatedAt }
+      form.status = 'inactive'
 
       await Form.updateOne(
         {

@@ -1,14 +1,20 @@
-import { Container, ContainerProps, Stack } from '@mantine/core'
+import { Container, ContainerProps, Stack, StackProps } from '@mantine/core'
 
-type Props = ContainerProps
+type Props = ContainerProps & {
+  props?: {
+    stack?: StackProps
+  }
+}
 
 export const PageContainer = (props: Props) => {
-  const { children, ...restProps } = props
+  const { children, props: internalProps, ...restProps } = props
 
   return (
     <>
       <Container size="xl" w="100%" h="100%" mt="xl" {...restProps}>
-        <Stack h="100%">{children}</Stack>
+        <Stack h="100%" {...internalProps?.stack}>
+          {children}
+        </Stack>
       </Container>
     </>
   )

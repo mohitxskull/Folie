@@ -1,4 +1,4 @@
-import { FormEditor } from "@/components/field_editor";
+import { FieldEditor } from "@/components/field_editor";
 import { FieldSchema } from "@folie/service-formation-backend/types";
 import { Box, JsonInput, SimpleGrid } from "@mantine/core";
 import { useListState } from "@mantine/hooks";
@@ -6,7 +6,7 @@ import { useListState } from "@mantine/hooks";
 export default function Page() {
   const [fields, fieldHandlers] = useListState<FieldSchema>([
     {
-      key: "email",
+      key: 0,
       name: "Email",
       type: "string",
       sub: {
@@ -19,7 +19,7 @@ export default function Page() {
     <>
       <Box p="xl">
         <SimpleGrid cols={2}>
-          <FormEditor fields={fields} fieldHandler={fieldHandlers} />
+          <FieldEditor fields={fields} fieldHandler={fieldHandlers} />
 
           <JsonInput
             h="100%"

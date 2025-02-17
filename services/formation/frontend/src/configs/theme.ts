@@ -13,4 +13,5 @@ export const MantineTheme = createTheme({
   autoContrast: true,
   primaryColor: "dark",
   primaryShade: 9,
+  cursorType: "pointer",
 });

@@ -6,8 +6,7 @@ import { DateTime } from 'luxon'
 import { ObjectIdSchema } from '#miscellaneous/object_id_rule'
 import { CaptchaService } from '@folie/castle/service/captcha_service'
 import { Secret } from '@adonisjs/core/helpers'
-import { compileFields } from '#helpers/compile_fields'
-import { getFormSchema } from '#helpers/get_schema'
+import { FormHelper } from '#helpers/form_helpers'
 
 export default class Controller {
   input = vine.compile(
@@ -32,11 +31,28 @@ export default class Controller {
     handle: async ({ payload, ctx }) => {
       const form = await Form.findOne({
         _id: payload.params.formId,
-        status: 'active',
+        status: {
+          value: 'active',
+        },
+        schema: {
+          published: {
+            $exists: true,
+          },
+        },
       })
 
       if (!form) {
         throw new ProcessingException('Form not found')
+      }
+
+      const { published } = form.schema
+
+      if (!published) {
+        throw new Error('Form does not have a published version', {
+          cause: {
+            form,
+          },
+        })
       }
 
       if (form.captcha) {
@@ -63,20 +79,9 @@ export default class Controller {
         }
       }
 
-      const activeSchema = getFormSchema(form.schema)
-
-      // Precautionary measure to ensure that the active schema is not null or undefined
-      if (!activeSchema) {
-        throw new Error('Active schema not found', {
-          cause: {
-            formId: form._id,
-          },
-        })
-      }
-
       const compiledSchema = vine.compile(
         vine.object({
-          fields: compileFields(activeSchema.fields),
+          fields: FormHelper.compile(published),
         })
       )
 
@@ -84,8 +89,25 @@ export default class Controller {
 
       await Submission.insertOne({
         formId: form._id,
-        fields: parsedFields.fields,
-        schemaVersion: activeSchema.version,
+        fields: Object.entries(parsedFields.fields).reduce<typeof parsedFields.fields>(
+          (res, [slugKey, value]) => {
+            const field = published.find((f) => f.slug === slugKey)
+
+            if (!field) {
+              throw new ProcessingException('Field not found', {
+                meta: {
+                  field: slugKey,
+                },
+              })
+            }
+
+            return {
+              ...res,
+              [field.key]: value,
+            }
+          },
+          {}
+        ),
         submittedAt: DateTime.utc().toJSDate(),
         meta: {
           ip: ctx.request.ip(),

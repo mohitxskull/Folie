@@ -1,174 +1,93 @@
 import { AppLayout } from "@/components/layout/app";
-import { cobalt } from "@/configs/cobalt";
 import { cobaltServer } from "@/configs/cobalt_server";
-import {
-  Form,
-  FormWrapper,
-  PageContainer,
-  PageHeader,
-  RightGroup,
-} from "@folie/cobalt/components";
-import { InferGetServerSidePropsType } from "next";
-import { useState } from "react";
-import { Alert, Button, Switch, TextInput } from "@mantine/core";
-import { notifications } from "@mantine/notifications";
+import { PageContainer, PageHeader } from "@folie/cobalt/components";
+import { Tabs } from "@mantine/core";
+import { IconForms, IconLayoutList, IconSettings } from "@tabler/icons-react";
+import { ICON_SIZE } from "@folie/cobalt";
+import { FormSubmissions } from "@/components/ui/form/submissions";
+import { FormSettings } from "@/components/ui/form/settings";
+import { cobalt } from "@/configs/cobalt";
+import { LocalQueryLoader } from "@/components/query_loader";
+import { FormEditor } from "@/components/ui/form/editor";
 
-export const getServerSideProps = cobaltServer.server(
-  async ({ params, api }) => {
-    const formId = params("formId");
+export const getServerSideProps = cobaltServer.secure();
 
-    const res = await api.endpoint("V1_FORM_SHOW").call({
+export default function Page() {
+  const { isReady, param } = cobalt.useParams();
+
+  const formId = param.bind(null, "formId");
+
+  const showQ = cobalt.useQuery({
+    endpoint: "V1_FORM_SHOW",
+    input: {
       params: {
-        formId: formId,
-      },
-    });
-
-    return {
-      props: {
-        form: res,
-      },
-    };
-  },
-  { secure: true },
-);
-
-export default function Page(
-  props: InferGetServerSidePropsType<typeof getServerSideProps>,
-) {
-  const [captcha, setCaptcha] = useState(!!props.form.captcha);
-
-  const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
-    endpoint: "V1_FORM_UPDATE",
-    form: {
-      values: {
-        params: {
-          formId: props.form.id,
-        },
-        name: props.form.name,
-        active: props.form.status === "active",
-        captcha: {
-          private: "",
-          public: props.form.captcha?.public ?? "",
-        },
+        formId: formId(),
       },
     },
-    onSuccess: (updatedData) => {
-      notifications.show({
-        message: updatedData.message,
-      });
-
-      return {
-        input: {
-          ...updatedData.form,
-          params: {
-            formId: updatedData.form.id,
-          },
-          captcha: {
-            private: "",
-            public: updatedData.form.captcha?.public ?? "",
-          },
-          active: updatedData.form.status === "active",
-        },
-        queryKeys: (qk) => [
-          qk("V1_FORM_SHOW", { formId: updatedData.form.id }),
-          qk("V1_FORM_LIST", undefined),
-        ],
-      };
+    props: {
+      enabled: isReady,
     },
   });
 
   return (
     <>
-      <AppLayout fullHeight>
+      <AppLayout>
         <>
-          <PageContainer>
-            <PageHeader
-              title="File"
-              description="Manage your files"
-              withBackBtn
-            />
+          <PageContainer
+            props={{
+              stack: {
+                gap: 0,
+              },
+            }}
+          >
+            <LocalQueryLoader query={showQ}>
+              {(form) => (
+                <>
+                  <PageHeader title={form.name} order={1} withBackBtn />
 
-            <FormWrapper>
-              <Form
-                mutation={mutation}
-                submit={(f) => {
-                  submit({
-                    ...f,
-                    captcha: captcha ? f.captcha : null,
-                  });
-                }}
-                form={form}
-              >
-                {({ dirty, loading }) => (
-                  <>
-                    <TextInput
-                      label="Name"
-                      {...iProps(["name"])}
-                      key={iKey(["name"])}
-                    />
+                  <Tabs
+                    keepMounted={false}
+                    defaultValue={
+                      form.schema.published ? "submissions" : "fields"
+                    }
+                  >
+                    <Tabs.List>
+                      <Tabs.Tab
+                        value="submissions"
+                        disabled={!form.schema.published}
+                        leftSection={<IconLayoutList size={ICON_SIZE.SM} />}
+                      >
+                        Submissions
+                      </Tabs.Tab>
+                      <Tabs.Tab
+                        value="fields"
+                        leftSection={<IconForms size={ICON_SIZE.SM} />}
+                      >
+                        Fields
+                      </Tabs.Tab>
+                      <Tabs.Tab
+                        value="settings"
+                        leftSection={<IconSettings size={ICON_SIZE.SM} />}
+                      >
+                        Settings
+                      </Tabs.Tab>
+                    </Tabs.List>
 
-                    <Switch
-                      label="Captcha"
-                      description="Only Cloudflare Turnstile is supported."
-                      checked={captcha}
-                      onChange={(event) => {
-                        const res = event.currentTarget.checked;
+                    <Tabs.Panel value="fields" pt="md">
+                      <FormEditor form={form} refetch={showQ.refetch} />
+                    </Tabs.Panel>
 
-                        if (res === false) {
-                          form.setValues((prev) => ({
-                            ...prev,
-                            captcha: {
-                              private: "",
-                              public: "",
-                            },
-                          }));
-                        }
+                    <Tabs.Panel value="submissions" pt="md">
+                      <FormSubmissions form={form} />
+                    </Tabs.Panel>
 
-                        setCaptcha(res);
-                      }}
-                    />
-
-                    {captcha && (
-                      <>
-                        <Alert>
-                          Ensure the Formation domain is included in the
-                          HostName to enable proper functionality of the widget.
-                        </Alert>
-
-                        <TextInput
-                          label="Public Captcha"
-                          placeholder="Turnstile Captcha Public Key ( Site Key )"
-                          {...iProps(["captcha", "public"])}
-                          key={iKey(["captcha", "public"])}
-                        />
-
-                        <TextInput
-                          label="Private Captcha"
-                          placeholder="Turnstile Captcha Private Key ( Secret Key )"
-                          {...iProps(["captcha", "private"])}
-                          key={iKey(["captcha", "private"])}
-                        />
-                      </>
-                    )}
-
-                    <Switch
-                      label="Active"
-                      description="Only active forms can accept submission"
-                      {...iProps(["active"], {
-                        type: "checkbox",
-                      })}
-                      key={iKey(["active"])}
-                    />
-
-                    <RightGroup>
-                      <Button type="submit" loading={loading} disabled={!dirty}>
-                        Update
-                      </Button>
-                    </RightGroup>
-                  </>
-                )}
-              </Form>
-            </FormWrapper>
+                    <Tabs.Panel value="settings" pt="md">
+                      <FormSettings form={form} refetch={showQ.refetch} />
+                    </Tabs.Panel>
+                  </Tabs>
+                </>
+              )}
+            </LocalQueryLoader>
           </PageContainer>
         </>
       </AppLayout>
