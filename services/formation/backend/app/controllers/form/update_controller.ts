@@ -120,7 +120,15 @@ export default class Controller {
       if (payload.fields !== undefined) {
         const dbFields: DBFieldSchema[] = []
 
-        if (form.schema.draft && md5(payload.fields) !== md5(form.schema.draft)) {
+        if (form.schema.draft) {
+          if (md5(payload.fields) === md5(form.schema.draft)) {
+            throw new ProcessingException('Fields are up to date', {
+              meta: {
+                formId: form._id,
+              },
+            })
+          }
+
           const formFieldKeys = form.schema.draft.map((field) => field.key)
           const payloadFieldKeys: number[] = []
 

@@ -18,10 +18,13 @@ const Form = <
   props?: {
     stack?: StackProps
   }
+
+  ref?: React.Ref<HTMLFormElement>
 }) => {
   return (
     <>
       <form
+        ref={props.ref}
         onSubmit={props.form.onSubmit(async (values) => {
           if (props?.checkpoint) {
             const result = props.checkpoint(values)

@@ -16,10 +16,8 @@ type Props = {
   children: React.ReactNode;
   fullHeight?: boolean;
   padding?: MantineSpacing;
-  aside?: React.ReactNode;
-  asideProps?: {
-    width?: number;
-  };
+  aside?: { children: React.ReactNode; width?: number };
+  footer?: { children: React.ReactNode };
 };
 
 const Links: {
@@ -56,11 +54,12 @@ export const AppLayout = (props: Props) => {
         aside={
           props.aside
             ? {
-                width: props.asideProps?.width ?? setting.navbar.width,
+                width: props.aside?.width ?? setting.navbar.width,
                 breakpoint: "sm",
               }
             : undefined
         }
+        footer={props.footer ? { height: setting.footer.height } : undefined}
       >
         <AppShell.Navbar p="md" bg={setting.navbar.bg}>
           <AppShell.Section>
@@ -108,8 +107,16 @@ export const AppLayout = (props: Props) => {
         {props.aside && (
           <>
             <AppShell.Aside p="md" bg={setting.navbar.bg}>
-              {props.aside}
+              {props.aside.children}
             </AppShell.Aside>
+          </>
+        )}
+
+        {props.footer && (
+          <>
+            <AppShell.Footer p="md" bg={setting.footer.bg}>
+              {props.footer.children}
+            </AppShell.Footer>
           </>
         )}
 
