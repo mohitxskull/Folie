@@ -46,7 +46,7 @@ export default function Page(
 
   return (
     <>
-      <FormAppLayout form={props.form}>
+      <FormAppLayout form={props.form} fullHeight>
         <LocalQueryLoader query={listQ}>
           {(paginatedData) => (
             <>

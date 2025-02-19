@@ -92,6 +92,6 @@ export const serializePublicForm = (object: WithId<FormCollectionSchema>) => {
   return {
     id: serialized.id,
     captcha: serialized.captcha,
-    fields: published,
+    fields: published.filter((f) => !f.deleted),
   }
 }

@@ -2,14 +2,13 @@ import vine from '@vinejs/vine'
 import { safeRoute } from '@folie/castle'
 import ProcessingException from '@folie/castle/exception/processing_exception'
 import { ObjectIdSchema } from '#miscellaneous/object_id_rule'
-import { Form, FormCollectionSchema, serializeForm } from '#config/mongo'
+import { Form, FormCollectionSchema, serializeForm, Submission } from '#config/mongo'
 import { DateTime } from 'luxon'
 import { MatchKeysAndValues } from 'mongodb'
 import { DBFieldSchema, FieldArraySchema } from '#validators/field'
 import { CaptchaSchema } from '#validators/captcha'
 import { TextSchema } from '@folie/castle/validator/index'
 import { slugify } from '@folie/castle/helpers/slugify'
-import { md5 } from '#helpers/md5'
 
 export default class Controller {
   input = vine.compile(
@@ -118,76 +117,136 @@ export default class Controller {
       }
 
       if (payload.fields !== undefined) {
-        const dbFields: DBFieldSchema[] = []
+        let updatedNeeded = true
 
         if (form.schema.draft) {
-          if (md5(payload.fields) === md5(form.schema.draft)) {
-            throw new ProcessingException('Fields are up to date', {
-              meta: {
-                formId: form._id,
-              },
+          const parsedPayloadFields = payload.fields
+            .map((field) => {
+              const { key, ...rest } = field
+
+              return rest
             })
-          }
+            .sort((a, b) => a.name.localeCompare(b.name))
 
-          const formFieldKeys = form.schema.draft.map((field) => field.key)
-          const payloadFieldKeys: number[] = []
+          const parsedDraftFields = form.schema.draft
+            .map((field) => {
+              const { slug, key, ...rest } = field
 
-          for (const field of payload.fields) {
-            if (field.key) {
-              payloadFieldKeys.push(field.key)
-            }
-          }
-
-          const missingKeys = formFieldKeys.filter((key) => !payloadFieldKeys.includes(key))
-
-          if (missingKeys.length > 0) {
-            throw new ProcessingException('Some fields are missing', {
-              meta: {
-                missingKeys,
-                formId: form._id,
-              },
+              return rest
             })
-          }
+            .sort((a, b) => a.name.localeCompare(b.name))
 
-          const extraKeys = payloadFieldKeys.filter((key) => !formFieldKeys.includes(key))
-
-          for (const field of payload.fields) {
-            const fieldKey = field.key
-
-            if (!fieldKey || (fieldKey && extraKeys.includes(fieldKey))) {
-              const newKey = Math.max(...formFieldKeys) + 1
-
-              formFieldKeys.push(newKey)
-            }
-
-            if (!fieldKey) {
-              throw new Error('Field key already exists')
-            }
-
-            dbFields.push({
-              ...field,
-              slug: slugify(field.name),
-              key: fieldKey,
-            })
-          }
-        } else {
-          for (const [fieldIndex, field] of payload.fields.entries()) {
-            dbFields.push({
-              ...field,
-              key: fieldIndex + 1,
-              slug: slugify(field.name),
-            })
+          if (JSON.stringify(parsedPayloadFields) === JSON.stringify(parsedDraftFields)) {
+            updatedNeeded = false
           }
         }
 
-        form.schema = {
-          ...form.schema,
-          draft: dbFields,
-        }
+        if (updatedNeeded) {
+          const dbFields: DBFieldSchema[] = []
 
-        updates = {
-          ...updates,
-          schema: form.schema,
+          if (form.schema.draft) {
+            const payloadFields = payload.fields
+            const draftFields = form.schema.draft
+
+            const draftKeys = form.schema.draft.map((field) => field.key)
+
+            const payloadKeys = payloadFields.reduce<number[]>((acc, field) => {
+              if (field.key) {
+                acc.push(field.key)
+              }
+              return acc
+            }, [])
+
+            const missingFields = draftFields.filter((field) => !payloadKeys.includes(field.key))
+
+            payloadFields.push(
+              ...missingFields.map((field) => ({
+                ...field,
+                key: field.key,
+                slug: slugify(field.name),
+              }))
+            )
+
+            for (const payloadField of payloadFields) {
+              let fieldKey = payloadField.key
+
+              if (fieldKey && draftKeys.includes(fieldKey)) {
+                const draftField = draftFields.find((f) => f.key === fieldKey)
+
+                if (!draftField) {
+                  throw new Error(`Field with key ${fieldKey} not found in draft`, {
+                    cause: {
+                      draftFields,
+                      fieldKey,
+                    },
+                  })
+                }
+
+                if (draftField.deleted && payloadField.deleted) {
+                  dbFields.push(draftField)
+                } else if (draftField.deleted && !payloadField.deleted) {
+                  throw new ProcessingException(`You can't restore a deleted field`)
+                } else if (!draftField.deleted && payloadField.deleted) {
+                  const submissionCount = await Submission.countDocuments({
+                    formId: form._id,
+                    fields: {
+                      [fieldKey]: { $exists: true },
+                    },
+                  })
+
+                  if (submissionCount < 1) {
+                    continue
+                  }
+
+                  dbFields.push({
+                    ...draftField,
+                    deleted: true,
+                  })
+                } else if (!draftField.deleted && !payloadField.deleted) {
+                  dbFields.push({
+                    ...payloadField,
+                    key: fieldKey,
+                    slug: slugify(payloadField.name),
+                  })
+                } else {
+                  throw new Error(`Invalid field state`, {
+                    cause: {
+                      draftFields,
+                      fieldKey,
+                    },
+                  })
+                }
+              } else {
+                const newKey = Math.max(...draftKeys) + 1
+
+                draftKeys.push(newKey)
+
+                dbFields.push({
+                  ...payloadField,
+                  slug: slugify(payloadField.name),
+                  key: newKey,
+                })
+              }
+            }
+          } else {
+            for (const [fieldIndex, field] of payload.fields.entries()) {
+              dbFields.push({
+                ...field,
+                key: fieldIndex,
+                slug: slugify(field.name),
+              })
+            }
+          }
+
+          form.schema = {
+            ...form.schema,
+            draft: dbFields,
+          }
+
+          updates = {
+            ...updates,
+            schema: form.schema,
+          }
         }
       }
 

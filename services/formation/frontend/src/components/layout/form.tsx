@@ -11,6 +11,7 @@ type Props = {
   children: React.ReactNode;
   form: V1FormShowRoute["output"];
   footer?: { children: React.ReactNode };
+  fullHeight?: boolean;
 };
 
 export const FormAppLayout = (props: Props) => {
@@ -24,7 +25,7 @@ export const FormAppLayout = (props: Props) => {
 
   return (
     <>
-      <AppLayout footer={props.footer}>
+      <AppLayout footer={props.footer} fullHeight={props.fullHeight}>
         <PageContainer
           props={{
             stack: {

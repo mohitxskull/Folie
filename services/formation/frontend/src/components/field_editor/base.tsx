@@ -15,12 +15,11 @@ import { deleteProperty, getProperty, setProperty } from "dot-prop";
 export const BaseField = <T extends FieldSchema>(props: {
   fields: T[];
   field: T;
-  index: number;
-  remove: (index: number) => void;
+  remove: () => void;
   onChange: (f: T) => void;
   children: React.ReactNode;
 }) => {
-  const { field, fields, index, onChange, remove } = props;
+  const { field, fields, onChange, remove } = props;
 
   return (
     <>
@@ -32,7 +31,7 @@ export const BaseField = <T extends FieldSchema>(props: {
             bg="transparent"
             c={fields.length < 2 ? undefined : "red"}
             disabled={fields.length < 2}
-            onClick={() => remove(index)}
+            onClick={() => remove()}
           >
             <IconTrash size={ICON_SIZE.XS} />
           </ActionIcon>

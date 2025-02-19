@@ -6,6 +6,7 @@ import { BaseField } from "./base";
 import { NumberOption } from "./number_option";
 import { TextOption } from "./text_option";
 import { FieldSchema } from "@folie/service-formation-backend/types";
+import { useMemo } from "react";
 
 type Props<T extends FieldSchema = FieldSchema> = {
   fields: T[];
@@ -13,12 +14,27 @@ type Props<T extends FieldSchema = FieldSchema> = {
 };
 
 export const FieldEditor = (props: Props) => {
+  const filteredFields = useMemo(() => {
+    return props.fields.filter((field) => !field.deleted);
+  }, [props.fields]);
+
   return (
     <>
       <Stack>
-        {props.fields.map((field, fieldIndex) => {
+        {filteredFields.map((field, fieldIndex) => {
           const setDirect = (obj: typeof field) => {
             props.fieldHandler.setItem(fieldIndex, obj);
+          };
+          
+          const remove = () => {
+            if (field.key) {
+              setDirect({
+                ...field,
+                deleted: true,
+              });
+            } else {
+              props.fieldHandler.remove(fieldIndex);
+            }
           };
 
           switch (field.type) {
@@ -28,8 +44,7 @@ export const FieldEditor = (props: Props) => {
                   <BaseField
                     field={field}
                     fields={props.fields}
-                    index={fieldIndex}
-                    remove={(i) => props.fieldHandler.remove(i)}
+                    remove={remove}
                     onChange={setDirect}
                   >
                     <SimpleGrid cols={2}>
@@ -208,8 +223,7 @@ export const FieldEditor = (props: Props) => {
                   <BaseField
                     field={field}
                     fields={props.fields}
-                    index={fieldIndex}
-                    remove={(i) => props.fieldHandler.remove(i)}
+                    remove={remove}
                     onChange={setDirect}
                   >
                     <SimpleGrid cols={2}>
