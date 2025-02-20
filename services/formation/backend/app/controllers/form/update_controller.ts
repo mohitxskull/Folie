@@ -119,7 +119,9 @@ export default class Controller {
       if (payload.fields !== undefined) {
         let updatedNeeded = true
 
-        if (form.schema.draft) {
+        const tempDraftSchema = form.schema.draft || form.schema.published
+
+        if (tempDraftSchema) {
           const parsedPayloadFields = payload.fields
             .map((field) => {
               const { key, ...rest } = field
@@ -128,9 +130,9 @@ export default class Controller {
             })
             .sort((a, b) => a.name.localeCompare(b.name))
 
-          const parsedDraftFields = form.schema.draft
+          const parsedDraftFields = tempDraftSchema
             .map((field) => {
-              const { slug, key, ...rest } = field
+              const { key, ...rest } = field
 
               return rest
             })
@@ -144,14 +146,14 @@ export default class Controller {
         if (updatedNeeded) {
           const dbFields: DBFieldSchema[] = []
 
-          if (form.schema.draft) {
+          if (tempDraftSchema) {
             const payloadFields = payload.fields
-            const draftFields = form.schema.draft
+            const draftFields = tempDraftSchema
 
-            const draftKeys = form.schema.draft.map((field) => field.key)
+            const draftKeys = draftFields.map((field) => field.key)
 
             const payloadKeys = payloadFields.reduce<number[]>((acc, field) => {
-              if (field.key) {
+              if (field.key !== undefined) {
                 acc.push(field.key)
               }
               return acc
@@ -163,9 +165,15 @@ export default class Controller {
               ...missingFields.map((field) => ({
                 ...field,
                 key: field.key,
-                slug: slugify(field.name),
+                slug: `${slugify(field.name)}#${field.key}`,
               }))
             )
+
+            console.log({
+              missingFields,
+              draftKeys,
+              payloadKeys,
+            })
 
             for (const payloadField of payloadFields) {
               let fieldKey = payloadField.key
@@ -189,9 +197,7 @@ export default class Controller {
                 } else if (!draftField.deleted && payloadField.deleted) {
                   const submissionCount = await Submission.countDocuments({
                     formId: form._id,
-                    fields: {
-                      [fieldKey]: { $exists: true },
-                    },
+                    [`fields.${fieldKey}`]: { $exists: true },
                   })
 
                   if (submissionCount < 1) {
@@ -206,7 +212,7 @@ export default class Controller {
                   dbFields.push({
                     ...payloadField,
                     key: fieldKey,
-                    slug: slugify(payloadField.name),
+                    slug: `${slugify(payloadField.name)}#${fieldKey}`,
                   })
                 } else {
                   throw new Error(`Invalid field state`, {
@@ -223,17 +229,19 @@ export default class Controller {
 
                 dbFields.push({
                   ...payloadField,
-                  slug: slugify(payloadField.name),
                   key: newKey,
+                  slug: `${slugify(payloadField.name)}#${newKey}`,
                 })
               }
             }
           } else {
             for (const [fieldIndex, field] of payload.fields.entries()) {
+              const key = fieldIndex + 1
+
               dbFields.push({
                 ...field,
-                key: fieldIndex,
-                slug: slugify(field.name),
+                key,
+                slug: `${slugify(field.name)}#${key}`,
               })
             }
           }

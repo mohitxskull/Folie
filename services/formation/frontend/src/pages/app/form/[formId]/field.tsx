@@ -48,7 +48,12 @@ export default function Page(
   const [updateM, submitUpdate] = cobalt.useMutation({
     endpoint: "V1_FORM_UPDATE",
     onSuccess: (updatedData) => {
-      setPropsState({ ...propsState, form: updatedData.form });
+      setPropsState((p) => ({ ...p, form: updatedData.form }));
+      fieldHandlers.setState(
+        updatedData.form.schema.draft ||
+          updatedData.form.schema.published ||
+          [],
+      );
     },
   });
 

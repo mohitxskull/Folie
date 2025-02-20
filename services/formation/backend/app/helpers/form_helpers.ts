@@ -6,6 +6,10 @@ export class FormHelper {
     let schemaBase = vine.object({})
 
     for (const field of fields) {
+      if (field.deleted) {
+        continue
+      }
+
       switch (field.type) {
         case 'string':
           let stringBase = vine.string()

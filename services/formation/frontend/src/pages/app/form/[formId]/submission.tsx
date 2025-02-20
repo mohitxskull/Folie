@@ -20,6 +20,8 @@ export const getServerSideProps = cobaltServer.server(
       },
     });
 
+    console.log(form.schema.published);
+
     return {
       props: {
         form,
