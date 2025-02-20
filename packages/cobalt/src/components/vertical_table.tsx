@@ -42,13 +42,20 @@ export const VerticalTable = (props: {
                   {(() => {
                     switch (typeof value) {
                       case null:
-                      case 'undefined':
+                      case 'undefined': {
+                        return (
+                          <>
+                            <Text size="sm">-</Text>
+                          </>
+                        )
+                      }
+
                       case 'string':
                       case 'number':
                       case 'boolean': {
                         return (
                           <>
-                            <Text size="sm">{value ? capitalCase(String(value)) : '-'}</Text>
+                            <Text size="sm">{capitalCase(String(value))}</Text>
                           </>
                         )
                       }

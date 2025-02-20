@@ -27,15 +27,13 @@ export default class Controller {
 
     handle: async ({ payload }) => {
       const form = await Form.findOne({
-        _id: payload.params.formId,
-        // status: {
-        //   $ne: 'deleted',
-        // },
-        // schema: {
-        //   published: {
-        //     $exists: true,
-        //   },
-        // },
+        '_id': payload.params.formId,
+        'status': {
+          $ne: 'deleted',
+        },
+        'schema.published': {
+          $exists: true,
+        },
       })
 
       if (!form) {

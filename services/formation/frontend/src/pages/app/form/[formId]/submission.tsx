@@ -85,7 +85,7 @@ export default function Page(
                     return [
                       {
                         accessor: field.slug,
-                        title: field.name,
+                        title: `${field.name}${field.deleted ? " (Deleted)" : ""}`,
                         render: (record) => {
                           return getProperty(record.fields, String(field.key));
                         },
