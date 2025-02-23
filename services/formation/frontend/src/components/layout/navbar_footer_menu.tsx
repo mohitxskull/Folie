@@ -61,7 +61,7 @@ export const NavbarFooterMenu = () => {
                     askConfirmation({
                       message: "Are you sure you want to logout?",
                       confirmLabel: "Logout",
-                      onConfirm: () => signout(undefined),
+                      onConfirm: () => signout({}),
                     });
                   }}
                   color="red"

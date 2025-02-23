@@ -46,6 +46,9 @@ export type V1FormRestoreRoute = InferController<
 export type V1SubmissionListRoute = InferController<
   (typeof import('../../app/controllers/submission/list_controller.ts'))['default']
 >
+export type V1PublicPingRoute = InferController<
+  (typeof import('../../app/controllers/public/ping_controller.ts'))['default']
+>
 export type V1PublicFormShowRoute = InferController<
   (typeof import('../../app/controllers/public/form/show_controller.ts'))['default']
 >
@@ -109,6 +112,11 @@ export const routes = {
   V1_SUBMISSION_LIST: route<V1SubmissionListRoute>({
     form: false,
     path: '/api/v1/submission/{{ formId }}',
+    method: 'GET',
+  }),
+  V1_PUBLIC_PING: route<V1PublicPingRoute>({
+    form: false,
+    path: '/api/v1/public/ping',
     method: 'GET',
   }),
   V1_PUBLIC_FORM_SHOW: route<V1PublicFormShowRoute>({

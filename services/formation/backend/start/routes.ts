@@ -67,6 +67,8 @@ router
 
         router
           .group(() => {
+            router.get('ping', [() => import('#controllers/public/ping_controller')])
+
             router
               .group(() => {
                 router.post(':formId', [() => import('#controllers/public/form/show_controller')])

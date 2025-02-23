@@ -18,7 +18,7 @@ test.group('API V1 Auth', () => {
       email: 'session-user@gmail.com',
     })
 
-    const response = await cus.api.endpoint('V1_AUTH_SESSION').call(undefined)
+    const response = await cus.api.endpoint('V1_AUTH_SESSION').call({})
 
     assert.equal(response.email, cus.user.email)
   })

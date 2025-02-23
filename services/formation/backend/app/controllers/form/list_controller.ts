@@ -1,11 +1,11 @@
 import { Form, FormCollectionSchema, serializeForm } from '#config/mongo'
-import { safeRoute } from '@folie/castle'
+import { routeController } from '@folie/castle'
 import { LimitSchema, PageSchema } from '@folie/castle/validator/index'
 import vine from '@vinejs/vine'
 import { Filter } from 'mongodb'
 
-export default class Controller {
-  input = vine.compile(
+export default routeController({
+  input: vine.compile(
     vine.object({
       query: vine.object({
         deleted: vine.boolean().optional(),
@@ -14,53 +14,49 @@ export default class Controller {
         limit: LimitSchema.optional(),
       }),
     })
-  )
+  ),
 
-  handle = safeRoute({
-    input: this.input,
+  handle: async ({ payload }) => {
+    const page = payload.query.page ?? 1
+    const limit = payload.query.limit ?? 10
 
-    handle: async ({ payload }) => {
-      const page = payload.query.page ?? 1
-      const limit = payload.query.limit ?? 10
+    let filter: Filter<FormCollectionSchema> = {}
 
-      let filter: Filter<FormCollectionSchema> = {}
-
-      if (payload.query.deleted) {
-        filter = {
-          ...filter,
-          status: 'deleted',
-        }
-      } else {
-        filter = {
-          ...filter,
-          status: { $ne: 'deleted' },
-        }
+    if (payload.query.deleted) {
+      filter = {
+        ...filter,
+        status: 'deleted',
       }
+    } else {
+      filter = {
+        ...filter,
+        status: { $ne: 'deleted' },
+      }
+    }
 
-      const skip = (page - 1) * limit
+    const skip = (page - 1) * limit
 
-      const [list, totalObjects] = await Promise.all([
-        Form.find(filter)
-          .sort({
-            createdAt: -1,
-          })
-          .skip(skip)
-          .limit(limit)
-          .toArray(),
-        Form.countDocuments(filter),
-      ])
+    const [list, totalObjects] = await Promise.all([
+      Form.find(filter)
+        .sort({
+          createdAt: -1,
+        })
+        .skip(skip)
+        .limit(limit)
+        .toArray(),
+      Form.countDocuments(filter),
+    ])
 
-      return {
-        data: list.map(serializeForm),
-        meta: {
-          page,
-          limit,
-          total: {
-            object: totalObjects,
-            page: Math.ceil(totalObjects / limit),
-          },
+    return {
+      data: list.map(serializeForm),
+      meta: {
+        page,
+        limit,
+        total: {
+          object: totalObjects,
+          page: Math.ceil(totalObjects / limit),
         },
-      }
-    },
-  })
-}
+      },
+    }
+  },
+})

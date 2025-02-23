@@ -1,9 +1,7 @@
-import { safeRoute } from '@folie/castle'
+import { routeController } from '@folie/castle'
 
-export default class Controller {
-  handle = safeRoute({
-    handle: async ({ ctx: { session: auth } }) => {
-      return auth.user.$serialize()
-    },
-  })
-}
+export default routeController({
+  handle: async ({ ctx: { session: auth } }) => {
+    return auth.user.$serialize()
+  },
+})

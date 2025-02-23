@@ -1,16 +1,14 @@
 import Session from '#models/session'
-import { safeRoute } from '@folie/castle'
+import { routeController } from '@folie/castle'
 
-export default class Controller {
-  handle = safeRoute({
-    handle: async ({ ctx }) => {
-      const tokenId = ctx.session.accessToken.id
+export default routeController({
+  handle: async ({ ctx }) => {
+    const tokenId = ctx.session.accessToken.id
 
-      await Session.query().where('id', tokenId).delete()
+    await Session.query().where('id', tokenId).delete()
 
-      return {
-        message: 'You have successfully logged out!',
-      }
-    },
-  })
-}
+    return {
+      message: 'You have successfully logged out!',
+    }
+  },
+})
