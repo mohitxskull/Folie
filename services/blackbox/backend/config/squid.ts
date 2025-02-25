@@ -12,4 +12,8 @@ export const squid = {
   SESSION: squidFactory.create({
     prefix: 'ses',
   }),
+
+  SECURE_OBJECT: squidFactory.create({
+    prefix: 'obj',
+  }),
 }

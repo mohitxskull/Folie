@@ -1,12 +1,11 @@
 {
-  "name": "@folie/service-formation-backend",
+  "name": "@folie/service-blackbox-backend",
   "version": "0.0.1",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
   "exports": {
-    "./blueprint": "./blueprint/api/schema.ts",
-    "./types": "./types/export.ts"
+    "./blueprint": "./blueprint/api/schema.ts"
   },
   "scripts": {
     "start": "node bin/server.js",
@@ -77,7 +76,6 @@
     "better-sqlite3": "^11.6.0",
     "edge.js": "^6.2.0",
     "luxon": "^3.5.0",
-    "mongodb": "^6.13.0",
     "mysql2": "^3.12.0",
     "reflect-metadata": "^0.2.2",
     "zod": "^3.24.1"

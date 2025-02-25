@@ -49,7 +49,7 @@ export default function Page() {
                 </Reveal>
               </Title>
 
-              <Text mx="auto" size="xl">
+              <Text mx="auto" size="lg">
                 <Reveal
                   splitBy="characters"
                   staggerDuration={0.025}

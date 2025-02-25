@@ -39,8 +39,6 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string.optional(),
   DB_SSL: Env.schema.boolean.optional(),
 
-  MONGO_DB_URI: Env.schema.string(),
-
   /*
   |----------------------------------------------------------
   | Variables for configuring the limiter package

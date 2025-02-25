@@ -8,6 +8,7 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { table } from '#config/tables'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
+import SecureObject from './secure_object.js'
 
 export default class User extends BaseModel {
   static table = table.USER()
@@ -18,9 +19,9 @@ export default class User extends BaseModel {
     return {
       id: squid.USER.encode(row.id),
 
-      firstName: row.firstName,
-      lastName: row.lastName,
-      email: row.email,
+      identifier: row.identifier,
+      password: row.password,
+      key: row.key,
 
       createdAt: serializeDT(row.createdAt),
       updatedAt: serializeDT(row.updatedAt),
@@ -34,10 +35,11 @@ export default class User extends BaseModel {
   $toJSON() {
     return {
       id: this.id,
-      firstName: this.firstName,
-      lastName: this.lastName,
-      email: this.email,
+
+      identifier: this.identifier,
       password: this.password,
+      key: this.key,
+
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
     }
@@ -63,16 +65,13 @@ export default class User extends BaseModel {
   declare id: number
 
   @column()
-  declare firstName: string
-
-  @column()
-  declare lastName: string
-
-  @column()
-  declare email: string
+  declare identifier: string
 
   @column()
   declare password: string
+
+  @column()
+  declare key: string
 
   // Extra ======================================
 
@@ -97,4 +96,7 @@ export default class User extends BaseModel {
 
   @hasMany(() => Session)
   declare sessions: HasMany<typeof Session>
+
+  @hasMany(() => SecureObject)
+  declare secureObjects: HasMany<typeof SecureObject>
 }

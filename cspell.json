@@ -23,6 +23,9 @@
     "scrollbars",
     "count",
     "ctx",
-    "bodyparser"
+    "bodyparser",
+    "blackbox",
+    "strtok",
+    "Hashers"
   ]
 }

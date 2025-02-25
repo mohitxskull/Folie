@@ -1,5 +1,5 @@
 {
-  "name": "@folie/service-formation-frontend",
+  "name": "@folie/service-blackbox-frontend",
   "version": "0.0.1",
   "description": "",
   "private": true,
@@ -18,7 +18,7 @@
     "@folie/gate": "workspace:*",
     "@folie/blueprint-lib": "workspace:*",
     "@folie/lib": "workspace:*",
-    "@folie/service-formation-backend": "workspace:*",
+    "@folie/service-blackbox-backend": "workspace:*",
     "@mantine/core": "^7.16.1",
     "@mantine/dates": "^7.16.1",
     "@mantine/form": "^7.16.1",
