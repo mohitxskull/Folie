@@ -14,6 +14,8 @@ export default class extends BaseSchema {
 
       t.text('value').notNullable()
 
+      t.integer('version').notNullable().defaultTo(0)
+
       t.timestamp('created_at')
       t.timestamp('updated_at')
     })

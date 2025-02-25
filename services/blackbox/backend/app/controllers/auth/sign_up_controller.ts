@@ -51,7 +51,9 @@ export default routeController({
       email: payload.email,
       password: payload.password,
       key: null,
-      timeout: 5 * 60, // 5 minutes
+      setting: {
+        timeout: 5 * 60, // 5 minutes
+      },
       verifiedAt: setting.signUp.verification.enabled ? null : DateTime.utc(),
     })
 

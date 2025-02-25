@@ -14,7 +14,9 @@ export const boot = async () => {
       firstName: 'Skull',
       lastName: 'Dot',
       key: null,
-      timeout: 5 * 60,
+      setting: {
+        timeout: 5 * 60, // 5 minutes
+      },
     }
   )
 

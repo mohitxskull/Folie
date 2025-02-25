@@ -20,6 +20,7 @@ export default class SecureObject extends BaseModel {
       userId: row.userId,
       value: row.value,
       key: row.key,
+      version: row.version,
 
       createdAt: serializeDT(row.createdAt),
       updatedAt: serializeDT(row.updatedAt),
@@ -37,6 +38,7 @@ export default class SecureObject extends BaseModel {
       userId: this.userId,
       value: this.value,
       key: this.key,
+      version: this.version,
 
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
@@ -67,6 +69,9 @@ export default class SecureObject extends BaseModel {
 
   @column()
   declare value: string
+
+  @column()
+  declare version: number
 
   @column()
   declare userId: number

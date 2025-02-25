@@ -20,4 +20,8 @@ export const setting = {
       max: 32,
     },
   },
+
+  secureObject: {
+    maxSize: 1024 * 2, // 2KB
+  },
 }
