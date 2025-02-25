@@ -17,8 +17,8 @@ export default class SecureObject extends BaseModel {
     return {
       id: squid.USER.encode(row.id),
 
-      identifier: row.identifier,
-      password: row.password,
+      userId: row.userId,
+      value: row.value,
       key: row.key,
 
       createdAt: serializeDT(row.createdAt),
@@ -34,8 +34,8 @@ export default class SecureObject extends BaseModel {
     return {
       id: this.id,
 
-      identifier: this.identifier,
-      password: this.password,
+      userId: this.userId,
+      value: this.value,
       key: this.key,
 
       createdAt: this.createdAt,

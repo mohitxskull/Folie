@@ -26,6 +26,8 @@
     "bodyparser",
     "blackbox",
     "strtok",
-    "Hashers"
+    "Hashers",
+    "SPARKPOST",
+    "zxcvbn"
   ]
 }

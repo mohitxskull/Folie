@@ -13,10 +13,10 @@
     "check": "nr format && nr typecheck && nr lint"
   },
   "dependencies": {
+    "@folie/blueprint-lib": "workspace:*",
     "@folie/cobalt": "workspace:*",
     "@folie/cobalt-animation": "workspace:*",
     "@folie/gate": "workspace:*",
-    "@folie/blueprint-lib": "workspace:*",
     "@folie/lib": "workspace:*",
     "@folie/service-blackbox-backend": "workspace:*",
     "@mantine/core": "^7.16.1",
@@ -30,6 +30,7 @@
     "@t3-oss/env-nextjs": "^0.11.1",
     "@tabler/icons-react": "^3.29.0",
     "@tanstack/react-query": "^5.52.2",
+    "boring-avatars": "^1.11.2",
     "case-anything": "^3.1.0",
     "cookies-next": "^5.1.0",
     "dayjs": "^1.11.13",

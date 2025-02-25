@@ -10,6 +10,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import ProcessingException from '@folie/castle/exception/processing_exception'
+import { signInThrottle, signUpThrottle, throttle } from './limiter.js'
 
 router
   .group(() => {
@@ -27,7 +28,11 @@ router
 
             router
               .post('sign-in', [() => import('#controllers/auth/sign_in_controller')])
-              .use(middleware.captcha())
+              .use([signInThrottle, middleware.captcha()])
+
+            router
+              .post('sign-up', [() => import('#controllers/auth/sign_up_controller')])
+              .use([signUpThrottle, middleware.captcha()])
 
             router
               .group(() => {
@@ -38,7 +43,6 @@ router
 
             router
               .group(() => {
-                router.get('', [() => import('#controllers/auth/profile/show_controller')])
                 router.put('', [() => import('#controllers/auth/profile/update_controller')])
               })
               .prefix('profile')
@@ -57,40 +61,17 @@ router
           })
           .prefix('form')
           .use(middleware.auth())
-
-        router
-          .group(() => {
-            router.get(':formId', [() => import('#controllers/submission/list_controller')])
-          })
-          .prefix('submission')
-          .use(middleware.auth())
-
-        router
-          .group(() => {
-            router.get('ping', [() => import('#controllers/public/ping_controller')])
-
-            router
-              .group(() => {
-                router.post(':formId', [() => import('#controllers/public/form/show_controller')])
-              })
-              .prefix('form')
-            router
-              .group(() => {
-                router.post(':formId', [
-                  () => import('#controllers/public/submission/create_controller'),
-                ])
-              })
-              .prefix('submission')
-          })
-          .prefix('public')
       })
       .prefix('v1')
   })
   .prefix('api')
+  .use(throttle)
 
-router.any('*', () => {
-  throw new ProcessingException('Route not found', {
-    status: 404,
-    code: 'E_ROUTE_NOT_FOUND',
+router
+  .any('*', () => {
+    throw new ProcessingException('Route not found', {
+      status: 404,
+      code: 'E_ROUTE_NOT_FOUND',
+    })
   })
-})
+  .use(throttle)

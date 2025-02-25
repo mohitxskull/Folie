@@ -6,7 +6,7 @@ export default class Playground extends BaseCommand {
   static description = 'Playground for your application'
 
   static options: CommandOptions = {
-    startApp: true,
+    // startApp: true,
   }
 
   async run() {

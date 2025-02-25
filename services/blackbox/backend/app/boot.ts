@@ -13,6 +13,8 @@ export const boot = async () => {
       password: 'master',
       firstName: 'Skull',
       lastName: 'Dot',
+      key: null,
+      timeout: 5 * 60,
     }
   )
 

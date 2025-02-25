@@ -9,6 +9,7 @@ import { table } from '#config/tables'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import SecureObject from './secure_object.js'
+import { JSONColumn } from '@folie/castle/column/json'
 
 export default class User extends BaseModel {
   static table = table.USER()
@@ -19,12 +20,15 @@ export default class User extends BaseModel {
     return {
       id: squid.USER.encode(row.id),
 
-      identifier: row.identifier,
-      password: row.password,
-      key: row.key,
+      firstName: row.firstName,
+      lastName: row.lastName,
+
+      email: row.email,
+      setting: row.setting,
 
       createdAt: serializeDT(row.createdAt),
       updatedAt: serializeDT(row.updatedAt),
+      verifiedAt: serializeDT(row.verifiedAt),
     }
   }
 
@@ -36,12 +40,17 @@ export default class User extends BaseModel {
     return {
       id: this.id,
 
-      identifier: this.identifier,
+      firstName: this.firstName,
+      lastName: this.lastName,
+
+      email: this.email,
       password: this.password,
       key: this.key,
+      setting: this.setting,
 
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
+      verifiedAt: this.verifiedAt,
     }
   }
 
@@ -65,13 +74,22 @@ export default class User extends BaseModel {
   declare id: number
 
   @column()
-  declare identifier: string
+  declare firstName: string
+
+  @column()
+  declare lastName: string
+
+  @column()
+  declare email: string
 
   @column()
   declare password: string
 
   @column()
-  declare key: string
+  declare key: string | null
+
+  @column(JSONColumn())
+  declare setting: { timeout: number | null }
 
   // Extra ======================================
 
@@ -82,6 +100,9 @@ export default class User extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  @column.dateTime()
+  declare verifiedAt: DateTime | null
 
   // Hooks =============================
 

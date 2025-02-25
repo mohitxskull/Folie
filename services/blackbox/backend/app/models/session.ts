@@ -44,6 +44,14 @@ export default class Session extends BaseModel {
 
       const { user } = accessToken
 
+      if (!user.verifiedAt) {
+        throw new ProcessingException('Not a valid access token', {
+          meta: {
+            reason: 'User is not verified',
+          },
+        })
+      }
+
       return user
     },
   })

@@ -1,7 +1,8 @@
+import { acceptablePassword } from '#helpers/acceptable_password'
+import { PasswordSchema } from '#validators/index'
 import hash from '@adonisjs/core/services/hash'
 import { routeController } from '@folie/castle'
 import ProcessingException from '@folie/castle/exception/processing_exception'
-import { PasswordSchema } from '@folie/castle/validator/index'
 import vine from '@vinejs/vine'
 
 export default routeController({
@@ -16,12 +17,26 @@ export default routeController({
     const { user } = ctx.session
 
     if (payload.oldPassword === payload.newPassword) {
-      throw new ProcessingException('Password is the same')
+      throw new ProcessingException('New password cannot be the same as old password', {
+        source: 'newPassword',
+      })
     }
 
     if (!(await hash.verify(user.password, payload.oldPassword))) {
       throw new ProcessingException('Invalid password', {
         source: 'oldPassword',
+      })
+    }
+
+    const passRes = acceptablePassword(payload.newPassword, [
+      user.firstName,
+      user.lastName,
+      user.email,
+    ])
+
+    if (!passRes.result) {
+      throw new ProcessingException(passRes.reason, {
+        source: 'newPassword',
       })
     }
 

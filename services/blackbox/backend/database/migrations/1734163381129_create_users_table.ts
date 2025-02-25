@@ -8,14 +8,20 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (t) => {
       t.increments('id')
 
-      t.string('identifier', 255).notNullable().unique()
+      t.string('firstName', 255).nullable()
+      t.string('lastName', 255).nullable()
+
+      t.string('email', 200).notNullable().unique()
 
       t.text('password').notNullable()
 
-      t.text('key').notNullable()
+      t.text('key').nullable()
+
+      t.text('setting').notNullable()
 
       t.timestamp('created_at')
       t.timestamp('updated_at')
+      t.timestamp('verified_at').nullable()
     })
   }
 
