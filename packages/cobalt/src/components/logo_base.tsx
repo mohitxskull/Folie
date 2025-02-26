@@ -1,5 +1,5 @@
 import { Button, ButtonProps } from '@mantine/core'
-import Link from 'next/link'
+import Link from 'next/link.js'
 
 export type LogoBaseProps = ButtonProps & {
   href?: string

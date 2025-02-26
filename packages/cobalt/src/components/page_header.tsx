@@ -1,7 +1,7 @@
 import { ICON_SIZE } from '@folie/cobalt'
 import { Button, Group, Stack, Text, Title, TitleOrder } from '@mantine/core'
 import { IconArrowNarrowLeft } from '@tabler/icons-react'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/router.js'
 
 type Props = {
   title: string

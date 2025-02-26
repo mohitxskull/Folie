@@ -1,5 +1,11 @@
 # @folie/cobalt
 
+## 0.0.23
+
+### Patch Changes
+
+- Bug fix
+
 ## 0.0.22
 
 ### Patch Changes
