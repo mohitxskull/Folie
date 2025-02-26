@@ -1,9 +1,9 @@
 import { RouteKeys, Routes } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-import { createStringGetter } from './helpers/create_string_getter'
-import { NextServerError } from './helpers/next_server_error'
-import { CheckpointParams } from './types/server'
+import { createStringGetter } from './helpers/create_string_getter.js'
+import { NextServerError } from './helpers/next_server_error.js'
+import { CheckpointParams } from './types/server.js'
 
 /**
  * CobaltServer is a comprehensive utility class designed to simplify and standardize server-side logic in Next.js applications.

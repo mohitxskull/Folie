@@ -1,4 +1,4 @@
-import { NextServerError } from '../src/helpers/next_server_error'
+import { NextServerError } from '../src/helpers/next_server_error.js'
 
 console.log('Welcome to playground!')
 
