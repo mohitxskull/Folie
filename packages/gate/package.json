@@ -25,7 +25,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "c8 nr quick:test",
     "prebuild": "nr clean",
-    "build": "tsc && folie transform ./build --minify",
+    "build": "tsc",
     "quick:test": "tsx bin/test.ts",
     "playground": "tsx bin/playground.ts"
   },

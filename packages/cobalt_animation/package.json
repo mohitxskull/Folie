@@ -22,7 +22,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "test": "c8 nr quick:test",
     "prebuild": "nr clean",
-    "build": "tsc && folie transform ./build --minify && npx tailwindcss -i ./src/styles/global.css -o ./build/cobalt-animation.css -m",
+    "build": "tsc && npx tailwindcss -i ./src/styles/global.css -o ./build/cobalt-animation.css -m",
     "quick:test": "tsx bin/test.ts",
     "playground": "tsx bin/playground.ts"
   },
