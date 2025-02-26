@@ -1,5 +1,14 @@
 # @folie/cobalt
 
+## 0.0.22
+
+### Patch Changes
+
+- Work in progress
+- Updated dependencies
+  - @folie/blueprint-lib@0.0.5
+  - @folie/gate@0.0.8
+
 ## 0.0.21
 
 ### Patch Changes

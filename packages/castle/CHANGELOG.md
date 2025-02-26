@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.12
+
+### Patch Changes
+
+- Work in progress
+
 ## 0.0.11
 
 ### Patch Changes

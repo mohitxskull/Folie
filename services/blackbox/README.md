@@ -1,3 +1,0 @@
-# Blackbox
-
-Password Manager

@@ -1,5 +1,11 @@
 # @folie/lib
 
+## 0.0.4
+
+### Patch Changes
+
+- Work in progress
+
 ## 0.0.3
 
 ### Patch Changes

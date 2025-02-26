@@ -160,7 +160,6 @@ const CONFIG = {
     "./packages/gate",
     "./packages/lib",
     "./packages/squid",
-    "./packages/mongo",
   ],
 } as const;
 
