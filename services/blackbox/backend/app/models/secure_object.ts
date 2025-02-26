@@ -7,6 +7,8 @@ import { table } from '#config/tables'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import User from './user.js'
+import { SecureObjectType, type SecureObjectTypeKeys } from '#types/enum'
+import { EnumColumn } from '@folie/castle/column/enum'
 
 export default class SecureObject extends BaseModel {
   static table = table.SECURE_OBJECT()
@@ -65,18 +67,19 @@ export default class SecureObject extends BaseModel {
   declare id: number
 
   @column()
+  declare userId: number
+
+  @column()
   declare key: string
+
+  @column(EnumColumn(SecureObjectType.enum))
+  declare type: SecureObjectTypeKeys | null
 
   @column()
   declare value: string
 
   @column()
   declare version: number
-
-  @column()
-  declare userId: number
-
-  // Extra ======================================
 
   // DateTime =============================
 
@@ -92,4 +95,8 @@ export default class SecureObject extends BaseModel {
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
+
+  // Extra ======================================
+
+  declare $$total: number
 }

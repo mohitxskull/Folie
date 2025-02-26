@@ -10,11 +10,15 @@ export default class extends BaseSchema {
 
       t.text('key').notNullable()
 
+      t.integer('type').nullable()
+
       t.integer('user_id').unsigned().references(table.USER('id')).notNullable().onDelete('CASCADE')
 
       t.text('value').notNullable()
 
       t.integer('version').notNullable().defaultTo(0)
+
+      t.unique(['user_id', 'version'])
 
       t.timestamp('created_at')
       t.timestamp('updated_at')

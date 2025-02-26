@@ -10,6 +10,7 @@ import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import SecureObject from './secure_object.js'
 import { JSONColumn } from '@folie/castle/column/json'
+import { SecureObjectType } from '#types/enum'
 
 export default class User extends BaseModel {
   static table = table.USER()
@@ -57,7 +58,7 @@ export default class User extends BaseModel {
   // Cache =============================
 
   static cache() {
-    return new StaticModelCache<User>(
+    return new StaticModelCache<User, 'metric'>(
       cache.namespace(this.table),
       (v) => new User().fill(v),
       (i) => User.find(i)
@@ -66,6 +67,36 @@ export default class User extends BaseModel {
 
   cache() {
     return User.cache().internal(this)
+  }
+
+  $metric(this: User, options?: { latest?: boolean }) {
+    return this.cache().get({
+      key: 'metric',
+      factory: async () => {
+        const [simpleObjectCount, tagObjectCount] = await Promise.all([
+          await this.related('secureObjects').query().whereNull('type').count('* as total').first(),
+          await this.related('secureObjects')
+            .query()
+            .where('type', SecureObjectType.keyof('TAG'))
+            .count('* as $$total')
+            .first(),
+        ])
+
+        if (!simpleObjectCount || !tagObjectCount) {
+          throw new Error('Failed to fetch metric data')
+        }
+
+        return {
+          simpleObjectCount: simpleObjectCount.$$total,
+          tagObjectCount: tagObjectCount.$$total,
+        }
+      },
+      parser: async (o) => o,
+      latest: options?.latest,
+      options: {
+        ttl: '1 hour',
+      },
+    })
   }
 
   // Columns =============================
@@ -90,8 +121,6 @@ export default class User extends BaseModel {
 
   @column(JSONColumn())
   declare setting: { timeout: number | null }
-
-  // Extra ======================================
 
   // DateTime =============================
 
@@ -120,4 +149,6 @@ export default class User extends BaseModel {
 
   @hasMany(() => SecureObject)
   declare secureObjects: HasMany<typeof SecureObject>
+
+  // Extra ======================================
 }

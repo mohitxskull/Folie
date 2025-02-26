@@ -12,12 +12,9 @@ export default routeController({
     })
   ),
 
-  handle: async ({
-    payload,
-    ctx: {
-      session: { user },
-    },
-  }) => {
+  handle: async ({ payload, ctx }) => {
+    const { user } = ctx.session
+
     const secureObject = await user
       .related('secureObjects')
       .query()

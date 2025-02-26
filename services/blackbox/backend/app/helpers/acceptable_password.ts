@@ -16,29 +16,28 @@ export const acceptablePassword = (
   userInputs?: string[]
 ): { result: true } | { result: false; reason: string } => {
   // Check if password length is less than the minimum required length.
-  if (password.length < setting.passwordRequirement.length.min) {
+  if (password.length < setting.passwordRequirement.size.min) {
     return {
       result: false,
-      reason: `Too short (min length ${setting.passwordRequirement.length.min})`,
+      reason: `Too short (min length ${setting.passwordRequirement.size.min})`,
     }
   } // Check if password length exceeds the maximum allowed length.
 
-  if (password.length > setting.passwordRequirement.length.max) {
+  if (password.length > setting.passwordRequirement.size.max) {
     return {
       result: false,
-      reason: `Too long (max length ${setting.passwordRequirement.length.max})`,
+      reason: `Too long (max length ${setting.passwordRequirement.size.max})`,
     }
   } // Analyze password strength using zxcvbn library.
 
   const result = zxcvbn(password, userInputs) // Check if the password can be cracked too quickly.
 
   if (
-    result.crackTimesSeconds.offlineFastHashing1e10PerSecond <
-    string.seconds.parse(setting.passwordRequirement.crackTime)
+    result.crackTimesSeconds.offlineFastHashing1e10PerSecond < setting.passwordRequirement.crackTime
   ) {
     return {
       result: false,
-      reason: `Can be cracked in ${result.crackTimesDisplay.offlineFastHashing1e10PerSecond} (min ${setting.passwordRequirement.crackTime})`,
+      reason: `Can be cracked in ${result.crackTimesDisplay.offlineFastHashing1e10PerSecond} (min ${string.seconds.format(setting.passwordRequirement.crackTime, true)})`,
     }
   } // Check if the password score is below the minimum required score.
 
