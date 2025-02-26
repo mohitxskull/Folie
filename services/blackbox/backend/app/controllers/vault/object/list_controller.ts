@@ -7,7 +7,7 @@ export default routeController({
   input: vine.compile(
     vine.object({
       query: vine.object({
-        page: vine.number().min(1).max(20),
+        page: vine.number().min(1).max(100),
       }),
     })
   ),

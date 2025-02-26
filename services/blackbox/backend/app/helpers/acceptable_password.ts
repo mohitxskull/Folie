@@ -33,11 +33,11 @@ export const acceptablePassword = (
   const result = zxcvbn(password, userInputs) // Check if the password can be cracked too quickly.
 
   if (
-    result.crackTimesSeconds.offlineFastHashing1e10PerSecond < setting.passwordRequirement.crackTime
+    result.crackTimesSeconds.offlineSlowHashing1e4PerSecond < setting.passwordRequirement.crackTime
   ) {
     return {
       result: false,
-      reason: `Can be cracked in ${result.crackTimesDisplay.offlineFastHashing1e10PerSecond} (min ${string.seconds.format(setting.passwordRequirement.crackTime, true)})`,
+      reason: `Can be cracked in ${result.crackTimesDisplay.offlineSlowHashing1e4PerSecond} (min ${string.seconds.format(setting.passwordRequirement.crackTime, true)})`,
     }
   } // Check if the password score is below the minimum required score.
 

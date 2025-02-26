@@ -2,9 +2,9 @@ import env from '#start/env'
 import { defineConfig, transports } from '@adonisjs/mail'
 
 const mailConfig = defineConfig({
-  default: 'sparkpost',
+  default: 'smtp',
 
-  from: 'blackbox.mohitxskull@gmail.com',
+  from: 'blackbox@mail.mohitxskull.com',
 
   /**
    * The mailers object can be used to configure multiple mailers
@@ -12,9 +12,17 @@ const mailConfig = defineConfig({
    * options.
    */
   mailers: {
-    sparkpost: transports.sparkpost({
-      key: env.get('SPARKPOST_API_KEY'),
-      baseUrl: 'https://api.sparkpost.com/api/v1',
+    smtp: transports.smtp({
+      host: env.get('SMTP_HOST'),
+      port: env.get('SMTP_PORT'),
+
+      auth: {
+        type: 'login',
+        user: env.get('SMTP_USERNAME'),
+        pass: env.get('SMTP_PASSWORD'),
+      },
+
+      tls: {},
     }),
   },
 })

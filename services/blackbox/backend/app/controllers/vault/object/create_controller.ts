@@ -17,10 +17,7 @@ export default routeController({
       value: vine
         .union([
           vine.union.if((v) => v.type === null, SimpleSecureObjectValueSchema),
-          vine.union.if(
-            (v) => vine.helpers.isString(v.type) && v.type === SecureObjectType.key('TAG'),
-            TagSecureObjectValueSchema
-          ),
+          vine.union.if((v) => v.type === SecureObjectType.key('TAG'), TagSecureObjectValueSchema),
         ])
         .otherwise((_, field) => {
           field.report('Invalid secure object type', 'invalid_secure_object', field)

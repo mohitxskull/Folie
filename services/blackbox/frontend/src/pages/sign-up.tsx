@@ -7,6 +7,7 @@ import {
   Button,
   Card,
   Center,
+  Group,
   PasswordInput,
   Stack,
   TextInput,
@@ -35,24 +36,25 @@ export default function Page() {
 
   const [captchaReady, setCaptchaReady] = useState(false);
 
-  const [form, inputProps, inputKey, [mutation, submit]] = cobalt.useForm({
-    endpoint: "V1_AUTH_SIGN_IN",
+  const [form, inputProps, inputKey, [mutation, submit]] = cobalt.useFormP({
+    endpoint: "V1_AUTH_SIGN_UP",
     form: {
       values: {
+        firstName: "",
+        lastName: "",
         email: "",
         password: "",
+        confirmPassword: "",
       },
     },
     onSuccess: (data) => {
-      setCookie("SESSION", data.token);
-
       cobalt.query.clear();
 
       notifications.show({
         message: data.message,
       });
 
-      router.replace("/vault");
+      router.replace("/sign-in");
     },
     mutation: {
       onErr: () => {
@@ -71,14 +73,35 @@ export default function Page() {
 
           <Card withBorder p="md" w={450}>
             <Stack>
-              <Title order={2}>Sign In</Title>
+              <Title order={2}>Sign Up</Title>
 
               <Form mutation={mutation} submit={submit} form={form}>
                 {({ dirty, loading }) => (
                   <>
+                    <Group grow>
+                      <TextInput
+                        label="First name"
+                        placeholder="John"
+                        {...inputProps(["firstName"])}
+                        key={inputKey(["firstName"])}
+                        required
+                        withAsterisk={false}
+                      />
+
+                      <TextInput
+                        label="Last name"
+                        placeholder="Doe"
+                        {...inputProps(["lastName"])}
+                        key={inputKey(["lastName"])}
+                        required
+                        withAsterisk={false}
+                      />
+                    </Group>
+
                     <TextInput
                       label="Email"
-                      placeholder="Enter your email"
+                      description="Only gmail's are allowed"
+                      placeholder="someone@gmail.com"
                       type="email"
                       {...inputProps(["email"])}
                       key={inputKey(["email"])}
@@ -88,9 +111,18 @@ export default function Page() {
 
                     <PasswordInput
                       label="Password"
-                      placeholder="Enter your password"
+                      placeholder="MwL]6j*mGnQW9zn"
                       {...inputProps(["password"])}
                       key={inputKey(["password"])}
+                      required
+                      withAsterisk={false}
+                    />
+
+                    <PasswordInput
+                      label="Confirm Password"
+                      placeholder="MwL]6j*mGnQW9zn"
+                      {...inputProps(["confirmPassword"])}
+                      key={inputKey(["confirmPassword"])}
                       required
                       withAsterisk={false}
                     />
@@ -130,7 +162,7 @@ export default function Page() {
                       loading={loading}
                       disabled={!dirty || !captchaReady}
                     >
-                      Sign In
+                      Sign Up
                     </Button>
                   </>
                 )}

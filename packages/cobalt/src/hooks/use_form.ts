@@ -18,6 +18,8 @@ export type UseFormParams<
     values: NonNullable<UseFormInput<EP['input']>['initialValues']>
     onValuesChange?: UseFormInput<EP['input']>['onValuesChange']
     transform?: UseFormInput<EP['input']>['transformValues']
+    validate?: UseFormInput<EP['input']>['validate']
+    validateInputOnBlur?: boolean
   }
 
   mutation?: {
@@ -40,6 +42,8 @@ export const useForm = <
     initialValues: params.form.values,
     onValuesChange: params.form.onValuesChange,
     transformValues: params.form.transform,
+    validate: params.form.validate,
+    validateInputOnBlur: params.form.validateInputOnBlur,
   })
 
   const internalMutation = cobalt.useMutation({

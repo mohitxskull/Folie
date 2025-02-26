@@ -30,7 +30,7 @@ export default class EmailVerificationMail extends BaseMail {
     logger.debug({ url }, `Verify email for user ${this.user.id}`)
 
     this.message.to(this.user.email)
-    this.message.htmlView('emails/verify_email_html', {
+    this.message.htmlView('emails/email_verification', {
       url,
     })
   }

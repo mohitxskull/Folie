@@ -20,7 +20,7 @@ test.group('API V1 Auth', () => {
 
     const response = await cus.api.endpoint('V1_AUTH_SESSION').call({})
 
-    assert.equal(response.email, cus.user.email)
+    assert.equal(response.session.email, cus.user.email)
   })
 
   test('Profile Update', async ({ assert, resource }) => {

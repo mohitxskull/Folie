@@ -7,6 +7,7 @@ import { Constructor } from '@adonisjs/core/types/container'
 
 export const routeController = <OUT, IN extends VineValidator<any, any>>(params: {
   input?: IN
+  form?: boolean
   handle: (params: {
     ctx: HttpContext
     payload: IN extends VineValidator<any, any> ? Infer<IN> : never
@@ -15,7 +16,9 @@ export const routeController = <OUT, IN extends VineValidator<any, any>>(params:
   input?: IN
   handle(ctx: HttpContext): Promise<OUT>
 }> => {
-  return class {
+  return class Controller {
+    form = params.form ?? false
+
     input?: IN = params.input
 
     async handle(ctx: HttpContext) {

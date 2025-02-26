@@ -9,6 +9,7 @@ import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
 import { acceptablePassword } from '#helpers/acceptable_password'
+import db from '@adonisjs/lucid/services/db'
 
 export default routeController({
   input: vine.compile(
@@ -17,6 +18,7 @@ export default routeController({
       lastName: TextSchema,
       email: GmailSchema,
       password: PasswordSchema,
+      confirmPassword: PasswordSchema.sameAs('password'),
     })
   ),
 
@@ -45,28 +47,45 @@ export default routeController({
       })
     }
 
-    const user = await User.create({
-      firstName: payload.firstName,
-      lastName: payload.lastName,
-      email: payload.email,
-      password: payload.password,
-      key: null,
-      setting: {
-        timeout: 5 * 60, // 5 minutes
-      },
-      verifiedAt: setting.signUp.verification.enabled ? null : DateTime.utc(),
-    })
+    const trx = await db.transaction()
 
-    if (setting.signUp.verification.enabled) {
-      await mail.send(new EmailVerificationMail(user))
+    try {
+      const user = await User.create(
+        {
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          email: payload.email,
+          password: payload.password,
+          key: null,
+          setting: {
+            timeout: 5 * 60, // 5 minutes
+          },
+          verifiedAt: setting.signUp.verification.enabled ? null : DateTime.utc(),
+        },
+        {
+          client: trx,
+        }
+      )
+
+      let message = 'You have successfully signed up'
+
+      if (setting.signUp.verification.enabled) {
+        await mail.send(new EmailVerificationMail(user))
+
+        message = 'An email has been sent to your email address'
+      }
+
+      await trx.commit()
 
       return {
-        message: 'An email has been sent to your email address',
+        message,
       }
-    }
+    } catch (error) {
+      await trx.rollback()
 
-    return {
-      message: 'You have successfully signed up',
+      throw Error('An error occurred while signing up', {
+        cause: error,
+      })
     }
   },
 })

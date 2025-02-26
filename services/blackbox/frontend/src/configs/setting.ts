@@ -1,10 +1,12 @@
 export const setting = {
-  app: "Formation",
-  bg: "gray.1",
+  app: "Blackbox",
+  bg: "dark.9",
+
   headerHeight: 60,
+
   footer: {
     height: 80,
-    bg: "gray.2",
+    bg: "dark.8",
   },
   navbar: {
     width: 250,

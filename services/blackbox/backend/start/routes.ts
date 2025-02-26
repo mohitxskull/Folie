@@ -23,7 +23,7 @@ router
               .use(middleware.auth())
 
             router
-              .get('sign-out', [() => import('#controllers/auth/sign_out_controller')])
+              .post('sign-out', [() => import('#controllers/auth/sign_out_controller')])
               .use(middleware.auth())
 
             router
@@ -35,6 +35,10 @@ router
               .use([signUpThrottle, middleware.captcha()])
 
             router
+              .post('verify', [() => import('#controllers/auth/verify_controller')])
+              .use([middleware.captcha()])
+
+            router
               .group(() => {
                 router.put('', [() => import('#controllers/auth/password/update_controller')])
               })
@@ -44,6 +48,8 @@ router
             router
               .group(() => {
                 router.put('', [() => import('#controllers/auth/profile/update_controller')])
+
+                router.get('metric', [() => import('#controllers/auth/profile/metric_controller')])
               })
               .prefix('profile')
               .use(middleware.auth())
@@ -52,15 +58,37 @@ router
 
         router
           .group(() => {
-            router.get('', [() => import('#controllers/form/list_controller')])
-            router.get(':formId', [() => import('#controllers/form/show_controller')])
-            router.post('', [() => import('#controllers/form/create_controller')])
-            router.put(':formId', [() => import('#controllers/form/update_controller')])
-            router.delete(':formId', [() => import('#controllers/form/delete_controller')])
-            router.put('restore/:formId', [() => import('#controllers/form/restore_controller')])
+            router
+              .group(() => {
+                router.get('', [() => import('#controllers/vault/key/show_controller')])
+                router.put('', [() => import('#controllers/vault/key/update_controller')])
+              })
+              .prefix('key')
+
+            router
+              .group(() => {
+                router.get('', [() => import('#controllers/vault/object/list_controller')])
+
+                router.get(':secretObjectId', [
+                  () => import('#controllers/vault/object/show_controller'),
+                ])
+
+                router.post('', [() => import('#controllers/vault/object/create_controller')])
+
+                router.put(':secretObjectId', [
+                  () => import('#controllers/vault/object/update_controller'),
+                ])
+
+                router.delete(':secretObjectId', [
+                  () => import('#controllers/vault/object/delete_controller'),
+                ])
+              })
+              .prefix('object')
           })
-          .prefix('form')
+          .prefix('vault')
           .use(middleware.auth())
+
+        router.get('ping', [() => import('#controllers/ping_controller')])
       })
       .prefix('v1')
   })
@@ -68,10 +96,16 @@ router
   .use(throttle)
 
 router
-  .any('*', () => {
+  .any('*', (ctx) => {
     throw new ProcessingException('Route not found', {
       status: 404,
       code: 'E_ROUTE_NOT_FOUND',
+      meta: {
+        public: {
+          route: ctx.request.url(),
+          method: ctx.request.method(),
+        },
+      },
     })
   })
   .use(throttle)

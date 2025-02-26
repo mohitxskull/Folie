@@ -11,7 +11,15 @@ export const MantineTheme = createTheme({
 
   defaultRadius: "sm",
   autoContrast: true,
-  primaryColor: "dark",
-  primaryShade: 9,
+  primaryColor: "gray",
+  primaryShade: 0,
   cursorType: "pointer",
+
+  components: {
+    Paper: {
+      defaultProps: {
+        bg: "dark.8",
+      },
+    },
+  },
 });

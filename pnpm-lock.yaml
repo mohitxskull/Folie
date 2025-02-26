@@ -142,13 +142,13 @@ importers:
         version: 3.1.5(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(edge.js@6.2.1)
       '@adonisjs/cache':
         specifier: ^1.1.0
-        version: 1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))(knex@3.1.0)
+        version: 1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))(knex@3.1.0(better-sqlite3@11.8.1)(mysql2@3.12.0))
       '@adonisjs/core':
         specifier: ^6.14.1
         version: 6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1)
       '@adonisjs/limiter':
         specifier: ^2.3.2
-        version: 2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))
+        version: 2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))
       '@adonisjs/lucid':
         specifier: ^21.3.0
         version: 21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0)
@@ -611,7 +611,7 @@ importers:
         version: 3.1.5(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(edge.js@6.2.1)
       '@adonisjs/cache':
         specifier: ^1.1.0
-        version: 1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))(knex@3.1.0)
+        version: 1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))(knex@3.1.0(better-sqlite3@11.8.1)(mysql2@3.12.0))
       '@adonisjs/core':
         specifier: ^6.14.1
         version: 6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1)
@@ -623,7 +623,7 @@ importers:
         version: 3.2.0(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))
       '@adonisjs/limiter':
         specifier: ^2.3.3
-        version: 2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))
+        version: 2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))
       '@adonisjs/lucid':
         specifier: ^21.3.0
         version: 21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0)
@@ -6732,11 +6732,11 @@ snapshots:
       '@adonisjs/core': 6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1)
       edge.js: 6.2.1
 
-  '@adonisjs/cache@1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))(knex@3.1.0)':
+  '@adonisjs/cache@1.1.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))(knex@3.1.0(better-sqlite3@11.8.1)(mysql2@3.12.0))':
     dependencies:
       '@adonisjs/assembler': 7.8.2(typescript@5.6.3)
       '@adonisjs/core': 6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1)
-      bentocache: 1.0.0(knex@3.1.0)
+      bentocache: 1.0.0(knex@3.1.0(better-sqlite3@11.8.1)(mysql2@3.12.0))
     optionalDependencies:
       '@adonisjs/lucid': 21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0)
     transitivePeerDependencies:
@@ -6879,7 +6879,7 @@ snapshots:
       vary: 1.1.2
       youch: 3.3.4
 
-  '@adonisjs/limiter@2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(luxon@3.5.0))':
+  '@adonisjs/limiter@2.3.3(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@adonisjs/lucid@21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0))':
     dependencies:
       '@adonisjs/core': 6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1)
       rate-limiter-flexible: 5.0.5
@@ -8740,7 +8740,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  bentocache@1.0.0(knex@3.1.0):
+  bentocache@1.0.0(knex@3.1.0(better-sqlite3@11.8.1)(mysql2@3.12.0)):
     dependencies:
       '@boringnode/bus': 0.7.0
       '@julr/utils': 1.6.2

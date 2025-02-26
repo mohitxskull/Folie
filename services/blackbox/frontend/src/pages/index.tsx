@@ -24,6 +24,9 @@ export default function Page() {
               <Button component={Link} href="/sign-in" variant="outline">
                 Sign In
               </Button>
+              <Button component={Link} href="/sign-up">
+                Sign Up
+              </Button>
             </Group>
           </Group>
         </AppShell.Header>

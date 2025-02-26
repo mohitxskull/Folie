@@ -7,7 +7,7 @@
     "build": "turbo build",
     "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt && turbo build --filter=./packages/cobalt",
     "dev": "turbo dev",
-    "dev:service:formation": "turbo dev --filter=./services/formation/*",
+    "dev:service:blackbox": "turbo dev --filter=./services/blackbox/*",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "turbo format",

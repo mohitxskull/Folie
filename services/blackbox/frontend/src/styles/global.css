@@ -1,8 +1,8 @@
 @layer mantine, mantine-datatable, mantine-contextmenu;
 
 ::selection {
-  color: var(--mantine-color-white);
-  background: var(--mantine-color-dark-9);
+  color: var(--mantine-color-dark-9);
+  background: var(--mantine-color-white);
 }
 
 .blink {
