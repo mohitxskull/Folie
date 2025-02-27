@@ -1,5 +1,11 @@
 # @folie/cobalt
 
+## 0.0.25
+
+### Patch Changes
+
+- Bug fix in show component
+
 ## 0.0.24
 
 ### Patch Changes

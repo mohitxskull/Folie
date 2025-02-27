@@ -4,11 +4,11 @@ import { If } from './if.js'
 import { type ReactNode } from 'react'
 
 type Props = {
-  children: ReactNode & {
+  children: (ReactNode & {
     props: {
       isTrue?: boolean
     }
-  }
+  })[]
 }
 
 type ElseProps = {
