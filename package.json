@@ -7,6 +7,7 @@
     "build": "turbo build",
     "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt && turbo build --filter=./packages/cobalt",
     "dev": "turbo dev",
+    "dev:playground": "turbo dev --filter=./playground/*",
     "lint": "turbo lint",
     "typecheck": "turbo typecheck",
     "format": "turbo format",

@@ -1,4 +1,3 @@
-import { Routes } from '@folie/blueprint-lib'
 import { CobaltContextProps, CobaltProvider } from './base.js'
 import { MantineProvider } from '@mantine/core'
 import { ModalsProvider } from '@mantine/modals'
@@ -6,7 +5,7 @@ import { NavigationProgress, nprogress } from '@mantine/nprogress'
 import { Notifications } from '@mantine/notifications'
 import { useEffect } from 'react'
 
-export const CobaltContext = <ROUTES extends Routes>(props: CobaltContextProps<ROUTES>) => {
+export const CobaltContext = (props: CobaltContextProps) => {
   const startProgress = (url: string) => {
     if (props.navigation?.started) {
       props.navigation.started(url)
@@ -37,11 +36,7 @@ export const CobaltContext = <ROUTES extends Routes>(props: CobaltContextProps<R
 
   return (
     <>
-      <CobaltProvider
-        value={{
-          query: props.cobalt?.query,
-        }}
-      >
+      <CobaltProvider value={{}}>
         <MantineProvider
           theme={props.mantine}
           defaultColorScheme={props.config.theme}

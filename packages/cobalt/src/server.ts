@@ -1,9 +1,10 @@
 import { RouteKeys, Routes } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-import { createStringGetter } from './helpers/create_string_getter.js'
 import { NextServerError } from './helpers/next_server_error.js'
 import { CheckpointParams } from './types/server.js'
+// eslint-disable-next-line import/extensions
+import { deleteCookie } from 'cookies-next/server'
 
 /**
  * CobaltServer is a comprehensive utility class designed to simplify and standardize server-side logic in Next.js applications.
@@ -18,11 +19,7 @@ import { CheckpointParams } from './types/server.js'
  * @template KEYS - A string type that represents the keys for route parameters expected in your Next.js pages.
  *                  Defaults to `never` if your pages do not use route parameters. This helps in type-safe parameter extraction within your server-side functions.
  */
-export class CobaltServer<
-  ROUTES extends Routes,
-  SCERK extends RouteKeys<ROUTES>,
-  KEYS extends string = never,
-> {
+export class CobaltServer<ROUTES extends Routes, SCERK extends RouteKeys<ROUTES>> {
   api: Gate<ROUTES>
   routes: ROUTES
 
@@ -142,6 +139,10 @@ export class CobaltServer<
     return async (ctx: GetServerSidePropsContext) => {
       const session = await this.#session(ctx)
 
+      if (!session) {
+        deleteCookie(this.sessionConfig.cookie, ctx)
+      }
+
       const condition = params?.checkpoint
         ? params.checkpoint({ ctx, session })
         : { allow: session !== null, redirect: this.secureConfig.redirect }
@@ -167,7 +168,6 @@ export class CobaltServer<
     callback: (params: {
       session: ROUTES[SCERK]['io']['output'] | null
       ctx: GetServerSidePropsContext
-      params: (key: KEYS) => string
       api: Gate<ROUTES>
     }) => Promise<GetServerSidePropsResult<T>>,
     options?: {
@@ -182,6 +182,10 @@ export class CobaltServer<
     return async (ctx: GetServerSidePropsContext): Promise<GetServerSidePropsResult<T>> => {
       try {
         const session = await this.#session(ctx)
+
+        if (!session) {
+          deleteCookie(this.sessionConfig.cookie, ctx)
+        }
 
         if (options?.secure) {
           if (typeof options?.secure === 'function') {
@@ -207,19 +211,7 @@ export class CobaltServer<
           }
         }
 
-        const getter = createStringGetter<KEYS>(ctx.params ?? {})
-
-        const params = (key: KEYS) => {
-          const res = getter(key)
-
-          if (!res) {
-            throw new NextServerError({ type: '404' })
-          }
-
-          return res
-        }
-
-        const res = await callback({ session, ctx, params, api: this.api })
+        const res = await callback({ session, ctx, api: this.api })
 
         return res
       } catch (error) {

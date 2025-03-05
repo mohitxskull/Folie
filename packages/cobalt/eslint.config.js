@@ -12,6 +12,7 @@ export default configPkg({
     import: importPlugin,
   },
   rules: {
-    'import/extensions': ['error', 'always'],
+    // https://github.com/import-js/eslint-plugin-import/blob/HEAD/docs/rules/extensions.md
+    'import/extensions': ['error', { js: 'always', json: 'never', mjs: 'never' }],
   },
 })

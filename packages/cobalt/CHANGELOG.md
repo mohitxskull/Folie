@@ -1,5 +1,11 @@
 # @folie/cobalt
 
+## 0.0.26
+
+### Patch Changes
+
+- Added an feature in LogoBase component
+
 ## 0.0.25
 
 ### Patch Changes

@@ -3,10 +3,11 @@ import Link from 'next/link.js'
 
 export type LogoBaseProps = ButtonProps & {
   href?: string
+  onClick?: () => void
 }
 
 export const LogoBase = (props: LogoBaseProps) => {
-  const { href, children, ...restProps } = props
+  const { href, children, onClick, ...restProps } = props
 
   return (
     <>
@@ -15,8 +16,7 @@ export const LogoBase = (props: LogoBaseProps) => {
         w="fit-content"
         p="0"
         variant="transparent"
-        component={Link}
-        href={href ?? '/'}
+        {...(onClick ? { onClick } : { renderRoot: (p) => <Link {...p} href={href ?? '/'} /> })}
         {...restProps}
       >
         {children}

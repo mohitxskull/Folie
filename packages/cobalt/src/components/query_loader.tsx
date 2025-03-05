@@ -2,7 +2,7 @@ import { UseQueryResult } from '@tanstack/react-query'
 
 export type QueryLoaderProps<OUT> = {
   children: (data: NonNullable<OUT>) => React.ReactNode
-  conditions?: (data: NonNullable<OUT>) => React.ReactNode | void
+  conditions?: (data: NonNullable<OUT>) => React.ReactNode
   query: UseQueryResult<OUT, unknown>
   isLoading?: React.ReactNode
   isError?: React.ReactNode
@@ -27,7 +27,7 @@ export const QueryLoader = <OUT,>(props: QueryLoaderProps<OUT>) => {
   if (props.conditions) {
     const conditions = props.conditions(data)
 
-    if (conditions) {
+    if (conditions !== null || conditions !== undefined) {
       return conditions
     }
   }

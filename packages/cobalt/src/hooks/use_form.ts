@@ -34,7 +34,7 @@ export const useForm = <
   RK extends RouteKeys<ROUTES>,
   EP extends ROUTES[RK]['io'],
 >(
-  cobalt: Cobalt<ROUTES>,
+  cobalt: Cobalt<ROUTES, any, any>,
   params: UseFormParams<ROUTES, RK, EP>
 ) => {
   const internalForm = useManForm({

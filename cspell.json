@@ -28,6 +28,9 @@
     "strtok",
     "Hashers",
     "SPARKPOST",
-    "zxcvbn"
+    "zxcvbn",
+    "gtag",
+    "PARAMKEYS",
+    "COOKIEKEYS"
   ]
 }

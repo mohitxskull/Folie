@@ -13,7 +13,6 @@ const Form = <
 
   children: (params: { loading: boolean; dirty: boolean }) => React.ReactNode
   submit: (input: INPUT) => void
-  checkpoint?: (values: INPUT) => boolean
 
   props?: {
     stack?: StackProps
@@ -25,15 +24,7 @@ const Form = <
     <>
       <form
         ref={props.ref}
-        onSubmit={props.form.onSubmit(async (values) => {
-          if (props?.checkpoint) {
-            const result = props.checkpoint(values)
-
-            if (result === false) {
-              return
-            }
-          }
-
+        onSubmit={props.form.onSubmit((values) => {
           props.submit(values)
         })}
       >
