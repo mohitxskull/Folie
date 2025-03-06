@@ -31,6 +31,8 @@
     "zxcvbn",
     "gtag",
     "PARAMKEYS",
-    "COOKIEKEYS"
+    "COOKIEKEYS",
+    "CROCKFORD",
+    "ABCDEFGHJKMNPQRSTVWXYZ"
   ]
 }

@@ -2,21 +2,21 @@ import { Config, Header, Token } from './types.js'
 import axios, { type AxiosRequestConfig, AxiosError, AxiosInstance, AxiosResponse } from 'axios'
 import qs from 'qs'
 import { GateError } from './error.js'
-import { RouteKeys, Routes } from '@folie/blueprint-lib'
+import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
 
-export class Gate<ROUTES extends Routes> {
+export class Gate<const Api extends ApiDefinition> {
   #axios: AxiosInstance
   #token?: Token
   #header?: Header
 
-  readonly routes: ROUTES
+  readonly api: Api
   readonly base: URL
 
-  constructor(params: Config<ROUTES>) {
+  constructor(params: Config<Api>) {
     this.#token = params.token
     this.#header = params.header
 
-    this.routes = params.routes
+    this.api = params.api
     this.base = params.base
 
     this.#axios = axios.create({
@@ -57,13 +57,13 @@ export class Gate<ROUTES extends Routes> {
   }
 
   async #call<
-    RK extends RouteKeys<ROUTES>,
-    EP extends ROUTES[RK],
+    RK extends EndpointKeys<Api>,
+    EP extends Api[RK],
     IN extends EP['io']['input'],
     OUT extends EP['io']['output'],
   >(endpointKey: RK, input: IN): Promise<OUT> {
     try {
-      const endpoint = this.routes[endpointKey]
+      const endpoint = this.api[endpointKey]
 
       const token = await this.token()
 
@@ -116,17 +116,10 @@ export class Gate<ROUTES extends Routes> {
     }
   }
 
-  /**
-   * Will catch "ArcessereError" and "Error"
-   * this both should cover most of the cases
-   * else it will literally throw error
-   */
-  async #safeCall<
-    RK extends RouteKeys<ROUTES>,
-    EP extends ROUTES[RK],
-    IN extends EP['io']['input'],
-    OUT extends EP['io']['output'],
-  >(endpointKey: RK, input: IN): Promise<[OUT, null] | [null, GateError]> {
+  async #safeCall<EK extends EndpointKeys<Api>, EP extends Api[EK]>(
+    endpointKey: EK,
+    input: EP['io']['input']
+  ): Promise<[EP['io']['output'], null] | [null, GateError]> {
     try {
       const res = await this.#call(endpointKey, input)
 
@@ -140,19 +133,17 @@ export class Gate<ROUTES extends Routes> {
     }
   }
 
-  endpoint<RK extends RouteKeys<ROUTES>>(endpointKey: RK) {
+  endpoint<RK extends EndpointKeys<Api>>(endpointKey: RK) {
     return {
-      call: (input: ROUTES[RK]['io']['input']) => this.#call(endpointKey, input),
-      safeCall: (input: ROUTES[RK]['io']['input']) => this.#safeCall(endpointKey, input),
+      call: (input: Api[RK]['io']['input']) => this.#call(endpointKey, input),
+      safeCall: (input: Api[RK]['io']['input']) => this.#safeCall(endpointKey, input),
     } as const
   }
 
-  url<RK extends RouteKeys<ROUTES>>(
-    endpointKey: RK,
-    params: ROUTES[RK]['io']['input'] extends undefined
-      ? undefined
-      : NonNullable<ROUTES[RK]['io']['input']>['params']
+  url<EK extends EndpointKeys<Api>, EP extends Api[EK]>(
+    endpointKey: EK,
+    params: NonNullable<EP['io']['input']>['params']
   ) {
-    return new URL(this.routes[endpointKey].path(params), this.base)
+    return new URL(this.api[endpointKey].path(params), this.base)
   }
 }

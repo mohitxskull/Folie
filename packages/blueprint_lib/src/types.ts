@@ -5,26 +5,26 @@ import { Constructor } from '@adonisjs/core/types/container'
 import { HttpContext } from '@adonisjs/core/http'
 
 export type EndpointIO = {
-  output: any
+  output: { [key: string]: any }
   input?: {
-    params?: any
-    query?: any
+    params?: { [key: string]: any }
+    query?: { [key: string]: any }
+    headers?: { [key: string]: any }
+    cookies?: { [key: string]: any }
     [key: string]: any
   }
 }
 
 export type Endpoint<IO extends EndpointIO> = {
-  path: (params?: IO['input'] extends { params: any } ? IO['input']['params'] : never) => string
+  path: (params: NonNullable<IO['input']>['params']) => string
   method: string
   form?: boolean
   io: IO
 }
 
-export type Routes = Record<string, Endpoint<EndpointIO>>
+export type ApiDefinition = Record<string, Endpoint<EndpointIO>>
 
-export type RouteKeys<ROUTES extends Routes> = keyof ROUTES
-
-export type EndpointRouteKey<ROUTES extends Routes, RK extends RouteKeys<ROUTES>> = ROUTES[RK]
+export type EndpointKeys<ROUTES extends ApiDefinition> = keyof ROUTES
 
 // ===============
 // https://github.com/Julien-R44/tuyau/blob/main/packages/utils/src/types.ts
@@ -83,7 +83,7 @@ export type FileMapping<T extends object> = MakeOptional<{
 export type InferController<
   CONTROLLER extends Constructor<{
     handle: (ctx: HttpContext) => Promise<any>
-    input?: VineValidator<any, any>
+    [key: string]: any
   }>,
 > = {
   output: Awaited<ReturnType<InstanceType<CONTROLLER>['handle']>> extends object

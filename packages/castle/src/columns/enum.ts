@@ -1,7 +1,7 @@
 import { ColumnOptions } from '@adonisjs/lucid/types/model'
 
 export const EnumColumn = (
-  rec: Record<string, any>,
+  rec: Record<string, number>,
   options?: Partial<ColumnOptions>
 ): Partial<ColumnOptions> => ({
   prepare: (value?: string | null) => {

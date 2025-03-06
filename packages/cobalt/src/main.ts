@@ -1,4 +1,4 @@
-import { RouteKeys, Routes } from '@folie/blueprint-lib'
+import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
 import { NotificationFunction } from './types/index.js'
 import { useRouter } from 'next/router.js'
@@ -20,26 +20,27 @@ import { CobaltUseMutationParams } from './types/cobalt_hooks.js'
 import { GetInputPropOptions, GetInputPropsReturnType } from './types/cobalt_hooks.js'
 
 export class Cobalt<
-  ROUTES extends Routes,
+  const Api extends ApiDefinition,
   COOKIEKEYS extends Record<string, string> = {},
   PARAMKEYS extends readonly [...string[]] = [],
 > {
-  api: Gate<ROUTES>
-  routes: ROUTES
+  api: Gate<Api>
+  endpoints: Api
+
   notification: NotificationFunction
 
   cookieKeys: COOKIEKEYS
   paramKeys: PARAMKEYS
 
   constructor(params: {
-    api: Gate<ROUTES>
-    routes: ROUTES
+    api: Gate<Api>
+    routes: Api
     notification: NotificationFunction
     paramKeys: PARAMKEYS
     cookieKeys: COOKIEKEYS
   }) {
     this.api = params.api
-    this.routes = params.routes
+    this.endpoints = params.routes
     this.notification = params.notification
     this.paramKeys = params.paramKeys
     this.cookieKeys = params.cookieKeys
@@ -79,19 +80,17 @@ export class Cobalt<
   removeCookie = (key: keyof COOKIEKEYS) => removeCook(this.cookieKeys[key])
 
   setCookie = (key: keyof COOKIEKEYS, value: string) => {
-    this.removeCookie(key)
-
     setCook(this.cookieKeys[key], value)
   }
 
-  queryKey = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(params: {
-    endpoint: RK
-    params: EP['input'] extends { params: any } ? EP['input']['params'] : undefined
-    query?: EP['input'] extends { query: any } ? EP['input']['query'] : undefined
+  queryKey = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(params: {
+    endpoint: EK
+    params: NonNullable<EP['input']>['params']
+    query?: NonNullable<EP['input']>['query']
   }) => {
-    const endpoint = this.routes[params.endpoint]
+    const endpoint = this.endpoints[params.endpoint]
 
-    const result: any[] = [endpoint.method, endpoint.path(params.params as never)]
+    const result: any[] = [endpoint.method, endpoint.path(params.params)]
 
     if (params.query) {
       result.push(params.query)
@@ -100,9 +99,9 @@ export class Cobalt<
     return result
   }
 
-  useQuery = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
+  useQuery = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
     params: {
-      endpoint: RK
+      endpoint: EK
       input: EP['input']
     } & Omit<UndefinedInitialDataOptions<EP['input'], Error, EP['output']>, 'queryFn' | 'queryKey'>
   ) => {
@@ -124,8 +123,8 @@ export class Cobalt<
     return internalQuery
   }
 
-  useMutation = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
-    params: CobaltUseMutationParams<ROUTES, RK, EP>
+  useMutation = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
+    params: CobaltUseMutationParams<Api, EK, EP>
   ) => {
     const { endpoint, form, onSuccess, onError, ...rest } = params
 
@@ -163,10 +162,14 @@ export class Cobalt<
         }
       },
       onError: (error, variables) => {
-        GateErrorHandler({ error, form: params.form, notification: this.notification })
-
         if (onError) {
           onError({ error, input: variables, form: params.form, notification: this.notification })
+        } else {
+          GateErrorHandler({ error, form: params.form, notification: this.notification })
+        }
+
+        if (params.onErrorHook?.after) {
+          params.onErrorHook.after()
         }
       },
     })
@@ -174,9 +177,9 @@ export class Cobalt<
     return internalMutation
   }
 
-  useList = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
+  useList = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
     params: {
-      endpoint: RK
+      endpoint: EK
       input?: EP['input']
       debounce?: {
         timeout?: number
@@ -202,13 +205,13 @@ export class Cobalt<
     return [internalQueryCall, [internalBody, setInternalBody]] as const
   }
 
-  useForm = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
+  useForm = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
     params: UseFormInput<NonNullable<EP['input']>> & {
-      endpoint: RK
+      endpoint: EK
 
-      onSuccess: CobaltUseMutationParams<ROUTES, RK, EP>['onSuccess']
+      onSuccess: CobaltUseMutationParams<Api, EK, EP>['onSuccess']
 
-      mutation?: Omit<CobaltUseMutationParams<ROUTES, RK, EP>, 'form' | 'onSuccess' | 'endpoint'>
+      mutation?: Omit<CobaltUseMutationParams<Api, EK, EP>, 'form' | 'onSuccess' | 'endpoint'>
     }
   ) => {
     const { endpoint, onSuccess, mutation, ...rest } = params
@@ -238,7 +241,7 @@ export class Cobalt<
         }),
         disabled: options?.disabled
           ? options.disabled(internalForm.values[key])
-          : internalMutation[0].isPending,
+          : internalMutation.isPending,
       }
 
       return base

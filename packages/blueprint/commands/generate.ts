@@ -452,6 +452,62 @@ export default class BluePrintGenerate extends BaseCommand {
           }
         }
 
+        const classDef = routeSourceFile.getClasses().find((c) => c.isDefaultExport())
+
+        if (!classDef) {
+          throw new Error(`We were not able to find the default export`, {
+            cause: {
+              endpoint: endpointDraft,
+            },
+          })
+        }
+
+        if (!classDef.getType().isClass()) {
+          throw new Error(`The default export is not a class`, {
+            cause: {
+              endpoint: endpointDraft,
+            },
+          })
+        }
+
+        const handleMethod = classDef.getProperty('handle')
+        const inputProperty = classDef.getProperty('input')
+        const formProperty = classDef.getProperty('form')
+
+        if (!handleMethod) {
+          throw new Error(`We were not able to find the "handle" method`, {
+            cause: {
+              endpoint: endpointDraft,
+            },
+          })
+        }
+
+        if (inputProperty) {
+          const inputPropertyType = inputProperty.getType()
+
+          if (!inputPropertyType.isObject()) {
+            throw new Error(`The "input" property is not an object`, {
+              cause: {
+                endpoint: endpointDraft,
+              },
+            })
+          }
+        }
+
+        if (formProperty) {
+          const formPropertyType = formProperty.getType()
+
+          if (!formPropertyType.isBoolean()) {
+            throw new Error(`The "form" property is not a boolean`, {
+              cause: {
+                endpoint: endpointDraft,
+              },
+            })
+          }
+
+          endpointDraft.form = Boolean(formProperty.getStructure().initializer)
+        }
+
         groupEndpoints.push(endpointDraft)
         endpoints.push(endpointDraft)
 

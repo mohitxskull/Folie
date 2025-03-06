@@ -26,7 +26,9 @@ export default class MigrationProvider {
         try {
           await ace.exec('migration:run', ['--force'])
         } catch (error) {
-          throw error
+          logger.error({ err: error })
+
+          await this.app.terminate()
         }
       } else {
         logger.error('Migration command not found')

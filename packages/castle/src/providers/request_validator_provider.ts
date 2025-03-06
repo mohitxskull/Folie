@@ -1,3 +1,5 @@
+/// <reference types="@adonisjs/core/providers/vinejs_provider" />
+
 import type { ApplicationService } from '@adonisjs/core/types'
 import { Request } from '@adonisjs/core/http'
 import type { VineValidator } from '@vinejs/vine'

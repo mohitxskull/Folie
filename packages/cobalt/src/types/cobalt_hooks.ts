@@ -1,24 +1,24 @@
-import { RouteKeys, Routes } from '@folie/blueprint-lib'
 import { UseFormReturnType } from '@mantine/form'
 import { QueryKey, UseMutationOptions } from '@tanstack/react-query'
-import type { Cobalt } from '../main'
+import type { Cobalt } from '../main.js'
+import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
 
 export type CobaltUseMutationParams<
-  ROUTES extends Routes,
-  RK extends RouteKeys<ROUTES>,
-  EP extends ROUTES[RK]['io'],
+  Api extends ApiDefinition,
+  EK extends EndpointKeys<Api>,
+  EP extends Api[EK]['io'],
 > = Omit<
   UseMutationOptions<EP['output'], unknown, EP['input'], unknown>,
   'mutationFn' | 'onSuccess' | 'onError'
 > & {
-  endpoint: RK
+  endpoint: EK
 
   onSuccess: (
     output: EP['output'],
     input: EP['input']
   ) => {
     input?: EP['input']
-    queryKeys?: (qk: Cobalt<ROUTES>['queryKey']) => QueryKey[]
+    queryKeys?: (qk: Cobalt<Api>['queryKey']) => QueryKey[]
     after?: () => void
   } | void
 
@@ -28,8 +28,12 @@ export type CobaltUseMutationParams<
     error: unknown
     input: EP['input']
     form?: UseFormReturnType<NonNullable<EP['input']>>
-    notification: Cobalt<ROUTES>['notification']
+    notification: Cobalt<Api>['notification']
   }) => void
+
+  onErrorHook?: {
+    after?: () => void
+  }
 }
 
 export type FormInputTransformType = 'default'

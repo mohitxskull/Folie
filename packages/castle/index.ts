@@ -7,5 +7,4 @@
 |
 */
 
-export * from './src/route_controller.js'
 export * from './src/types.js'

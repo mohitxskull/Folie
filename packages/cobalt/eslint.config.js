@@ -13,6 +13,6 @@ export default configPkg({
   },
   rules: {
     // https://github.com/import-js/eslint-plugin-import/blob/HEAD/docs/rules/extensions.md
-    'import/extensions': ['error', { js: 'always', json: 'never', mjs: 'never' }],
+    'import/extensions': ['error', "always"],
   },
 })
