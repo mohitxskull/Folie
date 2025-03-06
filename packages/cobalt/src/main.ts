@@ -1,8 +1,6 @@
-import { useList, UseListParams } from './hooks/use_list.js'
-import { useForm, UseFormParams } from './hooks/use_form.js'
 import { RouteKeys, Routes } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
-import { NotificationFunction, SetPartialState } from './types/index.js'
+import { NotificationFunction } from './types/index.js'
 import { useRouter } from 'next/router.js'
 import {
   getCookie as getCook,
@@ -10,16 +8,16 @@ import {
   deleteCookie as removeCook,
 } from 'cookies-next'
 import {
-  QueryKey,
   UndefinedInitialDataOptions,
-  UseMutationOptions,
-  useQuery as useTanQuery,
-  useMutation as useTanMutation,
+  useQuery,
+  useMutation,
   useQueryClient,
 } from '@tanstack/react-query'
-import { UseFormReturnType } from '@mantine/form'
+import { useForm, UseFormInput } from '@mantine/form'
 import { GateErrorHandler } from './api/gate_error_handler.js'
 import { useDebouncedValue, useSetState } from '@mantine/hooks'
+import { CobaltUseMutationParams } from './types/cobalt_hooks.js'
+import { GetInputPropOptions, GetInputPropsReturnType } from './types/cobalt_hooks.js'
 
 export class Cobalt<
   ROUTES extends Routes,
@@ -110,9 +108,8 @@ export class Cobalt<
   ) => {
     const { endpoint, input, ...rest } = params
 
-    const internalQuery = useTanQuery({
+    const internalQuery = useQuery({
       // Temporary
-
       ...rest,
 
       // Permanent
@@ -128,31 +125,14 @@ export class Cobalt<
   }
 
   useMutation = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
-    params: Omit<
-      UseMutationOptions<EP['output'], unknown, EP['input'], unknown>,
-      'mutationFn' | 'onSuccess' | 'onError'
-    > & {
-      endpoint: RK
-      form?: UseFormReturnType<EP['input']>
-      onSuccess: (
-        output: EP['output'],
-        input: EP['input']
-      ) => {
-        input?: EP['input']
-        queryKeys?: (qk: Cobalt<ROUTES>['queryKey']) => QueryKey[]
-        after?: () => void
-      } | void
-
-      onErr?: (error: unknown, input: EP['input']) => void
-    }
+    params: CobaltUseMutationParams<ROUTES, RK, EP>
   ) => {
-    const { endpoint, form, onSuccess, onErr, ...rest } = params
+    const { endpoint, form, onSuccess, onError, ...rest } = params
 
     const queryClient = useQueryClient()
 
-    const internalMutation = useTanMutation({
+    const internalMutation = useMutation({
       // Temporary
-
       ...rest,
 
       // Permanent
@@ -185,51 +165,85 @@ export class Cobalt<
       onError: (error, variables) => {
         GateErrorHandler({ error, form: params.form, notification: this.notification })
 
-        if (params.onErr) {
-          params.onErr(error, variables)
+        if (onError) {
+          onError({ error, input: variables, form: params.form, notification: this.notification })
         }
       },
     })
 
-    const mutate = (input: EP['input']) => {
-      internalMutation.mutate(input)
-    }
-
-    return [internalMutation as Omit<typeof internalMutation, 'mutate'>, mutate] as const
+    return internalMutation
   }
 
   useList = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
     params: {
       endpoint: RK
-      input: EP['input']
-      debounce?: number
-      leading?: boolean
+      input?: EP['input']
+      debounce?: {
+        timeout?: number
+        leading?: boolean
+      }
     } & Omit<UndefinedInitialDataOptions<EP['input'], Error, EP['output']>, 'queryFn' | 'queryKey'>
   ) => {
-    const { endpoint, input, debounce, leading, ...rest } = params
+    const { endpoint, input, debounce, ...rest } = params
 
-    const [internalBody, setInternalBody] = useSetState(input as Record<string, any>)
+    const [internalBody, setInternalBody] = useSetState<NonNullable<EP['input']>>(input ?? {})
 
-    const [debouncedBody] = useDebouncedValue(internalBody, debounce || 200, {
-      leading: leading || true,
+    const [debouncedBody] = useDebouncedValue(internalBody, debounce?.timeout || 200, {
+      leading: debounce?.leading || true,
     })
 
     const internalQueryCall = this.useQuery({
+      ...rest,
+
       endpoint: params.endpoint,
       input: debouncedBody,
-      ...rest,
     })
 
-    return [
-      internalQueryCall,
-      [
-        internalBody as EP['input'],
-        setInternalBody as unknown as SetPartialState<NonNullable<EP['input']>>,
-      ],
-    ] as const
+    return [internalQueryCall, [internalBody, setInternalBody]] as const
   }
 
   useForm = <RK extends RouteKeys<ROUTES>, EP extends ROUTES[RK]['io']>(
-    params: UseFormParams<ROUTES, RK, EP>
-  ) => useForm<false, ROUTES, RK, EP>(this, params)
+    params: UseFormInput<NonNullable<EP['input']>> & {
+      endpoint: RK
+
+      onSuccess: CobaltUseMutationParams<ROUTES, RK, EP>['onSuccess']
+
+      mutation?: Omit<CobaltUseMutationParams<ROUTES, RK, EP>, 'form' | 'onSuccess' | 'endpoint'>
+    }
+  ) => {
+    const { endpoint, onSuccess, mutation, ...rest } = params
+
+    const internalForm = useForm<NonNullable<EP['input']>>({
+      mode: 'uncontrolled',
+      ...rest,
+    })
+
+    const internalMutation = this.useMutation({
+      ...mutation,
+
+      endpoint: params.endpoint,
+      onSuccess: params.onSuccess,
+      form: internalForm,
+    })
+
+    const getExtendedInputProps = (
+      key: string,
+      options?: GetInputPropOptions<EP['input']>
+    ): GetInputPropsReturnType<EP['input']> => {
+      const base = {
+        ...internalForm.getInputProps(key, {
+          type: options?.type,
+          withError: options?.withError,
+          withFocus: options?.withFocus,
+        }),
+        disabled: options?.disabled
+          ? options.disabled(internalForm.values[key])
+          : internalMutation[0].isPending,
+      }
+
+      return base
+    }
+
+    return [internalForm, internalMutation, getExtendedInputProps] as const
+  }
 }
