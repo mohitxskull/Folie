@@ -5,10 +5,10 @@ import {
   ProcessingExceptionOptions,
   ProcessingExceptionResponse,
   ValidationError,
-} from './types.js'
+} from '../types/processing_exception.js'
 import stringHelpers from '@adonisjs/core/helpers/string'
 
-export default class ProcessingException extends Exception {
+class ProcessingException extends Exception {
   title: string
   message: string
 
@@ -164,3 +164,5 @@ export default class ProcessingException extends Exception {
     }
   }
 }
+
+export { ProcessingException }

@@ -7,4 +7,4 @@
 |
 */
 
-export * from './src/types.js'
+export { CastleModule } from './modules/castle.js'

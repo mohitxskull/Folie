@@ -1,20 +1,20 @@
-import type { PivotOptions } from './types.js'
+import { PivotOptions } from '../src/types/castle.js'
 
-export const defineConfig = <
+export class CastleModule<
   Table extends Record<string, string>,
-  Pivot extends Record<
-    string,
+  Pivot extends Record<string, PivotOptions>,
+> {
+  readonly table: Record<keyof Table, (column?: string) => string>
+  readonly pivot: Record<
+    keyof Pivot,
     {
-      tableName: string
-      options?: PivotOptions
-    }
-  >,
->(config: {
-  table: Table
-  pivot?: Pivot
-}) => {
-  return {
-    table: Object.entries(config.table).reduce(
+      pivotTable: string
+      pivotTimestamps: boolean
+    } & PivotOptions
+  >
+
+  constructor(params: { config: { table: Table; pivot?: Pivot } }) {
+    this.table = Object.entries(params.config.table).reduce(
       (acc, [key, value]) => ({
         ...acc,
         [key]: (column?: string) => {
@@ -26,14 +26,13 @@ export const defineConfig = <
         },
       }),
       {} as Record<keyof Table, (column?: string) => string>
-    ),
-    pivot: Object.entries(config.pivot ?? {}).reduce(
+    )
+    this.pivot = Object.entries(params.config.pivot ?? {}).reduce(
       (acc, [key, value]) => ({
         ...acc,
         [key]: {
-          pivotTable: value.tableName,
           pivotTimestamps: true,
-          ...value.options,
+          ...value,
         },
       }),
       {} as Record<
@@ -43,6 +42,6 @@ export const defineConfig = <
           pivotTimestamps: boolean
         } & PivotOptions
       >
-    ),
+    )
   }
 }

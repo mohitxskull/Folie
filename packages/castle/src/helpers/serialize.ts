@@ -16,7 +16,7 @@ const paginationMetaValidator = vine.compile(
   })
 )
 
-export const serializePage = async <MODAL extends LucidRow, TRANSFER>(
+const serializePage = async <MODAL extends LucidRow, TRANSFER>(
   paginated: ModelPaginatorContract<MODAL>,
   transferFunc: (model: MODAL) => TRANSFER
 ) => {
@@ -38,4 +38,4 @@ function serializeDT(dt: any): any {
   }
 }
 
-export { serializeDT }
+export { serializeDT, serializePage }

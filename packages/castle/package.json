@@ -13,14 +13,15 @@
   ],
   "exports": {
     ".": "./build/index.js",
-    "./column/*": "./build/src/columns/*.js",
-    "./exception/*": "./build/src/exceptions/*.js",
-    "./service/*": "./build/src/service/*.js",
-    "./helpers/*": "./build/src/helpers/*.js",
-    "./extension/*": "./build/src/extension/*.js",
-    "./middleware/*": "./build/src/middleware/*.js",
-    "./provider/*": "./build/src/providers/*.js",
-    "./validator/*": "./build/src/validators/*.js",
+    "./types": "./build/src/types/index.js",
+    "./types/castle": "./build/src/types/castle.js",
+    "./column": "./build/src/columns/index.js",
+    "./exception": "./build/src/exceptions/index.js",
+    "./services/*": "./build/services/*.js",
+    "./helpers": "./build/src/helpers/index.js",
+    "./middleware/*": "./build/middlewares/*.js",
+    "./provider/*": "./build/providers/*.js",
+    "./validator": "./build/src/validators/index.js",
     "./miscellaneous/*": "./build/src/miscellaneous/*.js"
   },
   "scripts": {

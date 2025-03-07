@@ -8,4 +8,4 @@
 */
 
 export * from './src/index.js'
-export * from './src/factory.js'
+export * from './src/module.js'

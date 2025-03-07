@@ -33,6 +33,8 @@
     "PARAMKEYS",
     "COOKIEKEYS",
     "CROCKFORD",
-    "ABCDEFGHJKMNPQRSTVWXYZ"
+    "ABCDEFGHJKMNPQRSTVWXYZ",
+    "Sqi\\d",
+    "Sqids"
   ]
 }

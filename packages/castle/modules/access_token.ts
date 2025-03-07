@@ -3,8 +3,8 @@ import { DateTime } from 'luxon'
 import { createHash } from 'node:crypto'
 import SH from '@adonisjs/core/helpers/string'
 import { HttpContext } from '@adonisjs/core/http'
-import { CRC32 } from '../helpers/crc32.js'
-import ProcessingException from '../exceptions/processing_exception.js'
+import { CRC32 } from '../src/helpers/crc32.js'
+import { ProcessingException } from '../src/exceptions/processing_exception.js'
 
 type AccessTokenDraft = {
   secret: Secret<string>

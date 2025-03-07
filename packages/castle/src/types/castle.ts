@@ -1,8 +1,5 @@
-import type { defineConfig } from './define_config.js'
-
-export type Metadata<T = Record<string, string | number | boolean | null>> = T | null
-
 export type PivotOptions = {
+  pivotTable: string
   pivotColumns?: string[]
   localKey?: string
   pivotForeignKey?: string
@@ -16,9 +13,4 @@ export type PivotOptions = {
       }
   serializeAs?: string | null
   meta?: any
-}
-
-export interface CastleConfig {
-  table: ReturnType<typeof defineConfig>['table']
-  pivot?: ReturnType<typeof defineConfig>['pivot']
 }

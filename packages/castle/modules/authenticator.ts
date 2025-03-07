@@ -1,5 +1,5 @@
 import crypto from 'node:crypto'
-import { base32Decode, base32Encode } from '../helpers/base32.js'
+import { base32Decode, base32Encode } from '../src/helpers/base32.js'
 
 export type AuthenticatorAlgorithm = 'SHA-1' | 'SHA-256' | 'SHA-384' | 'SHA-512'
 export type AuthenticatorEncoding = 'hex' | 'ascii'
