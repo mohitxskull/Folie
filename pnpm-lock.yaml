@@ -135,6 +135,49 @@ importers:
         specifier: ^5.6
         version: 5.6.3
 
+  packages/captcha:
+    dependencies:
+      '@vinejs/vine':
+        specifier: ^3.0.0
+        version: 3.0.0
+      ky:
+        specifier: ^1.7.5
+        version: 1.7.5
+    devDependencies:
+      '@adonisjs/eslint-config':
+        specifier: ^2.0.0-beta.7
+        version: 2.0.0-beta.7(eslint@9.19.0(jiti@1.21.7))(prettier@3.4.2)(typescript@5.6.3)
+      '@adonisjs/prettier-config':
+        specifier: ^1.3.0
+        version: 1.4.0
+      '@adonisjs/tsconfig':
+        specifier: ^1.3.0
+        version: 1.4.0
+      '@japa/assert':
+        specifier: ^3.0.0
+        version: 3.0.0(@japa/runner@3.1.4)(openapi-types@1.3.4)
+      '@japa/runner':
+        specifier: ^3.1.4
+        version: 3.1.4
+      '@types/node':
+        specifier: ^20.14.5
+        version: 20.17.17
+      c8:
+        specifier: ^10.1.2
+        version: 10.1.3
+      del-cli:
+        specifier: ^5.1.0
+        version: 5.1.0
+      eslint:
+        specifier: ^9
+        version: 9.19.0(jiti@1.21.7)
+      prettier:
+        specifier: ^3.3.2
+        version: 3.4.2
+      typescript:
+        specifier: ^5.6
+        version: 5.6.3
+
   packages/castle:
     dependencies:
       '@adonisjs/bouncer':
@@ -152,6 +195,9 @@ importers:
       '@adonisjs/lucid':
         specifier: ^21.3.0
         version: 21.6.0(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@adonisjs/core@6.17.1(@adonisjs/assembler@7.8.2(typescript@5.6.3))(@vinejs/vine@3.0.0)(edge.js@6.2.1))(@vinejs/vine@3.0.0)(better-sqlite3@11.8.1)(luxon@3.5.0)(mysql2@3.12.0)
+      '@folie/lib':
+        specifier: workspace:*
+        version: link:../lib
       '@vinejs/vine':
         specifier: ^3.0.0
         version: 3.0.0
@@ -648,6 +694,9 @@ importers:
       '@folie/blueprint-lib':
         specifier: workspace:*
         version: link:../../packages/blueprint_lib
+      '@folie/captcha':
+        specifier: workspace:*
+        version: link:../../packages/captcha
       '@folie/castle':
         specifier: workspace:*
         version: link:../../packages/castle
@@ -4614,6 +4663,10 @@ packages:
         optional: true
       tedious:
         optional: true
+
+  ky@1.7.5:
+    resolution: {integrity: sha512-HzhziW6sc5m0pwi5M196+7cEBtbt0lCYi67wNsiwMUmz833wloE0gbzJPWKs1gliFKQb34huItDQX97LyOdPdA==}
+    engines: {node: '>=18'}
 
   language-subtag-registry@0.3.23:
     resolution: {integrity: sha512-0K65Lea881pHotoGEa5gDlMxt3pctLi2RplBb7Ezh4rRdLEOtgi7n4EwK9lamnUCkKBqaeKRVebTq6BAxSkpXQ==}
@@ -10675,6 +10728,8 @@ snapshots:
       mysql2: 3.12.0
     transitivePeerDependencies:
       - supports-color
+
+  ky@1.7.5: {}
 
   language-subtag-registry@0.3.23: {}
 

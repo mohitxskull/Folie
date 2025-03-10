@@ -10,16 +10,6 @@ import { ProcessingException } from '../src/exceptions/processing_exception.js'
 import { getBearerToken } from '../src/helpers/get_bearer_token.js'
 import { HttpContext } from '@adonisjs/core/http'
 
-interface UserRow extends LucidRow {
-  id: number
-  createdAt: DateTime
-  updatedAt: DateTime
-}
-
-interface UserModel extends LucidModel {
-  new (): UserRow
-}
-
 interface SessionRow extends LucidRow {
   id: number
   hash: string
@@ -32,11 +22,15 @@ interface SessionRow extends LucidRow {
   usedAt: DateTime | null
 }
 
-interface SessionModel extends LucidModel {
+type ExtendedSessionModel = LucidModel & {
   new (): SessionRow
 }
 
-export class SessionManager<SessionModelG extends SessionModel, UserModelG extends UserModel> {
+interface SessionModel extends ExtendedSessionModel {
+  new (): SessionRow
+}
+
+export class SessionManager<SessionModelG extends SessionModel> {
   #tokenPrefix = 'oat_'
 
   /**
@@ -101,7 +95,12 @@ export class SessionManager<SessionModelG extends SessionModel, UserModelG exten
       return null
     }
 
-    const session = (await this.sessionModel.find(Number(decodedIdentifier))) as SessionRow | null
+    // Ensure the decoded identifier is a valid number
+    if (Number.isNaN(Number(decodedIdentifier))) {
+      return null
+    }
+
+    const session = await this.sessionModel.find(Number(decodedIdentifier))
 
     if (!session) {
       throw new ProcessingException(this.#invalidMessage, {
@@ -114,7 +113,10 @@ export class SessionManager<SessionModelG extends SessionModel, UserModelG exten
     session.secret = new Secret(decodedSecret)
     session.value = this.#value(session.id, decodedSecret)
 
-    return session
+    return session as typeof session & {
+      secret: Secret<string>
+      value: Secret<string>
+    }
   }
 
   #isVerified(hash: string, secret: Secret<string>): boolean {
@@ -135,7 +137,6 @@ export class SessionManager<SessionModelG extends SessionModel, UserModelG exten
 
   constructor(
     private readonly sessionModel: SessionModelG,
-    private readonly userModel: UserModelG,
     options?: {
       maxSessions?: number
       tokenPrefix?: string
@@ -196,7 +197,10 @@ export class SessionManager<SessionModelG extends SessionModel, UserModelG exten
 
       newSession.value = this.#value(newSession.id, seed.secret.release())
 
-      return newSession
+      return newSession as typeof newSession & {
+        secret: Secret<string>
+        value: Secret<string>
+      }
     } catch (error) {
       await trx.rollback()
       throw error
@@ -247,16 +251,6 @@ export class SessionManager<SessionModelG extends SessionModel, UserModelG exten
       }
     }
 
-    const user = await this.userModel.find(session.userId)
-
-    if (!user) {
-      throw new ProcessingException(this.#invalidMessage, {
-        meta: {
-          reason: 'User not found',
-        },
-      })
-    }
-
-    return [user, session] as const
+    return session
   }
 }

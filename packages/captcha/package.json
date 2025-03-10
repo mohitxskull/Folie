@@ -1,7 +1,7 @@
 {
-  "name": "@folie/castle",
+  "name": "@folie/captcha",
   "description": "",
-  "version": "0.0.12",
+  "version": "0.0.0",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -13,16 +13,8 @@
   ],
   "exports": {
     ".": "./build/index.js",
-    "./types": "./build/src/types/index.js",
-    "./types/castle": "./build/src/types/castle.js",
-    "./column": "./build/src/columns/index.js",
-    "./exception": "./build/src/exceptions/index.js",
-    "./services/*": "./build/services/*.js",
-    "./helpers": "./build/src/helpers/index.js",
-    "./middleware/*": "./build/middlewares/*.js",
-    "./provider/*": "./build/providers/*.js",
-    "./validator": "./build/src/validators/index.js",
-    "./miscellaneous/*": "./build/src/miscellaneous/*.js"
+    "./drivers": "./build/src/drivers/index.js",
+    "./types": "./build/src/types.js"
   },
   "scripts": {
     "clean": "del-cli build",
@@ -41,26 +33,15 @@
     "@adonisjs/tsconfig": "^1.3.0",
     "@japa/assert": "^3.0.0",
     "@japa/runner": "^3.1.4",
-    "@types/luxon": "3.4.2",
     "@types/node": "^20.14.5",
     "c8": "^10.1.2",
     "del-cli": "^5.1.0",
-    "eslint": "^9.12.0",
-    "prettier": "^3.3.3",
+    "eslint": "^9",
+    "prettier": "^3.3.2",
     "typescript": "^5.6"
-  },
-  "peerDependencies": {
-    "@adonisjs/bouncer": "^3.1.4",
-    "@adonisjs/core": "^6.14.1",
-    "@adonisjs/limiter": "^2.3.2",
-    "@adonisjs/lucid": "^21.3.0",
-    "@vinejs/vine": "^3.0.0",
-    "@adonisjs/cache": "^1.1.0",
-    "luxon": "^3.5.0"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",
-  "keywords": [],
   "prettier": "@adonisjs/prettier-config",
   "publishConfig": {
     "access": "public"
@@ -71,11 +52,7 @@
     ]
   },
   "dependencies": {
-    "axios": "^1.7.9",
-    "decimal.js": "^10.4.3",
-    "superjson": "^2.2.1",
-    "tinyexec": "^0.3.1",
-    "ts-morph": "^24.0.0",
-    "@folie/lib": "workspace:*"
+    "@vinejs/vine": "^3.0.0",
+    "ky": "^1.7.5"
   }
 }

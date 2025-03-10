@@ -35,6 +35,7 @@
     "CROCKFORD",
     "ABCDEFGHJKMNPQRSTVWXYZ",
     "Sqi\\d",
-    "Sqids"
+    "Sqids",
+    "remoteip"
   ]
 }

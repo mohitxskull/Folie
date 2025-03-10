@@ -7,15 +7,17 @@ import {
   ValidationError,
 } from '../types/processing_exception.js'
 import stringHelpers from '@adonisjs/core/helpers/string'
+import { getHTTPStatusByKey, getHTTPStatusByCode, HTTPStatusCodeKeys } from '@folie/lib'
 
 class ProcessingException extends Exception {
   title: string
   message: string
 
+  code: HTTPStatusCodeKeys = 'BAD_GATEWAY'
+  status: number = getHTTPStatusByKey('BAD_GATEWAY').status
+
   // ==================
 
-  status: number
-  code: string
   trace?: string[]
 
   options?: ProcessingExceptionOptions
@@ -38,9 +40,14 @@ class ProcessingException extends Exception {
 
     this.title = parsedOptions?.title || 'Processing error'
     this.message = parsedMessage
-    this.status = parsedOptions?.status || 400
-    this.code = parsedOptions?.code || 'E_BAD_REQUEST'
     this.options = parsedOptions
+
+    if (this.options?.status) {
+      const HTTPStatus = getHTTPStatusByKey(this.options.status)
+
+      this.status = HTTPStatus.status
+      this.code = HTTPStatus.code
+    }
 
     if (parsedOptions?.stack) {
       this.trace = this.#parseStack(parsedOptions.stack)
@@ -63,7 +70,6 @@ class ProcessingException extends Exception {
       title: e.title,
       status: e.status,
       code: e.code,
-
       multiple: [
         {
           message: e.message,
@@ -89,7 +95,6 @@ class ProcessingException extends Exception {
       {
         ip: ctx.request.ip(),
         status: e.status,
-        code: e.code,
         multiple: [
           {
             message: e.message,
@@ -112,8 +117,7 @@ class ProcessingException extends Exception {
       const messages: ValidationError[] = error.messages
 
       return new ProcessingException(error.message, {
-        status: error.status,
-        code: error.code,
+        status: 'BAD_REQUEST',
         stack: error.stack,
         multiple: messages.map((m) => ({
           message: m.message,
@@ -129,8 +133,7 @@ class ProcessingException extends Exception {
       })
     } else if (error instanceof Exception) {
       return new ProcessingException(error.message, {
-        status: error.status,
-        code: error.code,
+        status: getHTTPStatusByCode(error.status).code,
         stack: error.stack,
         meta: {
           cause: error.cause,
@@ -141,8 +144,7 @@ class ProcessingException extends Exception {
       })
     } else if (error instanceof Error) {
       return new ProcessingException('Internal Server Error', {
-        status: 500,
-        code: 'E_INTERNAL_SERVER_ERROR',
+        status: 'INTERNAL_SERVER_ERROR',
         meta: {
           error: {
             name: error.name,
@@ -154,8 +156,7 @@ class ProcessingException extends Exception {
       })
     } else {
       return new ProcessingException('Internal Server Error', {
-        status: 500,
-        code: 'E_INTERNAL_SERVER_ERROR',
+        status: 'INTERNAL_SERVER_ERROR',
         meta: {
           reason: 'Unknown error',
         },

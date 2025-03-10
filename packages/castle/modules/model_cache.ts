@@ -1,45 +1,50 @@
 import { CacheProvider, GetSetFactory, SetCommonOptions } from '@adonisjs/cache/types'
+import { LucidModel, LucidRow } from '@adonisjs/lucid/types/model'
 
 // ==================================
 
-type DefaultKeys = 'self'
+type DefaultCacheKeys = 'self'
 
-type TargetModelT = {
-  id: number
-  $toJSON: () => any
-  $isPersisted: boolean
-  $hydrateOriginals: () => void
+type TargetModel = LucidModel & {
+  new (): LucidRow & {
+    $toJSON: () => object
+
+    id: number
+  }
 }
 
 // ==================================
 
-export class ModelCache<TargetModel extends TargetModelT, CacheKeys extends string> {
-  constructor(
-    private cache: StaticModelCache<TargetModel, CacheKeys>,
-    private targetModel: TargetModel
-  ) {}
+class RowCache<GTargetModel extends TargetModel, CacheKeys extends string> {
+  #modelCache: ModelCache<GTargetModel, CacheKeys>
+  #row: InstanceType<GTargetModel>
+
+  constructor(modelCache: ModelCache<GTargetModel, CacheKeys>, row: InstanceType<GTargetModel>) {
+    this.#modelCache = modelCache
+    this.#row = row
+  }
 
   space() {
-    return this.cache.space(this.targetModel.id)
+    return this.#modelCache.space(this.#row.id)
   }
 
-  key(key: DefaultKeys | CacheKeys) {
-    return this.cache.key(key)
+  key(key: DefaultCacheKeys | CacheKeys) {
+    return this.#modelCache.key(key)
   }
 
-  async expire(key: DefaultKeys | CacheKeys) {
+  async expire(key: DefaultCacheKeys | CacheKeys) {
     await this.space().delete({ key })
   }
 
   async get<T, O>(params: {
-    key: DefaultKeys | CacheKeys
+    key: DefaultCacheKeys | CacheKeys
     factory: GetSetFactory<T>
     parser: (value: T) => Promise<O>
     options?: SetCommonOptions
     latest?: boolean
   }) {
-    return this.cache.get({
-      id: this.targetModel.id,
+    return this.#modelCache.get({
+      id: this.#row.id,
       key: params.key,
       factory: params.factory,
       parser: params.parser,
@@ -48,31 +53,34 @@ export class ModelCache<TargetModel extends TargetModelT, CacheKeys extends stri
   }
 }
 
-export class StaticModelCache<
-  TargetModel extends TargetModelT,
-  CacheKeys extends string = DefaultKeys,
-> {
-  constructor(
-    private _cache: CacheProvider,
-    private _fill: (values: ReturnType<TargetModel['$toJSON']>) => TargetModel,
-    private _find: (id: number) => Promise<TargetModel | null>
-  ) {}
+export class ModelCache<GTargetModel extends TargetModel, CacheKeys extends string> {
+  #model: GTargetModel
+  #cache: CacheProvider
 
-  space(id: number) {
-    return this._cache.namespace(String(id))
+  constructor(
+    model: GTargetModel,
+    cache: (namespace: string) => CacheProvider,
+    _?: readonly CacheKeys[]
+  ) {
+    this.#model = model
+    this.#cache = cache(model.table)
   }
 
-  key(key: DefaultKeys | CacheKeys) {
+  space(id: number) {
+    return this.#cache.namespace(String(id))
+  }
+
+  key(key: DefaultCacheKeys | CacheKeys) {
     return key
   }
 
-  async expire(params: { id: number; key: DefaultKeys | CacheKeys }) {
+  async expire(params: { id: number; key: DefaultCacheKeys | CacheKeys }) {
     await this.space(params.id).delete({ key: params.key })
   }
 
   async get<I, O>(params: {
     id: number
-    key: DefaultKeys | CacheKeys
+    key: DefaultCacheKeys | CacheKeys
     factory: GetSetFactory<I>
     parser: (value: I) => Promise<O> | O
     options?: SetCommonOptions
@@ -92,14 +100,12 @@ export class StaticModelCache<
   }
 
   async $find(id: number, options?: SetCommonOptions) {
-    const key = this.key('self')
-
-    return this.get({
+    return this.get<object | null, InstanceType<GTargetModel> | null>({
       id,
-      key,
+      key: this.key('self'),
       options,
       factory: async () => {
-        const res = await this._find(id)
+        const res = await this.#model.find(id)
 
         if (!res) {
           return null
@@ -112,12 +118,12 @@ export class StaticModelCache<
           return null
         }
 
-        const res = this._fill(row)
+        const res = new this.#model().fill(row)
 
         res.$hydrateOriginals()
         res.$isPersisted = true
 
-        return res
+        return res as InstanceType<GTargetModel>
       },
     })
   }
@@ -137,7 +143,7 @@ export class StaticModelCache<
     return res
   }
 
-  internal(targetModel: TargetModel) {
-    return new ModelCache<TargetModel, CacheKeys>(this, targetModel)
+  row(row: InstanceType<GTargetModel>) {
+    return new RowCache<GTargetModel, CacheKeys>(this, row)
   }
 }

@@ -1,3 +1,5 @@
+import { HTTPStatusCodeKeys } from '@folie/lib'
+
 export type ValidationError = {
   message: string
   field: string
@@ -16,12 +18,7 @@ type OptionsBase = {
   /**
    * The HTTP status code applicable to this problem, expressed as a number value. Like: 200, 404
    */
-  status?: number
-
-  /**
-   * An application-specific error code, expressed as a string value.
-   */
-  code?: string
+  status?: HTTPStatusCodeKeys
 
   /**
    * A short, human-readable summary of the problem that SHOULD NOT change from occurrence to occurrence of the problem, except for purposes of localization.
@@ -53,8 +50,8 @@ export type ProcessingExceptionOptions = OptionsBase & {
 export type ProcessingExceptionResponse = {
   id: string
   title: string
-  code: string
   status: number
+  code: HTTPStatusCodeKeys
   multiple: {
     message: string
     source?: string
