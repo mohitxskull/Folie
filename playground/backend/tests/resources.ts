@@ -11,7 +11,7 @@ export class TestResources {
 
   api = new Gate({
     base: this.base,
-    routes: this.routes,
+    api: this.routes,
   })
 
   password = 'master'
@@ -49,7 +49,7 @@ export class TestResources {
       user: user,
       api: new Gate({
         base: this.base,
-        routes: this.routes,
+        api: this.routes,
         token: token,
       }),
     }

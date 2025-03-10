@@ -1,7 +1,7 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import env from '#start/env'
-import ProcessingException from '@folie/castle/exception/processing_exception'
+import { ProcessingException } from '@folie/castle/exception'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**

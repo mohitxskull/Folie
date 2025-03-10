@@ -90,7 +90,7 @@ export class Cobalt<
   }) => {
     const endpoint = this.endpoints[params.endpoint]
 
-    const result: any[] = [endpoint.method, endpoint.path(params.params)]
+    const result: any[] = [endpoint.method, endpoint.path(params.params as any)]
 
     if (params.query) {
       result.push(params.query)

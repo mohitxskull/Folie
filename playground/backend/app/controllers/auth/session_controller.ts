@@ -2,6 +2,8 @@ import { handler } from '@folie/castle/helpers'
 
 export default class Controller {
   handle = handler(async ({ ctx }) => {
-    return { session: ctx.auth.session.$serialize() }
+    const user = await ctx.auth.session.getUser()
+
+    return { session: user.$serialize() }
   })
 }

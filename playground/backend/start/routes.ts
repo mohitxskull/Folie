@@ -9,8 +9,8 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
-import ProcessingException from '@folie/castle/exception/processing_exception'
 import { signInThrottle, signUpThrottle, throttle } from './limiter.js'
+import { ProcessingException } from '@folie/castle/exception'
 
 router
   .group(() => {
@@ -79,8 +79,7 @@ router
 router
   .any('*', (ctx) => {
     throw new ProcessingException('Route not found', {
-      status: 404,
-      code: 'E_ROUTE_NOT_FOUND',
+      status: 'NOT_FOUND',
       meta: {
         public: {
           route: ctx.request.url(),

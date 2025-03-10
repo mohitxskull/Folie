@@ -144,6 +144,6 @@ export class Gate<const Api extends ApiDefinition> {
     endpointKey: EK,
     params: NonNullable<EP['io']['input']>['params']
   ) {
-    return new URL(this.api[endpointKey].path(params), this.base)
+    return new URL(this.api[endpointKey].path(params as any), this.base)
   }
 }
