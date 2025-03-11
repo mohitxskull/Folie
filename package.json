@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
-    "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt && turbo build --filter=./packages/cobalt",
+    "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt --filter=!./packages/cobalt-next && turbo build --filter=./packages/cobalt --filter=./packages/cobalt-next",
     "dev": "turbo dev",
     "dev:playground": "turbo dev --filter=./playground/*",
     "lint": "turbo lint",

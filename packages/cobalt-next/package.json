@@ -1,7 +1,7 @@
 {
-  "name": "@folie/blueprint-lib",
+  "name": "@folie/cobalt-next",
   "description": "",
-  "version": "0.0.5",
+  "version": "0.0.0",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -26,27 +26,28 @@
     "playground": "tsx bin/playground.ts"
   },
   "devDependencies": {
-    "@adonisjs/core": "^6.15.1",
     "@adonisjs/eslint-config": "^2.0.0-beta.7",
     "@adonisjs/prettier-config": "^1.3.0",
     "@adonisjs/tsconfig": "^1.3.0",
     "@japa/assert": "^3.0.0",
     "@japa/runner": "^3.1.4",
     "@types/node": "^20.14.5",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
     "c8": "^10.1.2",
     "del-cli": "^5.1.0",
     "eslint": "^9",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-require-extensions": "^0.1.3",
     "prettier": "^3.3.2",
     "typescript": "^5.6"
   },
-  "dependencies": {
-    "@vinejs/vine": "3.0.0",
-    "@folie/lib": "workspace:*",
-    "qs": "6.14.0"
+  "peerDependencies": {
+    "@folie/gate": "workspace:*",
+    "next": "15"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",
-  "keywords": [],
   "prettier": "@adonisjs/prettier-config",
   "publishConfig": {
     "access": "public"
@@ -55,5 +56,9 @@
     "exclude": [
       "tests/**"
     ]
+  },
+  "dependencies": {
+    "@folie/blueprint-lib": "workspace:*",
+    "cookies-next": "^5.1.0"
   }
 }

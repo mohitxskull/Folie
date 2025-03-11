@@ -1,0 +1,1 @@
+inspect(error.toJSON(), { showHidden: false, depth: 15, colors: true })

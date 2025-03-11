@@ -1,26 +1,19 @@
 import { Config, Header, Token } from './types.js'
-import axios, { type AxiosRequestConfig, AxiosError, AxiosInstance, AxiosResponse } from 'axios'
+import axios, { type AxiosRequestConfig, AxiosInstance, AxiosResponse, isAxiosError } from 'axios'
 import qs from 'qs'
 import { GateError } from './error.js'
-import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
 
-export class Gate<const Api extends ApiDefinition> {
+export class Gate<const Endpoints extends ApiEndpoints> {
   #axios: AxiosInstance
-  #token?: Token
-  #header?: Header
 
-  readonly api: Api
-  readonly base: URL
+  #config: Config<Endpoints>
 
-  constructor(params: Config<Api>) {
-    this.#token = params.token
-    this.#header = params.header
-
-    this.api = params.api
-    this.base = params.base
+  constructor(config: Config<Endpoints>) {
+    this.#config = config
 
     this.#axios = axios.create({
-      baseURL: this.base.origin,
+      baseURL: this.#config.baseURL.origin,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -29,94 +22,95 @@ export class Gate<const Api extends ApiDefinition> {
   }
 
   setToken(token: Token) {
-    this.#token = token
+    this.#config.token = token
   }
 
   setHeader(header: Header) {
-    this.#header = header
+    this.#config.header = header
   }
 
-  async token() {
-    if (typeof this.#token === 'string') {
-      return this.#token
-    } else if (typeof this.#token === 'function') {
-      return this.#token()
+  token(custom?: Token) {
+    const target = custom || this.#config.token
+
+    if (typeof target === 'string') {
+      return target
+    } else if (typeof target === 'function') {
+      return target()
     } else {
       return null
     }
   }
 
-  async header() {
-    if (typeof this.#header === 'object') {
-      return this.#header
-    } else if (typeof this.#header === 'function') {
-      return this.#header()
+  header(custom?: Header) {
+    const target = custom || this.#config.header
+
+    if (typeof target === 'object') {
+      return target
+    } else if (typeof target === 'function') {
+      return target()
     } else {
       return null
     }
   }
 
   async #call<
-    RK extends EndpointKeys<Api>,
-    EP extends Api[RK],
+    EK extends EndpointKeys<Endpoints>,
+    EP extends Endpoints[EK],
     IN extends EP['io']['input'],
     OUT extends EP['io']['output'],
-  >(endpointKey: RK, input: IN): Promise<OUT> {
+  >(
+    endpointKey: EK,
+    input: IN,
+    options?: {
+      token?: Token
+      headers?: Header
+    }
+  ): Promise<OUT> {
     try {
-      const endpoint = this.api[endpointKey]
+      const endpoint = this.#config.endpoints[endpointKey]
 
-      const token = await this.token()
+      const [token, header] = await Promise.all([
+        this.token(options?.token),
+        this.header(options?.headers),
+      ])
 
-      const config: AxiosRequestConfig = {
-        data: input,
-        params: input?.query,
+      let config: AxiosRequestConfig = {
         method: endpoint.method,
-        url: endpoint.path(input?.params as never),
+        url: endpoint.url(),
         headers: {
+          ...header,
           'Authorization': token ? `Bearer ${token}` : undefined,
           'Content-Type': endpoint.form ? 'multipart/form-data' : 'application/json',
-          ...(await this.header()),
         },
       }
 
-      const res: AxiosResponse<OUT> = await this.#axios.request(config)
+      if (input) {
+        const { query, params, ...rest } = input
+
+        config = {
+          ...config,
+          url: endpoint.url({ params, query }),
+          data: rest,
+        }
+      }
+
+      const res: AxiosResponse<OUT, IN> = await this.#axios.request(config)
 
       return res.data
     } catch (error) {
       if (error instanceof GateError) {
         throw error
-      } else if (error instanceof AxiosError) {
-        if (error.response) {
-          throw new GateError('Axios Response Error', 'axios-response', {
-            error: error,
-            axios: error,
-          })
-        } else if (error.request) {
-          throw new GateError('Axios Request Error', 'axios-request', {
-            error: error,
-            axios: error,
-          })
-        } else {
-          throw new GateError('Axios Error', 'axios', {
-            error: error,
-            axios: error,
-          })
-        }
-      } else if (error instanceof Error) {
-        throw new GateError(`Unknown error in client error handler: ${error.message}`, 'error', {
-          error,
-        })
+      } else if (isAxiosError(error)) {
+        throw GateError.fromAxiosError(error)
       } else {
-        throw new GateError('Unknown error in client error handler', 'unknown', {
-          cause: {
-            originalError: error,
-          },
+        throw new GateError('Unknown error in client error handler', {
+          cause: error,
         })
       }
     }
   }
 
-  async #safeCall<EK extends EndpointKeys<Api>, EP extends Api[EK]>(
+  async #safeCall<EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]>(
     endpointKey: EK,
     input: EP['io']['input']
   ): Promise<[EP['io']['output'], null] | [null, GateError]> {
@@ -133,17 +127,23 @@ export class Gate<const Api extends ApiDefinition> {
     }
   }
 
-  endpoint<RK extends EndpointKeys<Api>>(endpointKey: RK) {
+  endpoint<RK extends EndpointKeys<Endpoints>>(endpointKey: RK) {
     return {
-      call: (input: Api[RK]['io']['input']) => this.#call(endpointKey, input),
-      safeCall: (input: Api[RK]['io']['input']) => this.#safeCall(endpointKey, input),
+      call: (input: Endpoints[RK]['io']['input']) => this.#call(endpointKey, input),
+      safeCall: (input: Endpoints[RK]['io']['input']) => this.#safeCall(endpointKey, input),
     } as const
   }
 
-  url<EK extends EndpointKeys<Api>, EP extends Api[EK]>(
+  url<EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]>(
     endpointKey: EK,
-    params: NonNullable<EP['io']['input']>['params']
+    options?: {
+      params?: NonNullable<EP['io']['input']>['params']
+      query?: NonNullable<EP['io']['input']>['query']
+    }
   ) {
-    return new URL(this.api[endpointKey].path(params as any), this.base)
+    return new URL(
+      this.#config.endpoints[endpointKey].url({ params: options?.params, query: options?.query }),
+      this.#config.baseURL
+    )
   }
 }

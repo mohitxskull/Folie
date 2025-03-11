@@ -15,48 +15,28 @@ const ErrorResponseSchema = z.object({
   ),
 })
 
-export type GateErrorType =
-  | 'path-parser'
-  | 'axios'
-  | 'axios-response'
-  | 'axios-request'
-  | 'error'
-  | 'unknown'
-  | 'gate'
-
 export class GateError extends Error {
-  override name = 'Gate Error'
-
-  type: GateErrorType
-
-  axios?: AxiosError<any, any>
+  #response?: z.infer<typeof ErrorResponseSchema>
 
   #trace?: string[]
 
   constructor(
     message: string,
-    type: GateErrorType,
     options?: {
-      error?: Error
-      cause?: object
-      axios?: AxiosError<any, any>
+      cause?: unknown
+      stack?: string
+      response?: z.infer<typeof ErrorResponseSchema>
     }
   ) {
     super(message, { cause: options?.cause })
 
-    this.type = type
+    this.name = 'GateError'
 
-    if (type.includes('axios')) {
-      if (options?.axios) {
-        this.axios = options.axios
-      } else {
-        throw new Error("When 'type' includes 'axios', 'options' must include 'axios'", {
-          cause: options,
-        })
-      }
-    }
+    Object.setPrototypeOf(this, new.target.prototype)
 
-    let stack = this.stack
+    this.#response = options?.response
+
+    let stack = options?.stack || this.stack
 
     if (!stack) {
       Error.captureStackTrace(this, this.constructor)
@@ -70,52 +50,19 @@ export class GateError extends Error {
 
   toJSON() {
     return {
+      name: this.name,
       message: this.message,
-      type: this.type,
       trace: this.#trace,
       cause: this.cause,
-      name: this.name,
-      axios: this.axios?.toJSON(),
+      response: this.#response,
     }
   }
 
-  parse():
-    | {
-        success: false
-        message: string
-        meta?: object
-      }
-    | {
-        success: true
-        data: z.infer<typeof ErrorResponseSchema>
-      } {
-    if (!this.axios?.response) {
-      return {
-        success: false,
-        message: 'Response not found',
-      }
-    }
+  static fromAxiosError(error: AxiosError): GateError {
+    const data = ErrorResponseSchema.safeParse(error.response?.data)
 
-    if (!this.axios.response.data) {
-      return {
-        success: false,
-        message: 'Response data not found',
-      }
-    }
+    const response = data.success ? data.data : undefined
 
-    const data = ErrorResponseSchema.safeParse(this.axios.response.data)
-
-    if (!data.success) {
-      return {
-        success: false,
-        message: 'Response data not valid',
-        meta: { error: data.error?.format(), data: this.axios.response.data },
-      }
-    }
-
-    return {
-      success: true,
-      data: data.data,
-    }
+    return new GateError(error.message, { cause: error, stack: error.stack, response })
   }
 }

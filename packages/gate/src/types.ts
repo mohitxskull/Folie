@@ -1,15 +1,14 @@
-import { ApiDefinition } from '@folie/blueprint-lib'
+import { ApiEndpoints } from '@folie/blueprint-lib'
 
-export type Token = string | (() => string | null) | (() => Promise<string | null>)
+export type MaybePromise<T> = T | Promise<T>
 
-export type Header =
-  | Record<string, string>
-  | (() => Record<string, string> | null)
-  | (() => Promise<Record<string, string> | null>)
+export type Token = string | (() => MaybePromise<string | null>)
 
-export type Config<Api extends ApiDefinition> = {
-  base: URL
-  api: Api
+export type Header = Record<string, string> | (() => MaybePromise<Record<string, string> | null>)
+
+export type Config<Endpoints extends ApiEndpoints> = {
+  baseURL: URL
+  endpoints: Endpoints
   token?: Token
   header?: Header
 }

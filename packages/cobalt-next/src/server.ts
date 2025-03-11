@@ -1,18 +1,21 @@
-import { Gate } from '@folie/gate'
-import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-import { NextServerError } from './helpers/next_server_error.js'
-import { CheckpointParams } from './types/server.js'
 // eslint-disable-next-line import/extensions
 import { deleteCookie } from 'cookies-next/server'
-import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
+import { Gate } from '@folie/gate'
+import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
+import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { CheckpointParams } from './types.js'
+import { NextServerError } from './next_server_error.js'
 
-export class CobaltServer<Api extends ApiDefinition, EK extends EndpointKeys<Api>> {
-  api: Gate<Api>
-  endpoints: Api
+export class CobaltNextServer<
+  const Endpoints extends ApiEndpoints,
+  SessionEndpointKey extends EndpointKeys<Endpoints>,
+> {
+  api: Gate<Endpoints>
+  endpoints: Endpoints
 
   sessionConfig: {
     cookie: string
-    endpoint: EK
+    endpoint: SessionEndpointKey
   }
 
   checkpointConfig: {
@@ -20,25 +23,27 @@ export class CobaltServer<Api extends ApiDefinition, EK extends EndpointKeys<Api
   }
 
   constructor(params: {
-    api: Gate<Api>
-    endpoints: Api
+    gate: Gate<Endpoints>
+    endpoints: Endpoints
     session: {
       /** Cookie name used for session */
       cookie: string
-      endpoint: EK
+      endpoint: SessionEndpointKey
     }
     checkpoint: {
       redirect: string
     }
   }) {
-    this.api = params.api
+    this.api = params.gate
     this.endpoints = params.endpoints
 
     this.sessionConfig = params.session
     this.checkpointConfig = params.checkpoint
   }
 
-  #session = async (ctx: GetServerSidePropsContext): Promise<Api[EK]['io']['output'] | null> => {
+  #session = async (
+    ctx: GetServerSidePropsContext
+  ): Promise<Endpoints[SessionEndpointKey]['io']['output'] | null> => {
     const sessionCookie = ctx.req.cookies[this.sessionConfig.cookie]
 
     if (!sessionCookie) {
@@ -55,10 +60,10 @@ export class CobaltServer<Api extends ApiDefinition, EK extends EndpointKeys<Api
   checkpoint = (params?: {
     condition?: (params: {
       ctx: GetServerSidePropsContext
-      session: Api[EK]['io']['output'] | null
+      session: Endpoints[SessionEndpointKey]['io']['output'] | null
     }) => CheckpointParams
   }): GetServerSideProps<{
-    session: Api[EK]['io']['output'] | null
+    session: Endpoints[SessionEndpointKey]['io']['output'] | null
   }> => {
     return async (ctx: GetServerSidePropsContext) => {
       const session = await this.#session(ctx)
@@ -90,15 +95,15 @@ export class CobaltServer<Api extends ApiDefinition, EK extends EndpointKeys<Api
 
   server = <T extends { [key: string]: any }>(
     callback: (params: {
-      session: Api[EK]['io']['output'] | null
+      session: Endpoints[SessionEndpointKey]['io']['output'] | null
       ctx: GetServerSidePropsContext
-      api: Gate<Api>
+      api: Gate<Endpoints>
     }) => Promise<GetServerSidePropsResult<T>>,
     options?: {
       checkpointCondition?:
         | ((params: {
             ctx: GetServerSidePropsContext
-            session: Api[EK]['io']['output'] | null
+            session: Endpoints[SessionEndpointKey]['io']['output'] | null
           }) => CheckpointParams)
         | true
     }

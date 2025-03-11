@@ -1,17 +1,17 @@
-import { routes } from '../blueprint/api/schema.js'
+import { endpoints } from '../blueprint/api/schema.js'
 import env from '#start/env'
-import { inspect } from 'node:util'
 import { Gate, GateError } from '@folie/gate'
 import User from '#models/user'
+import { inspectLog } from '@folie/castle/helpers'
 
 export class TestResources {
-  base = new URL(`http://${env.get('HOST')}:${env.get('PORT')}`)
+  baseURL = new URL(`http://${env.get('HOST')}:${env.get('PORT')}`)
 
-  routes = { ...routes }
+  endpoints = { ...endpoints }
 
   api = new Gate({
-    base: this.base,
-    api: this.routes,
+    baseURL: this.baseURL,
+    endpoints: this.endpoints,
   })
 
   password = 'master'
@@ -48,8 +48,8 @@ export class TestResources {
     return {
       user: user,
       api: new Gate({
-        base: this.base,
-        api: this.routes,
+        baseURL: this.baseURL,
+        endpoints: this.endpoints,
         token: token,
       }),
     }
@@ -60,9 +60,9 @@ export class TestResources {
       return await promise
     } catch (error) {
       if (error instanceof GateError) {
-        console.log(inspect(error.toJSON(), { showHidden: false, depth: 15, colors: true }))
+        inspectLog(error.toJSON())
 
-        throw new Error('Arcessere Error')
+        throw new Error('Gate Error')
       } else {
         throw error
       }

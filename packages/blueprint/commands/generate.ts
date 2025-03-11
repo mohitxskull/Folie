@@ -216,7 +216,7 @@ export default class BluePrintGenerate extends BaseCommand {
 
       writer.newLine()
 
-      writer.writeLine(`import { InferController, route } from '@folie/blueprint-lib'`)
+      writer.writeLine(`import { InferController, endpoint } from '@folie/blueprint-lib'`)
 
       writer.newLine()
 
@@ -236,11 +236,11 @@ export default class BluePrintGenerate extends BaseCommand {
       writer.newLine()
 
       writer
-        .write('export const routes = ')
+        .write('export const endpoints = ')
         .inlineBlock(() => {
           endpoints.forEach((route) => {
             writer.writeLine(
-              `${route.name.key}: route<${route.name.type}>({ form: ${route.form}, path: '${route.path}', method: '${route.method}' }),`
+              `${route.name.key}: endpoint<${route.name.type}>({ form: ${route.form}, url: '${route.path}', method: '${route.method}' }),`
             )
           })
         })
@@ -266,7 +266,7 @@ export default class BluePrintGenerate extends BaseCommand {
 
       writer.newLine()
 
-      writer.writeLine(`/* Add the required types here */`)
+      writer.writeLine(`/* Add the other required types here */`)
     })
 
     await file.save()

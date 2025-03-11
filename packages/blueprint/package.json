@@ -33,6 +33,7 @@
     "@japa/assert": "^3.0.0",
     "@japa/runner": "^3.1.4",
     "@types/node": "^20.14.5",
+    "@types/pretty-hrtime": "^1.0.3",
     "c8": "^10.1.2",
     "copyfiles": "^2.4.1",
     "del-cli": "^5.1.0",
@@ -53,10 +54,10 @@
     ]
   },
   "dependencies": {
-    "tinyexec": "^0.3.1",
-    "ts-morph": "^24.0.0",
     "@poppinss/cliui": "^6.4.2",
     "pretty-hrtime": "^1.0.3",
+    "tinyexec": "^0.3.1",
+    "ts-morph": "^24.0.0",
     "zod": "^3.24.1"
   },
   "peerDependencies": {

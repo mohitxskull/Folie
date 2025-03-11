@@ -1,6 +1,6 @@
 /// <reference path="../reference.ts" />
 
-import { InferController, route } from '@folie/blueprint-lib'
+import { InferController, endpoint } from '@folie/blueprint-lib'
 
 /*
  * This is an auto-generated file. Changes made to this file will be lost.
@@ -47,58 +47,58 @@ export type V1PingRoute = InferController<
   (typeof import('../../app/controllers/ping_controller.ts'))['default']
 >
 
-export const routes = {
-  V1_AUTH_SESSION: route<V1AuthSessionRoute>({
+export const endpoints = {
+  V1_AUTH_SESSION: endpoint<V1AuthSessionRoute>({
     form: false,
-    path: '/api/v1/auth/session',
+    url: '/api/v1/auth/session',
     method: 'GET',
   }),
-  V1_AUTH_SIGN_OUT: route<V1AuthSignOutRoute>({
+  V1_AUTH_SIGN_OUT: endpoint<V1AuthSignOutRoute>({
     form: false,
-    path: '/api/v1/auth/sign-out',
+    url: '/api/v1/auth/sign-out',
     method: 'POST',
   }),
-  V1_AUTH_SIGN_IN: route<V1AuthSignInRoute>({
+  V1_AUTH_SIGN_IN: endpoint<V1AuthSignInRoute>({
     form: false,
-    path: '/api/v1/auth/sign-in',
+    url: '/api/v1/auth/sign-in',
     method: 'POST',
   }),
-  V1_AUTH_SIGN_UP: route<V1AuthSignUpRoute>({
+  V1_AUTH_SIGN_UP: endpoint<V1AuthSignUpRoute>({
     form: false,
-    path: '/api/v1/auth/sign-up',
+    url: '/api/v1/auth/sign-up',
     method: 'POST',
   }),
-  V1_AUTH_VERIFY: route<V1AuthVerifyRoute>({
+  V1_AUTH_VERIFY: endpoint<V1AuthVerifyRoute>({
     form: false,
-    path: '/api/v1/auth/verify',
+    url: '/api/v1/auth/verify',
     method: 'POST',
   }),
-  V1_AUTH_PASSWORD_UPDATE: route<V1AuthPasswordUpdateRoute>({
+  V1_AUTH_PASSWORD_UPDATE: endpoint<V1AuthPasswordUpdateRoute>({
     form: false,
-    path: '/api/v1/auth/password',
+    url: '/api/v1/auth/password',
     method: 'PUT',
   }),
-  V1_AUTH_PROFILE_UPDATE: route<V1AuthProfileUpdateRoute>({
+  V1_AUTH_PROFILE_UPDATE: endpoint<V1AuthProfileUpdateRoute>({
     form: false,
-    path: '/api/v1/auth/profile',
+    url: '/api/v1/auth/profile',
     method: 'PUT',
   }),
-  V1_NOTE_LIST: route<V1NoteListRoute>({ form: false, path: '/api/v1/note', method: 'GET' }),
-  V1_NOTE_SHOW: route<V1NoteShowRoute>({
+  V1_NOTE_LIST: endpoint<V1NoteListRoute>({ form: false, url: '/api/v1/note', method: 'GET' }),
+  V1_NOTE_SHOW: endpoint<V1NoteShowRoute>({
     form: false,
-    path: '/api/v1/note/{{ noteId }}',
+    url: '/api/v1/note/{{ noteId }}',
     method: 'GET',
   }),
-  V1_NOTE_CREATE: route<V1NoteCreateRoute>({ form: false, path: '/api/v1/note', method: 'POST' }),
-  V1_NOTE_UPDATE: route<V1NoteUpdateRoute>({
+  V1_NOTE_CREATE: endpoint<V1NoteCreateRoute>({ form: false, url: '/api/v1/note', method: 'POST' }),
+  V1_NOTE_UPDATE: endpoint<V1NoteUpdateRoute>({
     form: false,
-    path: '/api/v1/note/{{ noteId }}',
+    url: '/api/v1/note/{{ noteId }}',
     method: 'PUT',
   }),
-  V1_NOTE_DELETE: route<V1NoteDeleteRoute>({
+  V1_NOTE_DELETE: endpoint<V1NoteDeleteRoute>({
     form: false,
-    path: '/api/v1/note/{{ noteId }}',
+    url: '/api/v1/note/{{ noteId }}',
     method: 'DELETE',
   }),
-  V1_PING: route<V1PingRoute>({ form: false, path: '/api/v1/ping', method: 'GET' }),
+  V1_PING: endpoint<V1PingRoute>({ form: false, url: '/api/v1/ping', method: 'GET' }),
 } as const

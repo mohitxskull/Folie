@@ -1,19 +1,16 @@
-import { routes } from "./routes";
-import { api } from "./api";
-import { QueryClient } from "@tanstack/react-query";
+import { gate } from "./gate";
 import { Cobalt } from "@folie/cobalt";
 import { notifications } from "@mantine/notifications";
+import { endpoints } from "./endpoints";
 
-export const cobalt = new Cobalt<typeof routes>({
-  api,
-  routes,
-  query: new QueryClient({
-    defaultOptions: {
-      queries: {
-        staleTime: 60 * 1000,
-      },
-    },
-  }),
+export const cobalt = new Cobalt({
+  gate,
+  endpoints,
+  cookieKeys: {
+    session: "session_token",
+    captcha: "captcha_token",
+  },
+  paramKeys: [],
   notification: (params) =>
     notifications.show({
       title: params.title,

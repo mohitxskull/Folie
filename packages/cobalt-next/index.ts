@@ -7,5 +7,6 @@
 |
 */
 
-export { endpoint } from './src/endpoint.js'
-export * from './src/types.js'
+export { CobaltNextServer } from './src/server.js'
+export { CobaltNextClient } from './src/client.js'
+export { NextServerError } from './src/next_server_error.js'

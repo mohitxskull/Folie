@@ -1,12 +1,14 @@
 import { UseFormReturnType } from '@mantine/form'
 import { QueryKey, UseMutationOptions } from '@tanstack/react-query'
-import type { Cobalt } from '../main.js'
-import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { GateTan } from './tan.js'
+
+export type NotificationFunction = (params: { title: string; message: string }) => void
 
 export type CobaltUseMutationParams<
-  Api extends ApiDefinition,
-  EK extends EndpointKeys<Api>,
-  EP extends Api[EK]['io'],
+  Endpoints extends ApiEndpoints,
+  EK extends EndpointKeys<Endpoints>,
+  EP extends Endpoints[EK]['io'],
 > = Omit<
   UseMutationOptions<EP['output'], unknown, EP['input'], unknown>,
   'mutationFn' | 'onSuccess' | 'onError'
@@ -18,7 +20,7 @@ export type CobaltUseMutationParams<
     input: EP['input']
   ) => {
     input?: EP['input']
-    queryKeys?: (qk: Cobalt<Api>['queryKey']) => QueryKey[]
+    queryKeys?: (qk: GateTan<Endpoints>['queryKey']) => QueryKey[]
     after?: () => void
   } | void
 
@@ -28,7 +30,7 @@ export type CobaltUseMutationParams<
     error: unknown
     input: EP['input']
     form?: UseFormReturnType<NonNullable<EP['input']>>
-    notification: Cobalt<Api>['notification']
+    notification: GateTan<Endpoints>['notification']
   }) => void
 
   onErrorHook?: {

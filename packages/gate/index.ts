@@ -7,5 +7,5 @@
 |
 */
 
-export { GateError, type GateErrorType } from './src/error.js'
+export { GateError } from './src/error.js'
 export { Gate } from './src/client.js'

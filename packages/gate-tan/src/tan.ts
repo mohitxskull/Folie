@@ -1,12 +1,5 @@
-import { ApiDefinition, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
-import { NotificationFunction } from './types/index.js'
-import { useRouter } from 'next/router.js'
-import {
-  getCookie as getCook,
-  setCookie as setCook,
-  deleteCookie as removeCook,
-} from 'cookies-next'
 import {
   UndefinedInitialDataOptions,
   useQuery,
@@ -14,92 +7,44 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { useForm, UseFormInput } from '@mantine/form'
-import { GateErrorHandler } from './api/gate_error_handler.js'
 import { useDebouncedValue, useSetState } from '@mantine/hooks'
-import { CobaltUseMutationParams } from './types/cobalt_hooks.js'
-import { GetInputPropOptions, GetInputPropsReturnType } from './types/cobalt_hooks.js'
+import {
+  CobaltUseMutationParams,
+  GetInputPropOptions,
+  GetInputPropsReturnType,
+  NotificationFunction,
+} from './types.js'
+import { ErrorHandler } from './error_handler.js'
 
-export class Cobalt<
-  const Api extends ApiDefinition,
-  COOKIEKEYS extends Record<string, string> = {},
-  PARAMKEYS extends readonly [...string[]] = [],
-> {
-  api: Gate<Api>
-  endpoints: Api
+export class GateTan<const Endpoints extends ApiEndpoints> {
+  gate: Gate<Endpoints>
+  endpoints: Endpoints
 
   notification: NotificationFunction
 
-  cookieKeys: COOKIEKEYS
-  paramKeys: PARAMKEYS
-
   constructor(params: {
-    api: Gate<Api>
-    routes: Api
+    gate: Gate<Endpoints>
+    endpoints: Endpoints
     notification: NotificationFunction
-    paramKeys: PARAMKEYS
-    cookieKeys: COOKIEKEYS
   }) {
-    this.api = params.api
-    this.endpoints = params.routes
+    this.gate = params.gate
+    this.endpoints = params.endpoints
     this.notification = params.notification
-    this.paramKeys = params.paramKeys
-    this.cookieKeys = params.cookieKeys
   }
 
-  useParams = () => {
-    const router = useRouter()
-
-    return {
-      isReady: router.isReady,
-      param: (key: PARAMKEYS[number]) => {
-        if (!router.isReady) {
-          return ''
-        }
-
-        const value = router.query[key]
-
-        if (typeof value !== 'string') {
-          return ''
-        }
-
-        return value
-      },
-    }
-  }
-
-  getCookie = (key: keyof COOKIEKEYS) => {
-    const cook = getCook(this.cookieKeys[key])
-
-    if (typeof cook !== 'string') {
-      return null
-    }
-
-    return cook
-  }
-
-  removeCookie = (key: keyof COOKIEKEYS) => removeCook(this.cookieKeys[key])
-
-  setCookie = (key: keyof COOKIEKEYS, value: string) => {
-    setCook(this.cookieKeys[key], value)
-  }
-
-  queryKey = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(params: {
+  queryKey = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(params: {
     endpoint: EK
-    params: NonNullable<EP['input']>['params']
-    query?: NonNullable<EP['input']>['query']
+    options?: {
+      params?: NonNullable<EP['input']>['params']
+      query?: NonNullable<EP['input']>['query']
+    }
   }) => {
     const endpoint = this.endpoints[params.endpoint]
 
-    const result: any[] = [endpoint.method, endpoint.path(params.params as any)]
-
-    if (params.query) {
-      result.push(params.query)
-    }
-
-    return result
+    return [endpoint.method, endpoint.url(params.options)]
   }
 
-  useQuery = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
+  useQuery = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
     params: {
       endpoint: EK
       input: EP['input']
@@ -114,17 +59,19 @@ export class Cobalt<
       // Permanent
       queryKey: this.queryKey({
         endpoint: endpoint,
-        params: input?.params,
-        query: input?.query,
+        options: {
+          params: input?.params,
+          query: input?.query,
+        },
       }),
-      queryFn: () => this.api.endpoint(endpoint).call(input),
+      queryFn: () => this.gate.endpoint(endpoint).call(input),
     })
 
     return internalQuery
   }
 
-  useMutation = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
-    params: CobaltUseMutationParams<Api, EK, EP>
+  useMutation = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
+    params: CobaltUseMutationParams<Endpoints, EK, EP>
   ) => {
     const { endpoint, form, onSuccess, onError, ...rest } = params
 
@@ -135,7 +82,7 @@ export class Cobalt<
       ...rest,
 
       // Permanent
-      mutationFn: this.api.endpoint(params.endpoint).call,
+      mutationFn: this.gate.endpoint(params.endpoint).call,
 
       onSuccess: (output, input) => {
         const res = params.onSuccess(output, input)
@@ -165,7 +112,7 @@ export class Cobalt<
         if (onError) {
           onError({ error, input: variables, form: params.form, notification: this.notification })
         } else {
-          GateErrorHandler({ error, form: params.form, notification: this.notification })
+          ErrorHandler({ error, form: params.form, notification: this.notification })
         }
 
         if (params.onErrorHook?.after) {
@@ -177,7 +124,7 @@ export class Cobalt<
     return internalMutation
   }
 
-  useList = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
+  useList = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
     params: {
       endpoint: EK
       input?: EP['input']
@@ -205,13 +152,13 @@ export class Cobalt<
     return [internalQueryCall, [internalBody, setInternalBody]] as const
   }
 
-  useForm = <EK extends EndpointKeys<Api>, EP extends Api[EK]['io']>(
+  useForm = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
     params: UseFormInput<NonNullable<EP['input']>> & {
       endpoint: EK
 
-      onSuccess: CobaltUseMutationParams<Api, EK, EP>['onSuccess']
+      onSuccess: CobaltUseMutationParams<Endpoints, EK, EP>['onSuccess']
 
-      mutation?: Omit<CobaltUseMutationParams<Api, EK, EP>, 'form' | 'onSuccess' | 'endpoint'>
+      mutation?: Omit<CobaltUseMutationParams<Endpoints, EK, EP>, 'form' | 'onSuccess' | 'endpoint'>
     }
   ) => {
     const { endpoint, onSuccess, mutation, ...rest } = params
@@ -240,7 +187,7 @@ export class Cobalt<
           withFocus: options?.withFocus,
         }),
         disabled: options?.disabled
-          ? options.disabled(internalForm.values[key])
+          ? options.disabled(internalMutation.isPending)
           : internalMutation.isPending,
       }
 
