@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "turbo build",
-    "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt --filter=!./packages/cobalt-next && turbo build --filter=./packages/cobalt --filter=./packages/cobalt-next",
+    "build:pkg": "turbo build --filter=./packages/* --filter=!./packages/cobalt --filter=!./packages/gate_next --filter=!./packages/gate_tan && turbo build --filter=./packages/cobalt --filter=./packages/gate_next --filter=./packages/gate_tan",
     "dev": "turbo dev",
     "dev:playground": "turbo dev --filter=./playground/*",
     "lint": "turbo lint",

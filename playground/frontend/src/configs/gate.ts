@@ -1,14 +1,14 @@
 import { Gate } from "@folie/gate";
-import { getCookie } from "@/lib/cookie";
 import { env } from "./env";
 import { endpoints } from "./endpoints";
+import { gateClient } from "./gate_client";
 
 export const gate = new Gate({
   baseURL: new URL(env.NEXT_PUBLIC_BACKEND_URL),
   endpoints: endpoints,
-  token: () => getCookie("SESSION"),
+  token: () => gateClient.getCookie("session"),
   header: () => {
-    const cap = getCookie("CAPTCHA");
+    const cap = gateClient.getCookie("captcha");
 
     if (!cap) {
       return null;

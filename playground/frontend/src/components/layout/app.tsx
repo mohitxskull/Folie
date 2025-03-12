@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const AppLayout = (props: Props) => {
-  const [signOutM, signOut] = useSignOut();
+  const signOutM = useSignOut();
 
   return (
     <>
@@ -43,7 +43,7 @@ export const AppLayout = (props: Props) => {
                   askConfirmation({
                     message: "Are you sure you want to logout?",
                     confirmLabel: "Logout",
-                    onConfirm: () => signOut({}),
+                    onConfirm: () => signOutM.mutate(undefined),
                   });
                 }}
               >

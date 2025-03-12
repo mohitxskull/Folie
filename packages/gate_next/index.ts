@@ -7,6 +7,6 @@
 |
 */
 
-export { CobaltNextServer } from './src/server.js'
-export { CobaltNextClient } from './src/client.js'
+export { GateNextServer } from './src/server.js'
+export { GateNextClient } from './src/client.js'
 export { NextServerError } from './src/next_server_error.js'

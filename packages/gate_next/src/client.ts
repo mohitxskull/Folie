@@ -5,7 +5,7 @@ import {
 } from 'cookies-next'
 import { useRouter } from 'next/router.js'
 
-export class CobaltNextClient<
+export class GateNextClient<
   CookieKeys extends Record<string, string>,
   ParamKeys extends readonly [...string[]],
 > {

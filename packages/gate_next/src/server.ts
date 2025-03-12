@@ -6,7 +6,7 @@ import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
 import { CheckpointParams } from './types.js'
 import { NextServerError } from './next_server_error.js'
 
-export class CobaltNextServer<
+export class GateNextServer<
   const Endpoints extends ApiEndpoints,
   SessionEndpointKey extends EndpointKeys<Endpoints>,
 > {
@@ -100,7 +100,7 @@ export class CobaltNextServer<
       api: Gate<Endpoints>
     }) => Promise<GetServerSidePropsResult<T>>,
     options?: {
-      checkpointCondition?:
+      checkpoint?:
         | ((params: {
             ctx: GetServerSidePropsContext
             session: Endpoints[SessionEndpointKey]['io']['output'] | null
@@ -116,9 +116,9 @@ export class CobaltNextServer<
           deleteCookie(this.sessionConfig.cookie, ctx)
         }
 
-        if (options?.checkpointCondition) {
-          if (typeof options?.checkpointCondition === 'function') {
-            const condition = options?.checkpointCondition({ ctx, session })
+        if (options?.checkpoint) {
+          if (typeof options?.checkpoint === 'function') {
+            const condition = options?.checkpoint({ ctx, session })
 
             if (condition.allow === false) {
               return {

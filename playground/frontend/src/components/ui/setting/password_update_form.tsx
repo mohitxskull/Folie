@@ -1,16 +1,15 @@
-import { cobalt } from "@/configs/cobalt";
-import { Form, HorizontalInput, RightGroup } from "@folie/cobalt/components";
+import { gateTan } from "@/configs/gate_tan";
+import { HorizontalInput, RightGroup } from "@folie/cobalt/components";
 import { Button, PasswordInput, Stack } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
+import { Form } from "@folie/gate-tan/components";
 
 export const SettingPasswordUpdateForm = () => {
-  const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
+  const [form, formM, iProps] = gateTan.useForm({
     endpoint: "V1_AUTH_PASSWORD_UPDATE",
-    form: {
-      values: {
-        newPassword: "",
-        oldPassword: "",
-      },
+    initialValues: {
+      newPassword: "",
+      oldPassword: "",
     },
     onSuccess: (updatedData) => {
       notifications.show({
@@ -22,14 +21,14 @@ export const SettingPasswordUpdateForm = () => {
           newPassword: "",
           oldPassword: "",
         },
-        queryKeys: (qk) => [qk("V1_AUTH_SESSION", undefined)],
+        queryKeys: (qk) => [qk("V1_AUTH_SESSION")],
       };
     },
   });
 
   return (
     <>
-      <Form mutation={mutation} submit={submit} form={form}>
+      <Form mutation={formM} submit={formM.mutate} form={form}>
         {({ dirty, loading }) => (
           <>
             <HorizontalInput
@@ -43,8 +42,8 @@ export const SettingPasswordUpdateForm = () => {
                   withAsterisk={false}
                   minLength={8}
                   maxLength={32}
-                  {...iProps(["oldPassword"])}
-                  key={iKey(["oldPassword"])}
+                  {...iProps("oldPassword")}
+                  key={form.key("oldPassword")}
                 />
 
                 <PasswordInput
@@ -53,8 +52,8 @@ export const SettingPasswordUpdateForm = () => {
                   withAsterisk={false}
                   minLength={8}
                   maxLength={32}
-                  {...iProps(["newPassword"])}
-                  key={iKey(["newPassword"])}
+                  {...iProps("newPassword")}
+                  key={form.key("newPassword")}
                 />
               </Stack>
             </HorizontalInput>

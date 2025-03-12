@@ -1,16 +1,11 @@
 import { gate } from "./gate";
-import { Cobalt } from "@folie/cobalt";
 import { notifications } from "@mantine/notifications";
 import { endpoints } from "./endpoints";
+import { GateTan } from "@folie/gate-tan";
 
-export const cobalt = new Cobalt({
+export const gateTan = new GateTan({
   gate,
   endpoints,
-  cookieKeys: {
-    session: "session_token",
-    captcha: "captcha_token",
-  },
-  paramKeys: [],
   notification: (params) =>
     notifications.show({
       title: params.title,

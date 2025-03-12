@@ -1,4 +1,4 @@
-import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints } from '@folie/blueprint-lib'
 import { Gate } from '@folie/gate'
 import {
   UndefinedInitialDataOptions,
@@ -32,19 +32,16 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
     this.notification = params.notification
   }
 
-  queryKey = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(params: {
-    endpoint: EK
-    options?: {
-      params?: NonNullable<EP['input']>['params']
-      query?: NonNullable<EP['input']>['query']
-    }
-  }) => {
-    const endpoint = this.endpoints[params.endpoint]
+  queryKey = <EK extends keyof Endpoints, EP extends Endpoints[EK]>(
+    endpointKey: EK,
+    options?: Parameters<EP['url']>[0]
+  ) => {
+    const endpoint = this.endpoints[endpointKey]
 
-    return [endpoint.method, endpoint.url(params.options)]
+    return [endpoint.method, endpoint.url(options)]
   }
 
-  useQuery = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
+  useQuery = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
     params: {
       endpoint: EK
       input: EP['input']
@@ -57,12 +54,9 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
       ...rest,
 
       // Permanent
-      queryKey: this.queryKey({
-        endpoint: endpoint,
-        options: {
-          params: input?.params,
-          query: input?.query,
-        },
+      queryKey: this.queryKey(endpoint, {
+        params: input?.params,
+        query: input?.query,
       }),
       queryFn: () => this.gate.endpoint(endpoint).call(input),
     })
@@ -70,7 +64,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
     return internalQuery
   }
 
-  useMutation = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
+  useMutation = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
     params: CobaltUseMutationParams<Endpoints, EK, EP>
   ) => {
     const { endpoint, form, onSuccess, onError, ...rest } = params
@@ -124,7 +118,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
     return internalMutation
   }
 
-  useList = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
+  useList = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
     params: {
       endpoint: EK
       input?: EP['input']
@@ -152,7 +146,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
     return [internalQueryCall, [internalBody, setInternalBody]] as const
   }
 
-  useForm = <EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]['io']>(
+  useForm = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
     params: UseFormInput<NonNullable<EP['input']>> & {
       endpoint: EK
 

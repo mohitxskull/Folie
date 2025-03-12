@@ -10,14 +10,14 @@ import type { AppProps } from "next/app";
 
 import { CobaltConfig } from "@/configs";
 import { MantineTheme } from "@/configs/theme";
-import { CobaltContext, CobaltAPIContext } from "@folie/cobalt";
+import { CobaltContext } from "@folie/cobalt";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
-import { cobalt } from "@/configs/cobalt";
 import { useState } from "react";
 import { useTimeout } from "@mantine/hooks";
 import { NavigationLoading } from "@/components/navigation_loading";
 import { setting } from "@/configs/setting";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function App({
   Component,
@@ -25,6 +25,8 @@ export default function App({
   router: serverRouter,
 }: AppProps) {
   const router = useRouter();
+
+  const [queryClient] = useState(() => new QueryClient());
 
   const [NavigationState, setNavigationState] = useState(
     serverRouter.pathname !== "/",
@@ -44,7 +46,6 @@ export default function App({
     <>
       <NextSeo title={setting.app.name} description={setting.app.description} />
       <CobaltContext
-        cobalt={cobalt}
         config={CobaltConfig}
         mantine={MantineTheme}
         router={router}
@@ -59,11 +60,11 @@ export default function App({
           },
         }}
       >
-        <CobaltAPIContext>
+        <QueryClientProvider client={queryClient}>
           <NavigationLoading opened={NavigationState}>
             <Component {...pageProps} />
           </NavigationLoading>
-        </CobaltAPIContext>
+        </QueryClientProvider>
       </CobaltContext>
     </>
   );

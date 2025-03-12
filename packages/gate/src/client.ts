@@ -1,19 +1,32 @@
-import { Config, Header, Token } from './types.js'
+import { Header, Token } from './types.js'
 import axios, { type AxiosRequestConfig, AxiosInstance, AxiosResponse, isAxiosError } from 'axios'
 import qs from 'qs'
 import { GateError } from './error.js'
-import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints } from '@folie/blueprint-lib'
 
 export class Gate<const Endpoints extends ApiEndpoints> {
   #axios: AxiosInstance
 
-  #config: Config<Endpoints>
+  #endpoints: Endpoints
+  #baseURL: string
 
-  constructor(config: Config<Endpoints>) {
-    this.#config = config
+  #token?: Token
+  #header?: Header
+
+  constructor(config: { baseURL: URL; endpoints: Endpoints; token?: Token; header?: Header }) {
+    this.#endpoints = config.endpoints
+    this.#baseURL = config.baseURL.origin
+
+    if (config.token) {
+      this.#token = config.token
+    }
+
+    if (config.header) {
+      this.#header = config.header
+    }
 
     this.#axios = axios.create({
-      baseURL: this.#config.baseURL.origin,
+      baseURL: config.baseURL.origin,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -22,15 +35,15 @@ export class Gate<const Endpoints extends ApiEndpoints> {
   }
 
   setToken(token: Token) {
-    this.#config.token = token
+    this.#token = token
   }
 
   setHeader(header: Header) {
-    this.#config.header = header
+    this.#header = header
   }
 
   token(custom?: Token) {
-    const target = custom || this.#config.token
+    const target = custom || this.#token
 
     if (typeof target === 'string') {
       return target
@@ -42,7 +55,7 @@ export class Gate<const Endpoints extends ApiEndpoints> {
   }
 
   header(custom?: Header) {
-    const target = custom || this.#config.header
+    const target = custom || this.#header
 
     if (typeof target === 'object') {
       return target
@@ -54,7 +67,7 @@ export class Gate<const Endpoints extends ApiEndpoints> {
   }
 
   async #call<
-    EK extends EndpointKeys<Endpoints>,
+    EK extends keyof Endpoints,
     EP extends Endpoints[EK],
     IN extends EP['io']['input'],
     OUT extends EP['io']['output'],
@@ -67,7 +80,7 @@ export class Gate<const Endpoints extends ApiEndpoints> {
     }
   ): Promise<OUT> {
     try {
-      const endpoint = this.#config.endpoints[endpointKey]
+      const endpoint = this.#endpoints[endpointKey]
 
       const [token, header] = await Promise.all([
         this.token(options?.token),
@@ -110,7 +123,7 @@ export class Gate<const Endpoints extends ApiEndpoints> {
     }
   }
 
-  async #safeCall<EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]>(
+  async #safeCall<EK extends keyof Endpoints, EP extends Endpoints[EK]>(
     endpointKey: EK,
     input: EP['io']['input']
   ): Promise<[EP['io']['output'], null] | [null, GateError]> {
@@ -127,23 +140,17 @@ export class Gate<const Endpoints extends ApiEndpoints> {
     }
   }
 
-  endpoint<RK extends EndpointKeys<Endpoints>>(endpointKey: RK) {
+  endpoint<EK extends keyof Endpoints>(endpointKey: EK) {
     return {
-      call: (input: Endpoints[RK]['io']['input']) => this.#call(endpointKey, input),
-      safeCall: (input: Endpoints[RK]['io']['input']) => this.#safeCall(endpointKey, input),
+      call: (input: Endpoints[EK]['io']['input']) => this.#call(endpointKey, input),
+      safeCall: (input: Endpoints[EK]['io']['input']) => this.#safeCall(endpointKey, input),
     } as const
   }
 
-  url<EK extends EndpointKeys<Endpoints>, EP extends Endpoints[EK]>(
+  url<EK extends keyof Endpoints, EP extends Endpoints[EK]>(
     endpointKey: EK,
-    options?: {
-      params?: NonNullable<EP['io']['input']>['params']
-      query?: NonNullable<EP['io']['input']>['query']
-    }
+    options?: Parameters<EP['url']>[0]
   ) {
-    return new URL(
-      this.#config.endpoints[endpointKey].url({ params: options?.params, query: options?.query }),
-      this.#config.baseURL
-    )
+    return new URL(this.#endpoints[endpointKey].url(options), this.#baseURL)
   }
 }

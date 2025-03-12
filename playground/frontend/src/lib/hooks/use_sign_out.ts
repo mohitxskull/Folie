@@ -1,4 +1,5 @@
-import { cobalt } from "@/configs/cobalt";
+import { gateClient } from "@/configs/gate_client";
+import { gateTan } from "@/configs/gate_tan";
 import { notifications } from "@mantine/notifications";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
@@ -8,10 +9,10 @@ export const useSignOut = () => {
 
   const queryClient = useQueryClient();
 
-  const mutation = cobalt.useMutation({
+  const mutation = gateTan.useMutation({
     endpoint: "V1_AUTH_SESSION",
     onSuccess: () => {
-      cobalt.removeCookie("session");
+      gateClient.removeCookie("session");
 
       queryClient.clear();
 

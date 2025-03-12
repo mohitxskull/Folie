@@ -1,7 +1,5 @@
 export { HeadScript } from './head_script.js'
 
-export { Form } from './form/index.js'
-
 export { QueryLoader } from './query_loader.js'
 export type { QueryLoaderProps } from './query_loader.js'
 

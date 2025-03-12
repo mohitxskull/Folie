@@ -1,5 +1,6 @@
-import { cobalt } from "@/configs/cobalt";
-import { Form, HorizontalInput, RightGroup } from "@folie/cobalt/components";
+import { gateTan } from "@/configs/gate_tan";
+import { HorizontalInput, RightGroup } from "@folie/cobalt/components";
+import { Form } from "@folie/gate-tan/components";
 import { V1AuthSessionRoute } from "@folie/playground-backend/blueprint";
 import { Button, Group, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
@@ -9,13 +10,11 @@ type Props = {
 };
 
 export const SettingGeneralUpdateForm = (props: Props) => {
-  const [form, iProps, iKey, [mutation, submit]] = cobalt.useForm({
+  const [form, formM, iProps] = gateTan.useForm({
     endpoint: "V1_AUTH_PROFILE_UPDATE",
-    form: {
-      values: {
-        firstName: props.session.firstName,
-        lastName: props.session.lastName,
-      },
+    initialValues: {
+      firstName: props.session.firstName,
+      lastName: props.session.lastName,
     },
     onSuccess: (updatedData) => {
       notifications.show({
@@ -26,14 +25,14 @@ export const SettingGeneralUpdateForm = (props: Props) => {
         input: {
           ...updatedData.user,
         },
-        queryKeys: (qk) => [qk("V1_AUTH_SESSION", undefined)],
+        queryKeys: (qk) => [qk("V1_AUTH_SESSION")],
       };
     },
   });
 
   return (
     <>
-      <Form mutation={mutation} submit={submit} form={form}>
+      <Form mutation={formM} submit={formM.mutate} form={form}>
         {({ dirty, loading }) => (
           <>
             <HorizontalInput
@@ -43,14 +42,14 @@ export const SettingGeneralUpdateForm = (props: Props) => {
               <Group grow>
                 <TextInput
                   placeholder="First Name"
-                  {...iProps(["firstName"])}
-                  key={iKey(["firstName"])}
+                  {...iProps("firstName")}
+                  key={form.key("firstName")}
                 />
 
                 <TextInput
                   placeholder="Last Name"
-                  {...iProps(["lastName"])}
-                  key={iKey(["lastName"])}
+                  {...iProps("lastName")}
+                  key={form.key("lastName")}
                 />
               </Group>
             </HorizontalInput>

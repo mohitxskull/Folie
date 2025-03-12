@@ -18,6 +18,8 @@
     "@folie/cobalt": "workspace:*",
     "@folie/cobalt-animation": "workspace:*",
     "@folie/gate": "workspace:*",
+    "@folie/gate-tan": "workspace:*",
+    "@folie/gate-next": "workspace:*",
     "@folie/lib": "workspace:*",
     "@mantine/core": "^7.16.1",
     "@mantine/dates": "^7.16.1",
