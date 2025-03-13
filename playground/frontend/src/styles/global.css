@@ -1,9 +1,5 @@
 @layer mantine, mantine-datatable, mantine-contextmenu;
 
-body {
-  background-color: var(--mantine-color-dark-9);
-}
-
 ::selection {
   color: var(--mantine-color-dark-9);
   background: var(--mantine-color-white);

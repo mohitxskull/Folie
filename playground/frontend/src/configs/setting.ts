@@ -5,9 +5,9 @@ export const setting = {
     description: "Testing Folie Packages Here.",
   },
 
-  bg: "var(--mantine-color-dark-9)",
-
   header: {
     height: 60,
   },
+
+  home: "/notes",
 };

@@ -15,8 +15,8 @@ export default class Controller {
     })
   )
 
-  handle = handler(async ({ ctx, getPayload }) => {
-    const payload = await getPayload(this.input)
+  handle = handler(async ({ ctx }) => {
+    const payload = await ctx.request.validateUsing(this.input)
 
     const { userId } = ctx.auth.session
 

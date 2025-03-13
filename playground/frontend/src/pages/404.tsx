@@ -1,10 +1,9 @@
-import { setting } from "@/configs/setting";
 import { Center, Stack, Text, Title } from "@mantine/core";
 
 export default function Page() {
   return (
     <>
-      <Center h="100vh" bg={setting.bg}>
+      <Center h="100vh">
         <Stack>
           <Title mx="auto" size="15vw">
             404

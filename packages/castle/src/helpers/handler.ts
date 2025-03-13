@@ -3,12 +3,9 @@
 import { HttpContext } from '@adonisjs/core/http'
 
 export const handler = <OUT extends { message?: string; [key: string]: any }>(
-  logic: (params: {
-    ctx: HttpContext
-    getPayload: HttpContext['request']['validateUsing']
-  }) => Promise<OUT>
+  logic: (params: { ctx: HttpContext }) => Promise<OUT>
 ) => {
-  return async (ctx: HttpContext) => {
-    return logic({ ctx, getPayload: ctx.request.validateUsing })
+  return (ctx: HttpContext) => {
+    return logic({ ctx })
   }
 }

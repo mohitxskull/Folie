@@ -1,5 +1,6 @@
 import "@mantine/core/styles.css";
 import "@/styles/global.css";
+import "@/styles/theme.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/nprogress/styles.css";
@@ -14,33 +15,13 @@ import { CobaltContext } from "@folie/cobalt";
 import { NextSeo } from "next-seo";
 import { useRouter } from "next/router";
 import { useState } from "react";
-import { useTimeout } from "@mantine/hooks";
-import { NavigationLoading } from "@/components/navigation_loading";
 import { setting } from "@/configs/setting";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
-export default function App({
-  Component,
-  pageProps,
-  router: serverRouter,
-}: AppProps) {
+export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter();
 
   const [queryClient] = useState(() => new QueryClient());
-
-  const [NavigationState, setNavigationState] = useState(
-    serverRouter.pathname !== "/",
-  );
-
-  useTimeout(
-    () => {
-      setNavigationState(false);
-    },
-    1000,
-    {
-      autoInvoke: true,
-    },
-  );
 
   return (
     <>
@@ -49,21 +30,21 @@ export default function App({
         config={CobaltConfig}
         mantine={MantineTheme}
         router={router}
-        navigation={{
-          started: (url) => {
-            if (url !== router.asPath) {
-              setNavigationState(true);
-            }
-          },
-          completed: () => {
-            setNavigationState(false);
-          },
-        }}
+        // navigation={{
+        //   started: (url) => {
+        //     if (url !== router.asPath) {
+        //       setNavigationState(true);
+        //     }
+        //   },
+        //   completed: () => {
+        //     setNavigationState(false);
+        //   },
+        // }}
       >
         <QueryClientProvider client={queryClient}>
-          <NavigationLoading opened={NavigationState}>
-            <Component {...pageProps} />
-          </NavigationLoading>
+          <Component {...pageProps} />
+          {/* <NavigationLoading opened={NavigationState}>
+          </NavigationLoading> */}
         </QueryClientProvider>
       </CobaltContext>
     </>

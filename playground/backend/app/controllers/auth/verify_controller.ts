@@ -13,14 +13,14 @@ export default class Controller {
     })
   )
 
-  handle = handler(async ({ getPayload }) => {
+  handle = handler(async ({ ctx }) => {
     if (!setting.signUp.verification.enabled) {
       throw new ProcessingException('Email verification is disabled', {
         status: 'FORBIDDEN',
       })
     }
 
-    const payload = await getPayload(this.input)
+    const payload = await ctx.request.validateUsing(this.input)
 
     const decryptedToken = encryption.decrypt<{ email: string }>(
       payload.token,

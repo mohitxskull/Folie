@@ -12,8 +12,8 @@ export const NavigationLoading = (props: Props) => {
   return (
     <>
       <NavigationLoadingBase
-        bg={setting.bg}
         opened={props.opened}
+        bg="var(--mantine-color-dark-9)"
         center={
           <Title>
             <Breathing

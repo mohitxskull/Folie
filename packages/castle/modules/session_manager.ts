@@ -172,6 +172,8 @@ export class SessionManager<SessionModelG extends SessionModel> {
 
       const newSession = new this.sessionModel()
 
+      newSession.useTransaction(trx)
+
       if (options?.expiresIn) {
         newSession.expiresAt = DateTime.utc().plus({
           seconds: stringHelpers.seconds.parse(options.expiresIn),
@@ -196,6 +198,8 @@ export class SessionManager<SessionModelG extends SessionModel> {
       }
 
       newSession.value = this.#value(newSession.id, seed.secret.release())
+
+      await trx.commit()
 
       return newSession as typeof newSession & {
         secret: Secret<string>

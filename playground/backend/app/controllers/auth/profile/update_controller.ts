@@ -10,8 +10,11 @@ export default class Controller {
     })
   )
 
-  handle = handler(async ({ ctx, getPayload }) => {
-    const [payload, user] = await Promise.all([getPayload(this.input), ctx.auth.session.getUser()])
+  handle = handler(async ({ ctx }) => {
+    const [payload, user] = await Promise.all([
+      ctx.request.validateUsing(this.input),
+      ctx.auth.session.getUser(),
+    ])
 
     if (payload.firstName) {
       user.firstName = payload.firstName

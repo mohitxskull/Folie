@@ -14,19 +14,4 @@ export const MantineTheme = createTheme({
   primaryColor: "gray",
   primaryShade: 0,
   cursorType: "pointer",
-
-  components: {
-    Paper: {
-      defaultProps: {
-        bg: "dark.8",
-      },
-    },
-    Modal: {
-      styles: {
-        header: {
-          background: "var(--mantine-color-dark-8)",
-        },
-      },
-    },
-  },
 });

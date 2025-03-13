@@ -13,8 +13,11 @@ export default class Controller {
     })
   )
 
-  handle = handler(async ({ ctx, getPayload }) => {
-    const [payload, user] = await Promise.all([getPayload(this.input), ctx.auth.session.getUser()])
+  handle = handler(async ({ ctx }) => {
+    const [payload, user] = await Promise.all([
+      ctx.request.validateUsing(this.input),
+      ctx.auth.session.getUser(),
+    ])
 
     if (payload.oldPassword === payload.newPassword) {
       throw new ProcessingException('New password cannot be the same as old password', {

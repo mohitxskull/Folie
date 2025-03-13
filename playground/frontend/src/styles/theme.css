@@ -1,0 +1,75 @@
+:root {
+}
+
+body {
+  background-color: var(--mantine-color-dark-9);
+}
+
+/* AppShell */
+
+.mantine-AppShell-main {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-9);
+  }
+}
+
+.mantine-AppShell-header {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-9);
+  }
+}
+
+.mantine-AppShell-navbar {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-9);
+  }
+}
+
+/* Paper */
+
+.mantine-Paper-root {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+/* Menu */
+
+.mantine-Menu-dropdown {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.mantine-Menu-item[data-hovered="true"] {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-6);
+  }
+}
+
+/* NavLink */
+
+.mantine-NavLink-root {
+  padding-left: 0;
+  padding-right: 0;
+
+  @mixin dark {
+    @mixin hover {
+      background-color: transparent;
+    }
+  }
+}
+
+/* Modal */
+
+.mantine-Modal-content {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.mantine-Modal-header {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}

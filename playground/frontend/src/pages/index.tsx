@@ -31,10 +31,7 @@ export default function Page() {
           </Group>
         </AppShell.Header>
 
-        <AppShell.Main
-          h={`calc(100vh - ${setting.header.height}px)`}
-          bg={setting.bg}
-        >
+        <AppShell.Main h={`calc(100vh - ${setting.header.height}px)`}>
           <Center h="100%">
             <Stack gap="0">
               <Title mx="auto" size="15vw">

@@ -18,14 +18,14 @@ export default class Controller {
     })
   )
 
-  handle = handler(async ({ getPayload }) => {
+  handle = handler(async ({ ctx }) => {
     if (!setting.signIn.enabled) {
       throw new ProcessingException('Sign-in is disabled', {
         status: 'FORBIDDEN',
       })
     }
 
-    const payload = await getPayload(this.input)
+    const payload = await ctx.request.validateUsing(this.input)
 
     const user = await User.findBy('email', payload.email)
 
