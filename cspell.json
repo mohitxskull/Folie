@@ -36,6 +36,9 @@
     "ABCDEFGHJKMNPQRSTVWXYZ",
     "Sqi\\d",
     "Sqids",
-    "remoteip"
+    "remoteip",
+    "autosize",
+    "tiptap",
+    "Strikethrough"
   ]
 }

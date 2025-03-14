@@ -1,4 +1,7 @@
 import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+
+dayjs.extend(relativeTime);
 
 export const formatDate = (
   date: string | Date | null,
@@ -7,6 +10,12 @@ export const formatDate = (
   if (!date) return null;
 
   return dayjs(date).format(format);
+};
+
+export const timeAgo = (date: string | Date | null) => {
+  if (!date) return null;
+
+  return dayjs(date).fromNow();
 };
 
 export const parseDate = (date: string | null) => {

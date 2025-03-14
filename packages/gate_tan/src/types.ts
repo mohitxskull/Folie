@@ -1,6 +1,6 @@
 import { UseFormReturnType } from '@mantine/form'
-import { QueryKey, UseMutationOptions } from '@tanstack/react-query'
-import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { QueryKey, UseMutationOptions, UseMutationResult } from '@tanstack/react-query'
+import { ApiEndpoints, EndpointKeys, EndpointIO } from '@folie/blueprint-lib'
 import { GateTan } from './tan.js'
 
 export type NotificationFunction = (params: { title: string; message: string }) => void
@@ -57,3 +57,9 @@ export type GetInputPropsReturnType<Values> = ReturnType<
 export type SetPartialState<T extends Record<string, unknown>> = (
   statePartial: Partial<T> | ((currentState: T) => Partial<T>)
 ) => void
+
+export type OnValuesChangeParams<T extends EndpointIO> = {
+  values: NonNullable<T['input']>
+  previousValues: NonNullable<T['input']>
+  mutation: UseMutationResult<T['output'], unknown, T['input'], unknown>
+}

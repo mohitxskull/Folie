@@ -1,23 +1,24 @@
 import { Text } from '@mantine/core'
 import { modals } from '@mantine/modals'
 
-type Props = {
+type Props = Omit<Parameters<typeof modals.openConfirmModal>[0], 'labels'> & {
   loading?: boolean
   title?: string
   message: string
-  props?: Parameters<typeof modals.openConfirmModal>[0]
-  confirmLabel?: string
-  cancelLabel?: string
-  onConfirm: () => void
-  onCancel?: () => void
+  labels?: {
+    confirm?: string
+    cancel?: string
+  }
 }
 
 export const askConfirmation = (props: Props) => {
+  const { loading, title, message, labels, confirmProps, cancelProps, ...rest } = props
+
   modals.openConfirmModal({
-    title: props.title || 'Please confirm your action',
+    title: title || 'Please confirm your action',
     children: (
       <>
-        <Text size="sm">{props.message}</Text>
+        <Text size="sm">{message}</Text>
       </>
     ),
     closeOnCancel: true,
@@ -26,19 +27,19 @@ export const askConfirmation = (props: Props) => {
     centered: true,
     withCloseButton: false,
     labels: {
-      confirm: props.confirmLabel || 'Confirm',
-      cancel: props.cancelLabel || 'Cancel',
+      confirm: labels?.confirm || 'Confirm',
+      cancel: labels?.cancel || 'Cancel',
     },
     confirmProps: {
-      loading: props.loading,
-      color: 'red',
+      loading: loading,
+      color: 'red.9',
+      ...confirmProps,
     },
     cancelProps: {
-      disabled: props.loading,
+      disabled: loading,
       autoFocus: true,
+      ...cancelProps,
     },
-    onConfirm: () => props.onConfirm(),
-    onCancel: () => props.onCancel?.(),
-    ...props.props,
+    ...rest,
   })
 }

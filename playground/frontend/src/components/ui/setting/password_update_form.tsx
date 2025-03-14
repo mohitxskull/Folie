@@ -5,7 +5,7 @@ import { notifications } from "@mantine/notifications";
 import { Form } from "@folie/gate-tan/components";
 
 export const SettingPasswordUpdateForm = () => {
-  const [form, formM, iProps] = gateTan.useForm({
+  const { form, inputProps, mutation } = gateTan.useForm({
     endpoint: "V1_AUTH_PASSWORD_UPDATE",
     initialValues: {
       newPassword: "",
@@ -28,7 +28,7 @@ export const SettingPasswordUpdateForm = () => {
 
   return (
     <>
-      <Form mutation={formM} submit={formM.mutate} form={form}>
+      <Form mutation={mutation} submit={mutation.mutate} form={form}>
         {({ dirty, loading }) => (
           <>
             <HorizontalInput
@@ -42,7 +42,7 @@ export const SettingPasswordUpdateForm = () => {
                   withAsterisk={false}
                   minLength={8}
                   maxLength={32}
-                  {...iProps("oldPassword")}
+                  {...inputProps("oldPassword")}
                   key={form.key("oldPassword")}
                 />
 
@@ -52,7 +52,7 @@ export const SettingPasswordUpdateForm = () => {
                   withAsterisk={false}
                   minLength={8}
                   maxLength={32}
-                  {...iProps("newPassword")}
+                  {...inputProps("newPassword")}
                   key={form.key("newPassword")}
                 />
               </Stack>

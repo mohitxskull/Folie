@@ -45,7 +45,7 @@ export default class Note extends BaseModel {
   // Cache =============================
 
   static $cache() {
-    return new ModelCache(Note, cache.namespace)
+    return new ModelCache(Note, cache.namespace(this.table))
   }
 
   $cache() {

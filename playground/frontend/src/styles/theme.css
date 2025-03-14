@@ -1,8 +1,15 @@
 :root {
+  @mixin dark {
+    &[data-variant="filled"] {
+      color: var(--mantine-color-red-9);
+    }
+  }
 }
 
 body {
-  background-color: var(--mantine-color-dark-9);
+  @mixin dark {
+    background-color: var(--mantine-color-dark-9);
+  }
 }
 
 /* AppShell */
@@ -53,10 +60,8 @@ body {
   padding-left: 0;
   padding-right: 0;
 
-  @mixin dark {
-    @mixin hover {
-      background-color: transparent;
-    }
+  @mixin hover {
+    background-color: transparent;
   }
 }
 
@@ -71,5 +76,41 @@ body {
 .mantine-Modal-header {
   @mixin dark {
     background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.sidebar-toggle-button-icon {
+  @mixin dark {
+    color: var(--mantine-color-dimmed);
+  }
+}
+
+/* Input */
+
+.mantine-Input-input {
+  @mixin dark {
+    &[data-variant="default"] {
+      background-color: var(--mantine-color-dark-8);
+    }
+  }
+}
+
+/* DropDown */
+
+.mantine-Select-dropdown {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.ProseMirror {
+  --mantine-spacing-md: 0px;
+}
+
+.mantine-Pagination-control {
+  @mixin dark {
+    &[data-active] {
+      --pagination-active-color: var(--mantine-color-dark-9);
+    }
   }
 }

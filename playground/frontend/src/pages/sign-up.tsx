@@ -37,7 +37,7 @@ export default function Page() {
 
   const [captchaReady, setCaptchaReady] = useState(false);
 
-  const [form, formM, iProps] = gateTan.useForm({
+  const { form, inputProps, mutation } = gateTan.useForm({
     endpoint: "V1_AUTH_SIGN_UP",
 
     initialValues: {
@@ -83,14 +83,14 @@ export default function Page() {
                 </Anchor>
               </Text>
 
-              <Form mutation={formM} submit={formM.mutate} form={form}>
+              <Form mutation={mutation} submit={mutation.mutate} form={form}>
                 {({ dirty, loading }) => (
                   <>
                     <Group grow>
                       <TextInput
                         label="First name"
                         placeholder="John"
-                        {...iProps("firstName")}
+                        {...inputProps("firstName")}
                         key={form.key("firstName")}
                         required
                         withAsterisk={false}
@@ -99,7 +99,7 @@ export default function Page() {
                       <TextInput
                         label="Last name"
                         placeholder="Doe"
-                        {...iProps("lastName")}
+                        {...inputProps("lastName")}
                         key={form.key("lastName")}
                         required
                         withAsterisk={false}
@@ -111,7 +111,7 @@ export default function Page() {
                       description="Only gmail's are allowed"
                       placeholder="someone@gmail.com"
                       type="email"
-                      {...iProps("email")}
+                      {...inputProps("email")}
                       key={form.key("email")}
                       required
                       withAsterisk={false}
@@ -120,7 +120,7 @@ export default function Page() {
                     <PasswordInput
                       label="Password"
                       placeholder="MwL]6j*mGnQW9zn"
-                      {...iProps("password")}
+                      {...inputProps("password")}
                       key={form.key("password")}
                       required
                       minLength={8}
@@ -131,7 +131,7 @@ export default function Page() {
                     <PasswordInput
                       label="Confirm Password"
                       placeholder="MwL]6j*mGnQW9zn"
-                      {...iProps("confirmPassword")}
+                      {...inputProps("confirmPassword")}
                       key={form.key("confirmPassword")}
                       required
                       minLength={8}

@@ -10,7 +10,7 @@ type Props = {
 };
 
 export const SettingGeneralUpdateForm = (props: Props) => {
-  const [form, formM, iProps] = gateTan.useForm({
+  const { form, inputProps, mutation } = gateTan.useForm({
     endpoint: "V1_AUTH_PROFILE_UPDATE",
     initialValues: {
       firstName: props.session.firstName,
@@ -32,7 +32,7 @@ export const SettingGeneralUpdateForm = (props: Props) => {
 
   return (
     <>
-      <Form mutation={formM} submit={formM.mutate} form={form}>
+      <Form mutation={mutation} submit={mutation.mutate} form={form}>
         {({ dirty, loading }) => (
           <>
             <HorizontalInput
@@ -42,13 +42,13 @@ export const SettingGeneralUpdateForm = (props: Props) => {
               <Group grow>
                 <TextInput
                   placeholder="First Name"
-                  {...iProps("firstName")}
+                  {...inputProps("firstName")}
                   key={form.key("firstName")}
                 />
 
                 <TextInput
                   placeholder="Last Name"
-                  {...iProps("lastName")}
+                  {...inputProps("lastName")}
                   key={form.key("lastName")}
                 />
               </Group>

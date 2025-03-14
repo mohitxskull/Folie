@@ -53,7 +53,7 @@ export default class User extends BaseModel {
   // Cache =============================
 
   static $cache() {
-    return new ModelCache(User, cache.namespace, ['metric'])
+    return new ModelCache(User, cache.namespace(this.table), ['metric'])
   }
 
   $cache() {

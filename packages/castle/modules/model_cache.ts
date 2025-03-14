@@ -57,13 +57,9 @@ export class ModelCache<GTargetModel extends TargetModel, CacheKeys extends stri
   #model: GTargetModel
   #cache: CacheProvider
 
-  constructor(
-    model: GTargetModel,
-    cache: (namespace: string) => CacheProvider,
-    _?: readonly CacheKeys[]
-  ) {
+  constructor(model: GTargetModel, cache: CacheProvider, _?: readonly CacheKeys[]) {
     this.#model = model
-    this.#cache = cache(model.table)
+    this.#cache = cache
   }
 
   space(id: number) {

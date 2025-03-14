@@ -1,5 +1,5 @@
 import { setting } from '#config/setting'
-import { NoteBodySchema, NoteTitleSchema } from '#validators/index'
+import { NoteTitleSchema } from '#validators/index'
 import { ProcessingException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
@@ -8,7 +8,6 @@ export default class Controller {
   input = vine.compile(
     vine.object({
       title: NoteTitleSchema,
-      body: NoteBodySchema,
     })
   )
 
@@ -26,7 +25,7 @@ export default class Controller {
 
     const note = await user.related('note').create({
       title: payload.title,
-      body: payload.body,
+      body: '',
     })
 
     return { note: note.$serialize(), message: 'Note created successfully' }

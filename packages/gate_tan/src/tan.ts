@@ -5,6 +5,7 @@ import {
   useQuery,
   useMutation,
   useQueryClient,
+  UseMutationResult,
 } from '@tanstack/react-query'
 import { useForm, UseFormInput } from '@mantine/form'
 import { useDebouncedValue, useSetState } from '@mantine/hooks'
@@ -13,8 +14,10 @@ import {
   GetInputPropOptions,
   GetInputPropsReturnType,
   NotificationFunction,
+  OnValuesChangeParams,
 } from './types.js'
 import { ErrorHandler } from './error_handler.js'
+import { useCallback, useRef } from 'react'
 
 export class GateTan<const Endpoints extends ApiEndpoints> {
   gate: Gate<Endpoints>
@@ -143,22 +146,46 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
       input: debouncedBody,
     })
 
-    return [internalQueryCall, [internalBody, setInternalBody]] as const
+    return {
+      query: internalQueryCall,
+      body: internalBody,
+      setBody: setInternalBody,
+    } as const
   }
 
   useForm = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
-    params: UseFormInput<NonNullable<EP['input']>> & {
+    params: Omit<UseFormInput<NonNullable<EP['input']>>, 'onValuesChange'> & {
       endpoint: EK
 
       onSuccess: CobaltUseMutationParams<Endpoints, EK, EP>['onSuccess']
 
       mutation?: Omit<CobaltUseMutationParams<Endpoints, EK, EP>, 'form' | 'onSuccess' | 'endpoint'>
+
+      onValuesChange?: (params: OnValuesChangeParams<EP>) => void
     }
   ) => {
-    const { endpoint, onSuccess, mutation, ...rest } = params
+    const { endpoint, onSuccess, mutation, onValuesChange, ...rest } = params
+
+    const mutationRef = useRef<UseMutationResult<
+      EP['output'],
+      unknown,
+      EP['input'],
+      unknown
+    > | null>(null)
 
     const internalForm = useForm<NonNullable<EP['input']>>({
       mode: 'uncontrolled',
+      onValuesChange: onValuesChange
+        ? (values, previousValues) => {
+            if (mutationRef.current) {
+              onValuesChange({
+                values,
+                previousValues,
+                mutation: mutationRef.current,
+              })
+            }
+          }
+        : undefined,
       ...rest,
     })
 
@@ -170,24 +197,33 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
       form: internalForm,
     })
 
-    const getExtendedInputProps = (
-      key: string,
-      options?: GetInputPropOptions<EP['input']>
-    ): GetInputPropsReturnType<EP['input']> => {
-      const base = {
-        ...internalForm.getInputProps(key, {
-          type: options?.type,
-          withError: options?.withError,
-          withFocus: options?.withFocus,
-        }),
-        disabled: options?.disabled
-          ? options.disabled(internalMutation.isPending)
-          : internalMutation.isPending,
-      }
+    mutationRef.current = internalMutation
 
-      return base
-    }
+    const getExtendedInputProps = useCallback(
+      (
+        key: string,
+        options?: GetInputPropOptions<EP['input']>
+      ): GetInputPropsReturnType<EP['input']> => {
+        const base = {
+          ...internalForm.getInputProps(key, {
+            type: options?.type,
+            withError: options?.withError,
+            withFocus: options?.withFocus,
+          }),
+          disabled: options?.disabled
+            ? options.disabled(internalMutation.isPending)
+            : internalMutation.isPending,
+        }
 
-    return [internalForm, internalMutation, getExtendedInputProps] as const
+        return base
+      },
+      [internalForm, internalMutation.isPending]
+    )
+
+    return {
+      form: internalForm,
+      mutation: internalMutation,
+      inputProps: getExtendedInputProps,
+    } as const
   }
 }

@@ -3,9 +3,12 @@ import {
   AppShell,
   Button,
   Group,
+  MantineColorScheme,
   NavLink,
   ScrollArea,
+  Select,
   Text,
+  useMantineColorScheme,
 } from "@mantine/core";
 import { setting } from "@/configs/setting";
 import { Logo } from "../logo";
@@ -28,6 +31,8 @@ export const AppLayout = (props: Props) => {
 
   const [opened, { toggle }] = useDisclosure();
 
+  const { setColorScheme, colorScheme } = useMantineColorScheme();
+
   return (
     <>
       <AppShell
@@ -40,28 +45,24 @@ export const AppLayout = (props: Props) => {
         padding="md"
         layout="alt"
       >
-        <AppShell.Header withBorder={false} bg="transparent">
+        <AppShell.Header withBorder={false}>
           <Group justify="space-between" px="md" h="100%">
             <Group>
-              <ActionIcon
-                variant="transparent"
-                size="sm"
-                c="dimmed"
-                onClick={toggle}
-              >
-                <IconLayoutSidebarFilled />
+              <ActionIcon variant="transparent" size="sm" onClick={toggle}>
+                <IconLayoutSidebarFilled className="sidebar-toggle-button-icon" />
               </ActionIcon>
 
               {props.crumbs && (
                 <>
                   <Group gap="xs">
-                    <For
-                      each={props.crumbs}
-                      render={(crumb, crumbIndex) => (
+                    <For each={props.crumbs}>
+                      {(crumb, crumbIndex) => (
                         <>
                           <Text
                             size="sm"
                             fw="500"
+                            truncate="end"
+                            maw={150}
                             component={Link}
                             href={crumb.href}
                           >
@@ -79,7 +80,7 @@ export const AppLayout = (props: Props) => {
                           </If>
                         </>
                       )}
-                    />
+                    </For>
                   </Group>
                 </>
               )}
@@ -107,7 +108,9 @@ export const AppLayout = (props: Props) => {
                 onClick={() => {
                   askConfirmation({
                     message: "Are you sure you want to logout?",
-                    confirmLabel: "Logout",
+                    labels: {
+                      confirm: "Logout",
+                    },
                     onConfirm: () => signOutM.mutate(undefined),
                   });
                 }}
@@ -126,11 +129,10 @@ export const AppLayout = (props: Props) => {
               <ActionIcon
                 variant="transparent"
                 size="sm"
-                c="dimmed"
                 onClick={toggle}
                 hiddenFrom="sm"
               >
-                <IconLayoutSidebarFilled />
+                <IconLayoutSidebarFilled className="sidebar-toggle-button-icon" />
               </ActionIcon>
             </Group>
           </AppShell.Section>
@@ -139,6 +141,33 @@ export const AppLayout = (props: Props) => {
               leftSection={<IconNotebook size={ICON_SIZE.SM} />}
               label="Notes"
               href="/app/notes"
+            />
+          </AppShell.Section>
+
+          <AppShell.Section>
+            <Select
+              value={colorScheme}
+              onChange={(v) => {
+                if (v) {
+                  setColorScheme(v as MantineColorScheme);
+                }
+              }}
+              data={
+                [
+                  {
+                    label: "Light",
+                    value: "light",
+                  },
+                  {
+                    label: "Dark",
+                    value: "dark",
+                  },
+                  {
+                    label: "Auto",
+                    value: "auto",
+                  },
+                ] as const
+              }
             />
           </AppShell.Section>
         </AppShell.Navbar>

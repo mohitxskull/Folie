@@ -1,11 +1,11 @@
 import "@mantine/core/styles.css";
 import "@/styles/global.css";
-import "@/styles/theme.css";
 import "@mantine/dates/styles.css";
 import "@mantine/notifications/styles.css";
 import "@mantine/nprogress/styles.css";
 import "@folie/cobalt-animation/cobalt-animation.css";
 import "@folie/cobalt/cobalt.css";
+import "@/styles/theme.css";
 
 import type { AppProps } from "next/app";
 

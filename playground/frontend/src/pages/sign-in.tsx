@@ -39,7 +39,7 @@ export default function Page() {
 
   const queryClient = useQueryClient();
 
-  const [form, formM, iProps] = gateTan.useForm({
+  const { form, inputProps, mutation } = gateTan.useForm({
     endpoint: "V1_AUTH_SIGN_IN",
 
     initialValues: {
@@ -86,14 +86,15 @@ export default function Page() {
                 </Anchor>
               </Text>
 
-              <Form mutation={formM} submit={formM.mutate} form={form}>
+              <Form mutation={mutation} submit={mutation.mutate} form={form}>
                 {({ dirty, loading }) => (
                   <>
                     <TextInput
+                      autoComplete="email"
                       label="Email"
                       placeholder="Enter your email"
                       type="email"
-                      {...iProps("email")}
+                      {...inputProps("email")}
                       key={form.key("email")}
                       required
                       withAsterisk={false}
@@ -102,7 +103,7 @@ export default function Page() {
                     <PasswordInput
                       label="Password"
                       placeholder="Enter your password"
-                      {...iProps("password")}
+                      {...inputProps("password")}
                       key={form.key("password")}
                       required
                       minLength={8}
