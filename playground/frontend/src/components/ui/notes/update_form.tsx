@@ -11,6 +11,7 @@ import { OnValuesChangeParams } from "@folie/gate-tan/types";
 import { useMemo, useState } from "react";
 import { timeAgo } from "@/lib/helpers/date";
 import LZString from "lz-string";
+import { usePreventNavigation } from "@/lib/hooks/use_prevent_navigation";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
@@ -19,6 +20,10 @@ type Props = {
 
 export const NoteUpdateForm = (props: Props) => {
   const [status, setStatus] = useState<"Saved" | "Unsaved" | "Error">("Saved");
+
+  usePreventNavigation(status !== "Saved", () => {
+    return confirm("Warning! You have unsaved changes.");
+  });
 
   const decompressedBody = useMemo(() => {
     return LZString.decompressFromBase64(props.note.body);
@@ -33,7 +38,7 @@ export const NoteUpdateForm = (props: Props) => {
           : values.values.body,
       });
     },
-    2500,
+    5000,
   );
 
   const { form, inputProps } = gateTan.useForm({

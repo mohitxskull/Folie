@@ -16,6 +16,7 @@
     "./types": "./build/src/types/index.js",
     "./components": "./build/src/components/index.js",
     "./helpers": "./build/src/helpers/index.js",
+    "./hooks": "./build/src/hooks/index.js",
     "./cobalt.css": "./build/src/styles/cobalt.css"
   },
   "scripts": {

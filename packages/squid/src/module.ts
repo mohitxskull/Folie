@@ -17,14 +17,8 @@ export class SquidModule {
    * Creates a group of Squid instances with the provided parameters.
    */
   group<T extends Record<string, SquidParams>>(params: T) {
-    return Object.entries(params).reduce(
-      (acc, [key, value]) => {
-        return {
-          ...acc,
-          [key]: this.create(value),
-        }
-      },
-      {} as Record<keyof T, Squid>
-    )
+    return Object.fromEntries(
+      Object.entries(params).map(([key, value]) => [key, this.create(value)])
+    ) as Record<keyof T, Squid>
   }
 }

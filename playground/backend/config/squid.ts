@@ -5,12 +5,12 @@ const squidModule = new SquidModule(env.get('SQUID_KEY'))
 
 export const squid = squidModule.group({
   user: {
-    prefix: 'usr',
+    prefixBase: 'usr',
   },
   session: {
-    prefix: 'ses',
+    prefixBase: 'ses',
   },
   note: {
-    prefix: 'not',
+    prefixBase: 'not',
   },
 })

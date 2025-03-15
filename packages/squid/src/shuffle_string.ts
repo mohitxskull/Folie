@@ -12,29 +12,14 @@ export const seedRandRange = (min: number, max: number, seed: string | number): 
   return Math.floor(seededRandom * (max - min) + min)
 }
 
-const shuffle = (array: string[], seed: number) => {
+const shuffle = (array: string[], seed: string) => {
+  const rand = new Rand(seed, PRNG.xoshiro128ss)
   let currentIndex = array.length
-  let temporaryValue: string
-  let randomIndex: number
-
-  seed = seed || 1
-
-  const random = () => {
-    var x = Math.sin(seed++) * 10000
-    return x - Math.floor(x)
+  while (currentIndex > 0) {
+    const randomIndex = Math.floor(rand.next() * currentIndex)
+    currentIndex--
+    ;[array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]]
   }
-
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
-    // Pick a remaining element...
-    randomIndex = Math.floor(random() * currentIndex)
-    currentIndex -= 1
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex]
-    array[currentIndex] = array[randomIndex]
-    array[randomIndex] = temporaryValue
-  }
-
   return array
 }
 
@@ -53,5 +38,5 @@ export const shuffleString = (data: string, seed?: string): string => {
 
   const newLength = seedRandRange(Math.ceil(dataLength / 2), dataLength, intSeed)
 
-  return shuffle(splittedData, intSeed).slice(0, newLength).join('')
+  return shuffle(splittedData, selectedSeed).slice(0, newLength).join('')
 }

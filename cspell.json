@@ -39,6 +39,8 @@
     "remoteip",
     "autosize",
     "tiptap",
-    "Strikethrough"
+    "Strikethrough",
+    "returnValue",
+    "returnValue"
   ]
 }

@@ -105,14 +105,17 @@ export const AppLayout = (props: Props) => {
                 disabled={signOutM.isPending}
                 c="red"
                 px="xs"
-                onClick={() => {
-                  askConfirmation({
+                onClick={async () => {
+                  const res = await askConfirmation({
                     message: "Are you sure you want to logout?",
                     labels: {
                       confirm: "Logout",
                     },
-                    onConfirm: () => signOutM.mutate(undefined),
                   });
+
+                  if (res) {
+                    signOutM.mutate(undefined);
+                  }
                 }}
               >
                 Logout

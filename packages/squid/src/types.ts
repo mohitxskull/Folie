@@ -1,5 +1,5 @@
 export type SquidParams = {
-  prefix: string
+  prefixBase: string
   minLength?: number
   prefixConnector?: string
   dictionary?: string

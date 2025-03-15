@@ -3,6 +3,7 @@ import { shuffleString } from './shuffle_string.js'
 import vine from '@vinejs/vine'
 import { createHash } from 'node:crypto'
 import { Secret } from '@adonisjs/core/helpers'
+import { SquidParams } from './types.js'
 
 const defaultDictionary = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
 
@@ -29,21 +30,27 @@ export class Squid {
    * @param params.prefixConnector - Optional connector string between prefix parts, default is '_'.
    * @param params.dictionary - Optional custom dictionary for encoding, default is alphanumeric.
    */
-  constructor(
-    secret: Secret<string>,
-    params: {
-      prefix: string
-      minLength?: number
-      prefixConnector?: string
-      dictionary?: string
-    }
-  ) {
-    this.prefixBase = params.prefix
+  constructor(secret: Secret<string>, params: SquidParams) {
+    this.prefixBase = params.prefixBase
     this.prefixConnector = params.prefixConnector ?? '_'
+
+    if (this.prefixBase.includes(this.prefixConnector)) {
+      throw new Error('Prefix should not contain the connector character')
+    }
 
     this.minLength = params.minLength ?? 22
 
     this.dictionary = params.dictionary ?? defaultDictionary
+
+    if (this.dictionary.length < 5) {
+      throw new Error('Dictionary must contain at least 5 characters')
+    }
+
+    const uniqueChars = new Set(this.dictionary).size
+
+    if (this.dictionary && uniqueChars < 5) {
+      throw new Error('Dictionary must have at least 5 unique characters')
+    }
 
     this.finalMinLength = this.prefix.length + this.minLength
 
@@ -53,10 +60,11 @@ export class Squid {
 
     const dictionary = shuffleString(this.dictionary, seed)
 
-    this.client = new Sqids({
-      alphabet: dictionary,
-      minLength: this.minLength,
-    })
+    try {
+      this.client = new Sqids({ alphabet: dictionary, minLength: this.minLength })
+    } catch (error) {
+      throw new Error(`Failed to initialize Sqids: ${error.message}`)
+    }
   }
 
   /**
@@ -109,7 +117,13 @@ export class Squid {
       })
     }
 
-    const id = this.client.decode(uuid.replace(new RegExp(`^${this.prefix}`), ''))[0]
+    const idPart = uuid.replace(new RegExp(`^${this.prefix}`), '')
+
+    if (!idPart) {
+      throw new Error('Invalid UUID (empty ID part)')
+    }
+
+    const id = this.client.decode(idPart)[0]
 
     if (!id) {
       throw new Error('Invalid UUID', {

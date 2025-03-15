@@ -34,7 +34,7 @@ export default function Page() {
         <AppShell.Main h={`calc(100vh - ${setting.header.height}px)`}>
           <Center h="100%">
             <Stack gap="0">
-              <Title mx="auto" size="15vw">
+              <Title mx="auto" size="15vw" fw="800">
                 <Reveal
                   splitBy="characters"
                   staggerDuration={0.025}
