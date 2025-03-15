@@ -927,6 +927,9 @@ importers:
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
+      dot-prop:
+        specifier: ^9.0.0
+        version: 9.0.0
       lowlight:
         specifier: ^3.3.0
         version: 3.3.0

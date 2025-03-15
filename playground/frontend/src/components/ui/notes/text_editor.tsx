@@ -2,7 +2,11 @@ import "@mantine/tiptap/styles.css";
 
 import { useUncontrolled } from "@mantine/hooks";
 import { useEditor, BubbleMenu } from "@tiptap/react";
-import { RichTextEditor, Link } from "@mantine/tiptap";
+import {
+  RichTextEditor,
+  Link,
+  useRichTextEditorContext,
+} from "@mantine/tiptap";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from "@tiptap/extension-highlight";
@@ -14,8 +18,26 @@ import { Group, InputError, Paper, Stack } from "@mantine/core";
 import { DisableTabIndex } from "@/components/disable_tab_index";
 import { all, createLowlight } from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { IconCodeDots } from "@tabler/icons-react";
 
 const lowlight = createLowlight(all);
+
+// ============================================
+
+const ToggleCodeBlockControl = () => {
+  const { editor } = useRichTextEditorContext();
+  return (
+    <RichTextEditor.Control
+      onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
+      aria-label="Insert star emoji"
+      title="Insert star emoji"
+    >
+      <IconCodeDots stroke={1.5} size={16} />
+    </RichTextEditor.Control>
+  );
+};
+
+// ============================================
 
 type Props = {
   value?: string;
@@ -116,6 +138,7 @@ export const NoteTextEditor = (props: Props) => {
                     <RichTextEditor.ClearFormatting />
                     <RichTextEditor.Highlight />
                     <RichTextEditor.Code />
+                    <ToggleCodeBlockControl />
                   </RichTextEditor.ControlsGroup>
 
                   <RichTextEditor.ControlsGroup>

@@ -47,7 +47,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
   useQuery = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(
     params: {
       endpoint: EK
-      input: EP['input']
+      input?: EP['input']
     } & Omit<UndefinedInitialDataOptions<EP['input'], Error, EP['output']>, 'queryFn' | 'queryKey'>
   ) => {
     const { endpoint, input, ...rest } = params
@@ -135,8 +135,8 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
 
     const [internalBody, setInternalBody] = useSetState<NonNullable<EP['input']>>(input ?? {})
 
-    const [debouncedBody] = useDebouncedValue(internalBody, debounce?.timeout || 200, {
-      leading: debounce?.leading || true,
+    const [debouncedBody] = useDebouncedValue(internalBody, debounce?.timeout || 1000, {
+      leading: debounce?.leading || false,
     })
 
     const internalQueryCall = this.useQuery({
@@ -148,6 +148,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
 
     return {
       query: internalQueryCall,
+      debouncedBody: debouncedBody,
       body: internalBody,
       setBody: setInternalBody,
     } as const

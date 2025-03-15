@@ -5,6 +5,7 @@ import { gateTan } from "@/configs/gate_tan";
 import { gateClient } from "@/configs/gate_client";
 import { LocalQueryLoader } from "@/components/query_loader";
 import { NoteUpdateForm } from "@/components/ui/notes/update_form";
+import { Space } from "@mantine/core";
 
 export const getServerSideProps = gateServer.checkpoint();
 
@@ -37,6 +38,8 @@ export default function Page() {
           {({ note }) => (
             <>
               <NoteUpdateForm note={note} refetch={() => noteQ.refetch()} />
+
+              <Space h="xl" />
             </>
           )}
         </LocalQueryLoader>

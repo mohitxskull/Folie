@@ -3,11 +3,14 @@ import { LocalQueryLoader } from "@/components/query_loader";
 import {
   Center,
   Container,
+  Divider,
   Group,
   Loader,
   Paper,
+  Space,
   Stack,
   Text,
+  TextInput,
   Title,
 } from "@mantine/core";
 import { gateServer } from "@/configs/gate_server";
@@ -19,6 +22,10 @@ import { timeAgo } from "@/lib/helpers/date";
 import { PaginationRange } from "@/components/pagination_range";
 import { SimplePagination } from "@/components/simple_pagination";
 import { useRouter } from "next/router";
+import {
+  getTypedProperty,
+  setTypedProperty,
+} from "@/lib/helpers/set_object_property";
 
 export const getServerSideProps = gateServer.checkpoint();
 
@@ -37,37 +44,80 @@ export default function Page() {
         },
       },
     },
+    debounce: {
+      timeout: 1000,
+    },
   });
 
   return (
     <>
       <AppLayout crumbs={noteCrumbs.get()}>
-        <LocalQueryLoader
-          query={query}
-          isLoading={
-            <>
-              <Center h="100vh">
-                <Loader />
-              </Center>
-            </>
-          }
-        >
-          {({ data, meta }) => (
-            <>
-              <Container pt="xl">
-                <Stack>
-                  <Group justify="space-between">
-                    <Title>Notes</Title>
+        <Container pt="xl">
+          <Stack>
+            <Group justify="space-between">
+              <Title>Notes</Title>
 
-                    <NoteCreateForm refetch={query.refetch} />
-                  </Group>
+              <NoteCreateForm refetch={query.refetch} />
+            </Group>
 
+            <TextInput
+              minLength={1}
+              maxLength={100}
+              placeholder="Search notes..."
+              value={getTypedProperty(body, "query.filter.title", "")}
+              onChange={(e) => {
+                setBody(
+                  setTypedProperty(
+                    body,
+                    "query.filter.title",
+                    e.currentTarget.value,
+                    "",
+                  ),
+                );
+              }}
+            />
+
+            <Divider
+              classNames={{
+                root: "big-dash",
+              }}
+              variant="dashed"
+            />
+            <LocalQueryLoader
+              query={query}
+              isLoading={
+                <>
+                  <Center h="100vh">
+                    <Loader />
+                  </Center>
+                </>
+              }
+            >
+              {({ data, meta }) => (
+                <>
                   <Show>
                     <Show.When isTrue={data.length === 0}>
                       <>
                         <Center h="50vh">
                           <Text fs="italic" fw="bold">
-                            &quot;No notes found.&quot;
+                            <Show>
+                              <Show.When
+                                isTrue={
+                                  getTypedProperty(
+                                    body,
+                                    "query.filter.title",
+                                    "",
+                                  ) !== ""
+                                }
+                              >
+                                {`No notes found for "${getTypedProperty(
+                                  body,
+                                  "query.filter.title",
+                                  "",
+                                )}"`}
+                              </Show.When>
+                              <Show.Else>&quot;No notes found.&quot;</Show.Else>
+                            </Show>
                           </Text>
                         </Center>
                       </>
@@ -105,34 +155,32 @@ export default function Page() {
 
                         <Group justify="space-between">
                           <PaginationRange
-                            page={Number(body.query.page)}
-                            limit={Number(body.query.limit)}
+                            page={getTypedProperty(body, "query.page", 1)}
+                            limit={getTypedProperty(body, "query.limit", 10)}
                             total={meta.total}
                           />
 
                           <SimplePagination
-                            page={Number(body.query.page)}
-                            limit={Number(body.query.limit)}
+                            page={getTypedProperty(body, "query.page", 1)}
+                            limit={getTypedProperty(body, "query.limit", 10)}
                             total={meta.total}
                             onChange={(page) => {
-                              setBody({
-                                ...body,
-                                query: {
-                                  ...body.query,
-                                  page,
-                                },
-                              });
+                              setBody(
+                                setTypedProperty(body, "query.page", page, 1),
+                              );
                             }}
                           />
                         </Group>
+
+                        <Space h="xl" />
                       </>
                     </Show.Else>
                   </Show>
-                </Stack>
-              </Container>
-            </>
-          )}
-        </LocalQueryLoader>
+                </>
+              )}
+            </LocalQueryLoader>
+          </Stack>
+        </Container>
       </AppLayout>
     </>
   );

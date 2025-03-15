@@ -114,3 +114,7 @@ body {
     }
   }
 }
+
+.big-dash {
+  --divider-size: 2px;
+}

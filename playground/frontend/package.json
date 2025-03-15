@@ -48,6 +48,7 @@
     "case-anything": "^3.1.0",
     "cookies-next": "^5.1.0",
     "dayjs": "^1.11.13",
+    "dot-prop": "^9.0.0",
     "lowlight": "^3.3.0",
     "lz-string": "^1.5.0",
     "next": "15.1.6",
