@@ -65,8 +65,32 @@ router
             router.put(':noteId', [() => import('#controllers/note/update_controller')])
 
             router.delete(':noteId', [() => import('#controllers/note/delete_controller')])
+
+            router
+              .group(() => {
+                router.post('add/:noteId', [() => import('#controllers/note/tag/add_controller')])
+                router.post('remove/:noteId', [
+                  () => import('#controllers/note/tag/remove_controller'),
+                ])
+              })
+              .prefix('tag')
           })
           .prefix('note')
+          .use(middleware.auth())
+
+        router
+          .group(() => {
+            router.get('', [() => import('#controllers/tag/list_controller')])
+
+            router.get(':tagId', [() => import('#controllers/tag/show_controller')])
+
+            router.post('', [() => import('#controllers/tag/create_controller')])
+
+            router.put(':tagId', [() => import('#controllers/tag/update_controller')])
+
+            router.delete(':tagId', [() => import('#controllers/tag/delete_controller')])
+          })
+          .prefix('tag')
           .use(middleware.auth())
 
         router.get('ping', [() => import('#controllers/ping_controller')])

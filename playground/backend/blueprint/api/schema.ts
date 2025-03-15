@@ -43,6 +43,27 @@ export type V1NoteUpdateRoute = InferController<
 export type V1NoteDeleteRoute = InferController<
   (typeof import('../../app/controllers/note/delete_controller.ts'))['default']
 >
+export type V1NoteTagAddRoute = InferController<
+  (typeof import('../../app/controllers/note/tag/add_controller.ts'))['default']
+>
+export type V1NoteTagRemoveRoute = InferController<
+  (typeof import('../../app/controllers/note/tag/remove_controller.ts'))['default']
+>
+export type V1TagListRoute = InferController<
+  (typeof import('../../app/controllers/tag/list_controller.ts'))['default']
+>
+export type V1TagShowRoute = InferController<
+  (typeof import('../../app/controllers/tag/show_controller.ts'))['default']
+>
+export type V1TagCreateRoute = InferController<
+  (typeof import('../../app/controllers/tag/create_controller.ts'))['default']
+>
+export type V1TagUpdateRoute = InferController<
+  (typeof import('../../app/controllers/tag/update_controller.ts'))['default']
+>
+export type V1TagDeleteRoute = InferController<
+  (typeof import('../../app/controllers/tag/delete_controller.ts'))['default']
+>
 export type V1PingRoute = InferController<
   (typeof import('../../app/controllers/ping_controller.ts'))['default']
 >
@@ -98,6 +119,33 @@ export const endpoints = {
   V1_NOTE_DELETE: endpoint<V1NoteDeleteRoute>({
     form: false,
     url: '/api/v1/note/{{ noteId }}',
+    method: 'DELETE',
+  }),
+  V1_NOTE_TAG_ADD: endpoint<V1NoteTagAddRoute>({
+    form: false,
+    url: '/api/v1/note/tag/add/{{ noteId }}',
+    method: 'POST',
+  }),
+  V1_NOTE_TAG_REMOVE: endpoint<V1NoteTagRemoveRoute>({
+    form: false,
+    url: '/api/v1/note/tag/remove/{{ noteId }}',
+    method: 'POST',
+  }),
+  V1_TAG_LIST: endpoint<V1TagListRoute>({ form: false, url: '/api/v1/tag', method: 'GET' }),
+  V1_TAG_SHOW: endpoint<V1TagShowRoute>({
+    form: false,
+    url: '/api/v1/tag/{{ tagId }}',
+    method: 'GET',
+  }),
+  V1_TAG_CREATE: endpoint<V1TagCreateRoute>({ form: false, url: '/api/v1/tag', method: 'POST' }),
+  V1_TAG_UPDATE: endpoint<V1TagUpdateRoute>({
+    form: false,
+    url: '/api/v1/tag/{{ tagId }}',
+    method: 'PUT',
+  }),
+  V1_TAG_DELETE: endpoint<V1TagDeleteRoute>({
+    form: false,
+    url: '/api/v1/tag/{{ tagId }}',
     method: 'DELETE',
   }),
   V1_PING: endpoint<V1PingRoute>({ form: false, url: '/api/v1/ping', method: 'GET' }),

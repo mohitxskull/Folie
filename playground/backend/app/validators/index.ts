@@ -14,7 +14,7 @@ export const PasswordSchema = vine
 
 export const NoteTitleSchema = vine.string().minLength(1).maxLength(100)
 
-export const NoteBodySchema = vine.string().minLength(1).maxLength(5000)
+export const NoteBodySchema = vine.string().minLength(1).maxLength(10000)
 
 export const TagNameSchema = vine.string().minLength(1).maxLength(20)
 

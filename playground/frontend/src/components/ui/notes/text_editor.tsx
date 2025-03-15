@@ -12,6 +12,10 @@ import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
 import { Group, InputError, Paper, Stack } from "@mantine/core";
 import { DisableTabIndex } from "@/components/disable_tab_index";
+import { all, createLowlight } from "lowlight";
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+
+const lowlight = createLowlight(all);
 
 type Props = {
   value?: string;
@@ -41,6 +45,9 @@ export const NoteTextEditor = (props: Props) => {
       SubScript,
       Highlight,
       TextAlign.configure({ types: ["heading", "paragraph"] }),
+      CodeBlockLowlight.configure({
+        lowlight,
+      }),
     ],
     content: _value,
     immediatelyRender: false,
