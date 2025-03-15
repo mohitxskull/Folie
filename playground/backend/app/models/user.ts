@@ -1,14 +1,15 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column, hasMany, hasOne } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeSave, column, hasMany } from '@adonisjs/lucid/orm'
 import hash from '@adonisjs/core/services/hash'
 import Session from './session.js'
-import type { HasMany, HasOne } from '@adonisjs/lucid/types/relations'
+import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import Note from './note.js'
 import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
 import { ModelCache } from '@folie/castle'
+import Tag from './tag.js'
 
 export default class User extends BaseModel {
   static table = castle.table.user()
@@ -64,9 +65,12 @@ export default class User extends BaseModel {
     return this.$cache().get({
       key: 'metric',
       factory: async () => {
-        const notes = await this.related('note').query().count('* as $$total')
+        const [notes, tags] = await Promise.all([
+          this.related('notes').query().count('* as $$total'),
+          this.related('tags').query().count('* as $$total'),
+        ])
 
-        return { notes: notes[0].$$total }
+        return { notes: notes[0].$$total, tags: tags[0].$$total }
       },
       parser: async (p) => p,
     })
@@ -114,8 +118,11 @@ export default class User extends BaseModel {
   @hasMany(() => Session)
   declare sessions: HasMany<typeof Session>
 
-  @hasOne(() => Note)
-  declare note: HasOne<typeof Note>
+  @hasMany(() => Note)
+  declare notes: HasMany<typeof Note>
+
+  @hasMany(() => Tag)
+  declare tags: HasMany<typeof Tag>
 
   // Extra ======================================
 }

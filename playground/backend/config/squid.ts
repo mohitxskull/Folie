@@ -13,4 +13,7 @@ export const squid = squidModule.group({
   note: {
     prefixBase: 'not',
   },
+  tag: {
+    prefixBase: 'tag',
+  },
 })

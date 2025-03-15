@@ -6,6 +6,15 @@ export const castle = new CastleModule({
       user: 'users',
       session: 'sessions',
       note: 'notes',
+      tag: 'tags',
+      noteTags: 'note_tags',
+    },
+    pivot: {
+      noteTags: {
+        pivotTable: (t) => t.noteTags(),
+        pivotForeignKey: 'note_id',
+        pivotRelatedForeignKey: 'tag_id',
+      },
     },
   },
 })

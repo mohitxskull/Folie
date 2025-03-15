@@ -26,4 +26,8 @@ export const setting = {
   notes: {
     perUser: 20,
   },
+  tags: {
+    perUser: 10,
+    perNote: 5,
+  },
 }

@@ -1,8 +1,8 @@
-import { PivotOptions } from '../src/types/castle.js'
+import { ExtendedPivotOptions, PivotOptions } from '../src/types/castle.js'
 
 export class CastleModule<
   Table extends Record<string, string>,
-  Pivot extends Record<string, PivotOptions>,
+  Pivot extends Record<string, ExtendedPivotOptions<Table>>,
 > {
   readonly table: Record<keyof Table, (column?: string) => string>
   readonly pivot: Record<
@@ -14,34 +14,28 @@ export class CastleModule<
   >
 
   constructor(params: { config: { table: Table; pivot?: Pivot } }) {
-    this.table = Object.entries(params.config.table).reduce(
-      (acc, [key, value]) => ({
-        ...acc,
-        [key]: (column?: string) => {
-          if (column) {
-            return `${value}.${column}`
-          } else {
-            return value
-          }
-        },
-      }),
-      {} as Record<keyof Table, (column?: string) => string>
-    )
-    this.pivot = Object.entries(params.config.pivot ?? {}).reduce(
-      (acc, [key, value]) => ({
-        ...acc,
-        [key]: {
+    this.table = Object.fromEntries(
+      Object.entries(params.config.table).map(([key, value]) => [
+        key,
+        (column?: string) => (column ? `${value}.${column}` : value),
+      ])
+    ) as Record<keyof Table, (column?: string) => string>
+
+    this.pivot = Object.fromEntries(
+      Object.entries(params.config.pivot ?? {}).map(([key, value]) => [
+        key,
+        {
           pivotTimestamps: true,
           ...value,
+          pivotTable: value.pivotTable(this.table),
         },
-      }),
-      {} as Record<
-        keyof Pivot,
-        {
-          pivotTable: string
-          pivotTimestamps: boolean
-        } & PivotOptions
-      >
-    )
+      ])
+    ) as Record<
+      keyof Pivot,
+      {
+        pivotTable: string
+        pivotTimestamps: boolean
+      } & PivotOptions
+    >
   }
 }

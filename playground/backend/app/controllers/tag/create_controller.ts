@@ -1,5 +1,5 @@
 import { setting } from '#config/setting'
-import { NoteTitleSchema } from '#validators/index'
+import { TagDescriptionSchema, TagNameSchema } from '#validators/index'
 import { ProcessingException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
@@ -7,7 +7,8 @@ import vine from '@vinejs/vine'
 export default class Controller {
   input = vine.compile(
     vine.object({
-      title: NoteTitleSchema,
+      name: TagNameSchema,
+      description: TagDescriptionSchema.optional(),
     })
   )
 
@@ -23,11 +24,11 @@ export default class Controller {
       throw new ProcessingException('Maximum notes reached')
     }
 
-    const note = await user.related('notes').create({
-      title: payload.title,
-      body: '',
+    const tag = await user.related('tags').create({
+      name: payload.name,
+      description: payload.description,
     })
 
-    return { note: note.$serialize(), message: 'Note created successfully' }
+    return { tag: tag.$serialize() }
   })
 }

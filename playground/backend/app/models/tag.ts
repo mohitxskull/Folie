@@ -7,20 +7,21 @@ import User from './user.js'
 import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
 import { ModelCache } from '@folie/castle'
-import Tag from './tag.js'
+import Note from './note.js'
 
-export default class Note extends BaseModel {
-  static table = castle.table.note()
+export default class Tag extends BaseModel {
+  static table = castle.table.tag()
 
   // Serialize =============================
 
-  static $serialize(row: Note) {
+  static $serialize(row: Tag) {
     return {
       id: squid.note.encode(row.id),
 
       userId: squid.user.encode(row.userId),
-      title: row.title,
-      body: row.body,
+      slug: row.slug,
+      name: row.name,
+      description: row.description,
 
       createdAt: serializeDT(row.createdAt),
       updatedAt: serializeDT(row.updatedAt),
@@ -28,7 +29,7 @@ export default class Note extends BaseModel {
   }
 
   $serialize() {
-    return Note.$serialize(this)
+    return Tag.$serialize(this)
   }
 
   $toJSON() {
@@ -36,8 +37,9 @@ export default class Note extends BaseModel {
       id: this.id,
 
       userId: this.userId,
-      title: this.title,
-      body: this.body,
+      slug: this.slug,
+      name: this.name,
+      description: this.description,
 
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
@@ -47,11 +49,11 @@ export default class Note extends BaseModel {
   // Cache =============================
 
   static $cache() {
-    return new ModelCache(Note, cache.namespace(this.table))
+    return new ModelCache(Tag, cache.namespace(this.table))
   }
 
   $cache() {
-    return Note.$cache().row(this)
+    return Tag.$cache().row(this)
   }
 
   // Columns =============================
@@ -63,10 +65,13 @@ export default class Note extends BaseModel {
   declare userId: number
 
   @column()
-  declare title: string
+  declare slug: string
 
   @column()
-  declare body: string
+  declare name: string
+
+  @column()
+  declare description: string | null
 
   // DateTime =============================
 
@@ -83,8 +88,8 @@ export default class Note extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @manyToMany(() => Tag, castle.pivot.noteTags)
-  declare tags: ManyToMany<typeof Tag>
+  @manyToMany(() => Note, castle.pivot.noteTags)
+  declare notes: ManyToMany<typeof Note>
 
   // Extra ======================================
 

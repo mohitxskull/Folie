@@ -7,7 +7,7 @@ export default defineConfig({
   metaChunk: true,
 
   sitemap: {
-    hostname: "https://folie-suite.vercel.app"
+    hostname: "https://folie.mohitxskull.com"
   },
 
   head: [
@@ -40,7 +40,7 @@ export default defineConfig({
       {
         text: "Introduction",
         collapsed: false,
-        items: [{ text: "What is Filante?", link: "/" }],
+        items: [{ text: "What is Folie?", link: "/" }],
       },
       {
         text: "Packages",
