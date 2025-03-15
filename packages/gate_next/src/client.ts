@@ -5,10 +5,7 @@ import {
 } from 'cookies-next'
 import { useRouter } from 'next/router.js'
 
-export class GateNextClient<
-  CookieKeys extends Record<string, string>,
-  ParamKeys extends readonly [...string[]],
-> {
+export class GateNextClient<CookieKeys extends Record<string, string>, ParamKeys extends string[]> {
   cookieKeys: CookieKeys
   paramKeys: ParamKeys
 
@@ -22,7 +19,7 @@ export class GateNextClient<
 
     return {
       isReady: router.isReady,
-      param: (key: ParamKeys[number]) => {
+      param: <K extends ParamKeys[number]>(key: K): string => {
         if (!router.isReady) {
           return ''
         }
