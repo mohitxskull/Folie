@@ -4,6 +4,7 @@ import Note from '#models/note'
 import { ProcessingException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
+import { DateTime } from 'luxon'
 
 export default class Controller {
   input = vine.compile(
@@ -48,7 +49,9 @@ export default class Controller {
         throw new ProcessingException('Tag already added')
       }
 
-      await note.related('tags').attach([payload.tagId])
+      note.updatedAt = DateTime.utc()
+
+      await Promise.all([note.related('tags').attach([payload.tagId]), note.save()])
 
       return { message: 'Tag added successfully' }
     } else {
@@ -56,7 +59,9 @@ export default class Controller {
         throw new ProcessingException('Tag not found')
       }
 
-      await note.related('tags').detach([payload.tagId])
+      note.updatedAt = DateTime.utc()
+
+      await Promise.all([note.related('tags').detach([payload.tagId]), note.save()])
 
       return { message: 'Tag removed successfully' }
     }
