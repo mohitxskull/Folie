@@ -1,6 +1,7 @@
 import { AppLayout } from "@/components/layout/app";
 import { LocalQueryLoader } from "@/components/query_loader";
 import {
+  Button,
   Center,
   Container,
   Divider,
@@ -12,6 +13,7 @@ import {
   Text,
   TextInput,
   Title,
+  Tooltip,
 } from "@mantine/core";
 import { gateServer } from "@/configs/gate_server";
 import { noteCrumbs } from "@/lib/crumbs";
@@ -23,11 +25,18 @@ import { PaginationRange } from "@/components/pagination_range";
 import { SimplePagination } from "@/components/simple_pagination";
 import { useRouter } from "next/router";
 import { DotProp } from "@folie/lib";
+import { TagBadge } from "@/components/ui/notes/tag/badge";
+import { IconTagFilled } from "@tabler/icons-react";
+import { ICON_SIZE } from "@folie/cobalt";
+import { TagManageAside } from "@/components/ui/notes/tag/manage";
+import { useState } from "react";
 
 export const getServerSideProps = gateServer.checkpoint();
 
 export default function Page() {
   const router = useRouter();
+
+  const [tagManageState, setTagManageState] = useState(false);
 
   const { body, query, setBody } = gateTan.useList({
     endpoint: "V1_NOTE_LIST",
@@ -48,27 +57,52 @@ export default function Page() {
 
   return (
     <>
-      <AppLayout crumbs={noteCrumbs.get()}>
+      <AppLayout
+        crumbs={noteCrumbs.get()}
+        aside={{
+          state: tagManageState,
+          setState: setTagManageState,
+          children: (
+            <TagManageAside
+              state={tagManageState}
+              setState={setTagManageState}
+            />
+          ),
+        }}
+      >
         <Container pt="xl">
           <Stack>
             <Group justify="space-between">
               <Title>Notes</Title>
 
-              <NoteCreateForm refetch={query.refetch} />
+              <Group>
+                <NoteCreateForm refetch={query.refetch} />
+
+                <Tooltip label="Manage Tags" position="bottom-end">
+                  <Button
+                    px="xs"
+                    variant="outline"
+                    onClick={() => setTagManageState(!tagManageState)}
+                  >
+                    <IconTagFilled size={ICON_SIZE.SM} />
+                  </Button>
+                </Tooltip>
+              </Group>
             </Group>
 
             <TextInput
               minLength={1}
               maxLength={100}
+              description='Use "tag:" to search by tag, or enter keywords to search by note title'
               placeholder="Search notes..."
-              value={DotProp.lookup(body, "query.filter.title", "")}
+              value={DotProp.lookup(body, "query.filter.value", "")}
               onChange={(e) => {
-                const newTitle = e.currentTarget.value;
+                const newValue = e.currentTarget.value;
 
                 setBody({
                   query: {
                     ...body.query,
-                    filter: newTitle !== "" ? { title: newTitle } : undefined,
+                    filter: newValue !== "" ? { value: newValue } : undefined,
                   },
                 });
               }}
@@ -94,14 +128,14 @@ export default function Page() {
                         <Center h="50vh">
                           <Text fs="italic" fw="bold">
                             {(() => {
-                              const filterTitle = DotProp.lookup(
+                              const filterValue = DotProp.lookup(
                                 body,
-                                "query.filter.title",
+                                "query.filter.value",
                                 "",
                               );
 
-                              if (filterTitle !== "") {
-                                return `No notes found for "${filterTitle}"`;
+                              if (filterValue !== "") {
+                                return `No notes found for "${filterValue}"`;
                               } else {
                                 return `"No notes found."`;
                               }
@@ -125,17 +159,34 @@ export default function Page() {
                                   cursor: "pointer",
                                 }}
                               >
-                                <Group justify="space-between">
-                                  <Title order={4} flex={1}>
-                                    <Text inherit truncate="end" maw="60%">
-                                      {note.title}
-                                    </Text>
-                                  </Title>
+                                <Stack>
+                                  <Group justify="space-between">
+                                    <Title order={4} flex={1}>
+                                      <Text inherit truncate="end" maw="60%">
+                                        {note.title}
+                                      </Text>
+                                    </Title>
 
-                                  <Text c="dimmed" size="sm">
-                                    {timeAgo(note.updatedAt)}
-                                  </Text>
-                                </Group>
+                                    <Text c="dimmed" size="sm">
+                                      {timeAgo(note.updatedAt)}
+                                    </Text>
+                                  </Group>
+
+                                  {note.tags.length > 0 && (
+                                    <Group gap="xs">
+                                      <For each={note.tags}>
+                                        {(tag) => (
+                                          <>
+                                            <TagBadge
+                                              color="dark.9"
+                                              tag={tag}
+                                            />
+                                          </>
+                                        )}
+                                      </For>
+                                    </Group>
+                                  )}
+                                </Stack>
                               </Paper>
                             </>
                           )}

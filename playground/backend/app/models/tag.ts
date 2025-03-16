@@ -49,11 +49,23 @@ export default class Tag extends BaseModel {
   // Cache =============================
 
   static $cache() {
-    return new ModelCache(Tag, cache.namespace(this.table))
+    return new ModelCache(Tag, cache.namespace(this.table), ['metric'])
   }
 
   $cache() {
     return Tag.$cache().row(this)
+  }
+
+  $metric(this: Tag) {
+    return this.$cache().get({
+      key: 'metric',
+      factory: async () => {
+        const notes = await this.related('notes').query().count('* as $$total')
+
+        return { notes: notes[0].$$total }
+      },
+      parser: async (p) => p,
+    })
   }
 
   // Columns =============================

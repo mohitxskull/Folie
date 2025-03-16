@@ -21,7 +21,13 @@ export default class Controller {
           filter: vine
             .object({
               noteId: squid.note.schema.optional(),
-              name: TagNameSchema.optional(),
+              value: TagNameSchema.optional(),
+            })
+            .optional(),
+
+          properties: vine
+            .object({
+              metric: vine.boolean().optional(),
             })
             .optional(),
         })
@@ -48,8 +54,8 @@ export default class Controller {
     }
 
     // Filter by tag name if provided
-    if (payload.query?.filter?.name) {
-      listQuery = listQuery.andWhereLike('name', `%${payload.query.filter.name}%`)
+    if (payload.query?.filter?.value) {
+      listQuery = listQuery.andWhereLike('name', `%${payload.query.filter.value}%`)
     }
 
     // Execute the query and paginate results
@@ -58,6 +64,11 @@ export default class Controller {
       .paginate(payload.query?.page ?? 1, payload.query?.limit ?? 10)
 
     // Serialize and return the paginated results
-    return serializePage(list, (d) => d.$serialize())
+    return serializePage(list, async (d) => {
+      return {
+        ...d.$serialize(),
+        metric: payload.query?.properties?.metric ? await d.$metric() : null,
+      }
+    })
   })
 }

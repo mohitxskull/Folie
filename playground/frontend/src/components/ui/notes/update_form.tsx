@@ -14,7 +14,7 @@ import LZString from "lz-string";
 import { usePreventNavigation } from "@/lib/hooks/use_prevent_navigation";
 import { IconDotsVertical } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { NoteTag } from "./tag/tag";
+import { NoteTag } from "./tag/note";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
@@ -135,7 +135,7 @@ export const NoteUpdateForm = (props: Props) => {
             disabled={false}
           />
 
-          <NoteTag note={props.note} />
+          <NoteTag note={props.note} refetch={props.refetch} />
         </Stack>
 
         <LazyNoteTextEditor {...inputProps("body")} key={form.key("body")} />

@@ -1,4 +1,5 @@
 import { LucidRow, ModelPaginatorContract } from '@adonisjs/lucid/types/model'
+import { promiseMap } from '@folie/lib'
 import vine from '@vinejs/vine'
 import { DateTime } from 'luxon'
 
@@ -18,12 +19,12 @@ const paginationMetaValidator = vine.compile(
 
 const serializePage = async <MODAL extends LucidRow, TRANSFER>(
   paginated: ModelPaginatorContract<MODAL>,
-  transferFunc: (model: MODAL) => TRANSFER
+  transferFunc: (model: MODAL) => TRANSFER | Promise<TRANSFER>
 ) => {
   const serialized = paginated.toJSON()
 
   return {
-    data: serialized.data.map((model) => transferFunc(model as MODAL)),
+    data: await promiseMap(serialized.data, async (model) => await transferFunc(model as MODAL)),
     meta: await paginationMetaValidator.validate(serialized.meta),
   }
 }

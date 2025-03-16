@@ -32,6 +32,12 @@ body {
   }
 }
 
+.mantine-AppShell-aside {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-9);
+  }
+}
+
 /* Paper */
 
 .mantine-Paper-root {
@@ -79,7 +85,7 @@ body {
   }
 }
 
-.sidebar-toggle-button-icon {
+.color-dimmed {
   @mixin dark {
     color: var(--mantine-color-dimmed);
   }
@@ -136,6 +142,12 @@ body {
 }
 
 .mantine-Combobox-dropdown {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.mantine-HoverCard-dropdown {
   @mixin dark {
     background-color: var(--mantine-color-dark-8);
   }

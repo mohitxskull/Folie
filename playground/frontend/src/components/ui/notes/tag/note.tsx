@@ -1,24 +1,19 @@
 import { LocalQueryLoader } from "@/components/query_loader";
 import { gateTan } from "@/configs/gate_tan";
 import { ICON_SIZE } from "@folie/cobalt";
-import { askConfirmation, For } from "@folie/cobalt/components";
+import { For } from "@folie/cobalt/components";
 import { DotProp } from "@folie/lib";
 import { V1NoteShowRoute } from "@folie/playground-backend/blueprint";
-import {
-  Badge,
-  Combobox,
-  Group,
-  Text,
-  Tooltip,
-  useCombobox,
-} from "@mantine/core";
+import { Badge, Combobox, Group, Text, useCombobox } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useMemo } from "react";
-import { TagCreateForm } from "./tag_create_form";
+import { TagCreateForm } from "./create_form";
 import { useDisclosure } from "@mantine/hooks";
+import { TagBadge } from "./badge";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
+  refetch: () => void;
 };
 
 export const NoteTag = (props: Props) => {
@@ -61,6 +56,7 @@ export const NoteTag = (props: Props) => {
     endpoint: "V1_NOTE_TAG_UPDATE",
     onSuccess: () => {
       noteTagQ.refetch();
+      props.refetch();
     },
   });
 
@@ -73,7 +69,7 @@ export const NoteTag = (props: Props) => {
           ...tagBody.query,
           filter: {
             ...tagBody.query?.filter,
-            name: undefined,
+            value: undefined,
           },
         },
       });
@@ -127,43 +123,18 @@ export const NoteTag = (props: Props) => {
               <For each={data}>
                 {(tag) => (
                   <>
-                    <Tooltip
-                      opened={
-                        (tag.description?.length ?? 0) > 0 ? undefined : false
-                      }
-                      label={tag.description}
-                      multiline
-                      w={220}
-                      withArrow
-                    >
-                      <Badge
-                        variant="filled"
-                        color="dark.7"
-                        style={{
-                          cursor: "pointer",
-                        }}
-                        onClick={async () => {
-                          const confirmation = await askConfirmation({
-                            message: `Are you sure you want to remove tag "${tag.name}"?`,
-                            labels: {
-                              confirm: "Remove",
-                            },
-                          });
-
-                          if (confirmation) {
-                            tagM.mutate({
-                              params: {
-                                noteId: props.note.id,
-                              },
-                              action: "remove",
-                              tagId: tag.id,
-                            });
-                          }
-                        }}
-                      >
-                        {tag.name}
-                      </Badge>
-                    </Tooltip>
+                    <TagBadge
+                      tag={tag}
+                      remove={() => {
+                        tagM.mutate({
+                          params: {
+                            noteId: props.note.id,
+                          },
+                          action: "remove",
+                          tagId: tag.id,
+                        });
+                      }}
+                    />
                   </>
                 )}
               </For>
@@ -205,7 +176,7 @@ export const NoteTag = (props: Props) => {
           <Combobox.Dropdown>
             <Combobox.Search
               disabled={tagQ.isLoading}
-              value={DotProp.lookup(tagBody, "query.filter.name", "")}
+              value={DotProp.lookup(tagBody, "query.filter.value", "")}
               onChange={(event) => {
                 const newValue = event.currentTarget.value;
 
@@ -214,7 +185,7 @@ export const NoteTag = (props: Props) => {
                     ...tagBody.query,
                     filter: {
                       ...tagBody.query?.filter,
-                      name: newValue.length > 0 ? newValue : undefined,
+                      value: newValue.length > 0 ? newValue : undefined,
                     },
                   },
                 });

@@ -21,12 +21,17 @@ type Props = {
   children: React.ReactNode;
   fullHeight?: boolean;
   crumbs?: Crumbs;
+  aside?: {
+    children: React.ReactNode;
+    state: boolean;
+    setState: (opened: boolean) => void;
+  };
 };
 
 export const AppLayout = (props: Props) => {
   const signOutM = useSignOut();
 
-  const [opened, { toggle }] = useDisclosure();
+  const [navBarState, navBarHandlers] = useDisclosure();
 
   return (
     <>
@@ -35,16 +40,32 @@ export const AppLayout = (props: Props) => {
         navbar={{
           width: 250,
           breakpoint: "sm",
-          collapsed: { mobile: !opened, desktop: opened },
+          collapsed: { mobile: !navBarState, desktop: !navBarState },
         }}
+        aside={
+          props.aside
+            ? {
+                width: 300,
+                breakpoint: "sm",
+                collapsed: {
+                  mobile: !props.aside.state,
+                  desktop: !props.aside.state,
+                },
+              }
+            : undefined
+        }
         padding="md"
         layout="alt"
       >
         <AppShell.Header withBorder={false}>
           <Group justify="space-between" px="md" h="100%">
             <Group>
-              <ActionIcon variant="transparent" size="sm" onClick={toggle}>
-                <IconLayoutSidebarFilled className="sidebar-toggle-button-icon" />
+              <ActionIcon
+                variant="transparent"
+                size="sm"
+                onClick={navBarHandlers.toggle}
+              >
+                <IconLayoutSidebarFilled className="color-dimmed" />
               </ActionIcon>
 
               {props.crumbs && (
@@ -127,10 +148,10 @@ export const AppLayout = (props: Props) => {
               <ActionIcon
                 variant="transparent"
                 size="sm"
-                onClick={toggle}
+                onClick={navBarHandlers.toggle}
                 hiddenFrom="sm"
               >
-                <IconLayoutSidebarFilled className="sidebar-toggle-button-icon" />
+                <IconLayoutSidebarFilled className="color-dimmed" />
               </ActionIcon>
             </Group>
           </AppShell.Section>
@@ -142,6 +163,10 @@ export const AppLayout = (props: Props) => {
             />
           </AppShell.Section>
         </AppShell.Navbar>
+
+        {props.aside && (
+          <AppShell.Aside p="md">{props.aside.children}</AppShell.Aside>
+        )}
 
         <AppShell.Main h={props.fullHeight ? `100vh` : "100%"}>
           {props.children}
