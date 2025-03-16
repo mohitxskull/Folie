@@ -1,7 +1,7 @@
 import { setting } from '#config/setting'
 import { TagDescriptionSchema, TagNameSchema } from '#validators/index'
 import { ProcessingException } from '@folie/castle/exception'
-import { handler } from '@folie/castle/helpers'
+import { handler, slugify } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
 
 export default class Controller {
@@ -24,11 +24,20 @@ export default class Controller {
       throw new ProcessingException('Maximum notes reached')
     }
 
+    const slug = slugify(payload.name)
+
+    const exist = await user.related('tags').query().where('slug', slug).first()
+
+    if (exist) {
+      throw new ProcessingException('Tag already exists')
+    }
+
     const tag = await user.related('tags').create({
+      slug,
       name: payload.name,
       description: payload.description,
     })
 
-    return { tag: tag.$serialize() }
+    return { tag: tag.$serialize(), message: `Tag "${tag.name}" created successfully` }
   })
 }

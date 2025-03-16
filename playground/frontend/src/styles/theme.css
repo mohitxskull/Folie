@@ -115,6 +115,22 @@ body {
   }
 }
 
-.big-dash {
-  --divider-size: 2px;
+.mantine-RichTextEditor-toolbar {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}
+
+.mantine-Paper-root {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+
+  @mixin light {
+    background-color: var(--mantine-color-gray-1);
+  }
+}
+
+.tiptap a {
+  color: var(--mantine-color-blue-3);
 }

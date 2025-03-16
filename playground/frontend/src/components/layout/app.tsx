@@ -3,12 +3,9 @@ import {
   AppShell,
   Button,
   Group,
-  MantineColorScheme,
   NavLink,
   ScrollArea,
-  Select,
   Text,
-  useMantineColorScheme,
 } from "@mantine/core";
 import { setting } from "@/configs/setting";
 import { Logo } from "../logo";
@@ -30,8 +27,6 @@ export const AppLayout = (props: Props) => {
   const signOutM = useSignOut();
 
   const [opened, { toggle }] = useDisclosure();
-
-  const { setColorScheme, colorScheme } = useMantineColorScheme();
 
   return (
     <>
@@ -144,33 +139,6 @@ export const AppLayout = (props: Props) => {
               leftSection={<IconNotebook size={ICON_SIZE.SM} />}
               label="Notes"
               href="/app/notes"
-            />
-          </AppShell.Section>
-
-          <AppShell.Section>
-            <Select
-              value={colorScheme}
-              onChange={(v) => {
-                if (v) {
-                  setColorScheme(v as MantineColorScheme);
-                }
-              }}
-              data={
-                [
-                  {
-                    label: "Light",
-                    value: "light",
-                  },
-                  {
-                    label: "Dark",
-                    value: "dark",
-                  },
-                  {
-                    label: "Auto",
-                    value: "auto",
-                  },
-                ] as const
-              }
             />
           </AppShell.Section>
         </AppShell.Navbar>

@@ -22,10 +22,7 @@ import { timeAgo } from "@/lib/helpers/date";
 import { PaginationRange } from "@/components/pagination_range";
 import { SimplePagination } from "@/components/simple_pagination";
 import { useRouter } from "next/router";
-import {
-  getTypedProperty,
-  setTypedProperty,
-} from "@/lib/helpers/set_object_property";
+import { DotProp } from "@folie/lib";
 
 export const getServerSideProps = gateServer.checkpoint();
 
@@ -45,7 +42,7 @@ export default function Page() {
       },
     },
     debounce: {
-      timeout: 1000,
+      timeout: 500,
     },
   });
 
@@ -64,25 +61,21 @@ export default function Page() {
               minLength={1}
               maxLength={100}
               placeholder="Search notes..."
-              value={getTypedProperty(body, "query.filter.title", "")}
+              value={DotProp.lookup(body, "query.filter.title", "")}
               onChange={(e) => {
-                setBody(
-                  setTypedProperty(
-                    body,
-                    "query.filter.title",
-                    e.currentTarget.value,
-                    "",
-                  ),
-                );
+                const newTitle = e.currentTarget.value;
+
+                setBody({
+                  query: {
+                    ...body.query,
+                    filter: newTitle !== "" ? { title: newTitle } : undefined,
+                  },
+                });
               }}
             />
 
-            <Divider
-              classNames={{
-                root: "big-dash",
-              }}
-              variant="dashed"
-            />
+            <Divider />
+
             <LocalQueryLoader
               query={query}
               isLoading={
@@ -100,24 +93,19 @@ export default function Page() {
                       <>
                         <Center h="50vh">
                           <Text fs="italic" fw="bold">
-                            <Show>
-                              <Show.When
-                                isTrue={
-                                  getTypedProperty(
-                                    body,
-                                    "query.filter.title",
-                                    "",
-                                  ) !== ""
-                                }
-                              >
-                                {`No notes found for "${getTypedProperty(
-                                  body,
-                                  "query.filter.title",
-                                  "",
-                                )}"`}
-                              </Show.When>
-                              <Show.Else>&quot;No notes found.&quot;</Show.Else>
-                            </Show>
+                            {(() => {
+                              const filterTitle = DotProp.lookup(
+                                body,
+                                "query.filter.title",
+                                "",
+                              );
+
+                              if (filterTitle !== "") {
+                                return `No notes found for "${filterTitle}"`;
+                              } else {
+                                return `"No notes found."`;
+                              }
+                            })()}
                           </Text>
                         </Center>
                       </>
@@ -155,18 +143,23 @@ export default function Page() {
 
                         <Group justify="space-between">
                           <PaginationRange
-                            page={getTypedProperty(body, "query.page", 1)}
-                            limit={getTypedProperty(body, "query.limit", 10)}
+                            page={DotProp.lookup(body, "query.page", 1)}
+                            limit={DotProp.lookup(body, "query.limit", 10)}
                             total={meta.total}
                           />
 
                           <SimplePagination
-                            page={getTypedProperty(body, "query.page", 1)}
-                            limit={getTypedProperty(body, "query.limit", 10)}
+                            page={DotProp.lookup(body, "query.page", 1)}
+                            limit={DotProp.lookup(body, "query.limit", 10)}
                             total={meta.total}
                             onChange={(page) => {
                               setBody(
-                                setTypedProperty(body, "query.page", page, 1),
+                                DotProp.assignOrOmit(
+                                  body,
+                                  "query.page",
+                                  page,
+                                  1,
+                                ),
                               );
                             }}
                           />

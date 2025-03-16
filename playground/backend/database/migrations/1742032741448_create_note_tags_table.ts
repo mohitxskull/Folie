@@ -8,19 +8,19 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (t) => {
       t.increments('id')
 
-      t.integer('user_id')
-        .unsigned()
-        .references(castle.table.user('id'))
-        .notNullable()
-        .onDelete('CASCADE')
-
       t.integer('note_id')
         .unsigned()
         .references(castle.table.note('id'))
         .notNullable()
         .onDelete('CASCADE')
 
-      t.unique(['user_id', 'note_id'])
+      t.integer('tag_id')
+        .unsigned()
+        .references(castle.table.tag('id'))
+        .notNullable()
+        .onDelete('CASCADE')
+
+      t.unique(['note_id', 'tag_id'])
 
       t.timestamp('created_at')
       t.timestamp('updated_at')

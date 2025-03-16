@@ -16,7 +16,7 @@ export default class Tag extends BaseModel {
 
   static $serialize(row: Tag) {
     return {
-      id: squid.note.encode(row.id),
+      id: squid.tag.encode(row.id),
 
       userId: squid.user.encode(row.userId),
       slug: row.slug,

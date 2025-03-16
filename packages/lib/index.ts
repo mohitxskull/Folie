@@ -7,6 +7,8 @@
 |
 */
 
+export { DotProp } from './src/dot_prop.js'
+
 export { XEnum } from './src/x_enum.js'
 export { interpolate } from './src/interpolate.js'
 export { pick } from './src/pick.js'

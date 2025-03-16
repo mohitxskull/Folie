@@ -8,7 +8,7 @@ import {
   UseMutationResult,
 } from '@tanstack/react-query'
 import { useForm, UseFormInput } from '@mantine/form'
-import { useDebouncedValue, useSetState } from '@mantine/hooks'
+import { useDebouncedValue } from '@mantine/hooks'
 import {
   CobaltUseMutationParams,
   GetInputPropOptions,
@@ -17,7 +17,7 @@ import {
   OnValuesChangeParams,
 } from './types.js'
 import { ErrorHandler } from './error_handler.js'
-import { useCallback, useRef } from 'react'
+import { useCallback, useRef, useState } from 'react'
 
 export class GateTan<const Endpoints extends ApiEndpoints> {
   gate: Gate<Endpoints>
@@ -133,7 +133,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
   ) => {
     const { endpoint, input, debounce, ...rest } = params
 
-    const [internalBody, setInternalBody] = useSetState<NonNullable<EP['input']>>(input ?? {})
+    const [internalBody, setInternalBody] = useState<NonNullable<EP['input']>>(input ?? {})
 
     const [debouncedBody] = useDebouncedValue(internalBody, debounce?.timeout || 1000, {
       leading: debounce?.leading || false,
@@ -151,7 +151,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
       debouncedBody: debouncedBody,
       body: internalBody,
       setBody: setInternalBody,
-    } as const
+    }
   }
 
   useForm = <EK extends keyof Endpoints, EP extends Endpoints[EK]['io']>(

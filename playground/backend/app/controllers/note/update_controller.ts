@@ -42,6 +42,6 @@ export default class Controller {
 
     await note.save()
 
-    return { note: note.$serialize(), message: 'Note updated successfully' }
+    return { note: note.$serialize(), message: `Note "${note.title}" updated successfully` }
   })
 }

@@ -28,6 +28,6 @@ export default class Controller {
       body: '',
     })
 
-    return { note: note.$serialize(), message: 'Note created successfully' }
+    return { note: note.$serialize(), message: `Note "${note.title}" created successfully` }
   })
 }

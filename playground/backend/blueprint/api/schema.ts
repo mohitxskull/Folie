@@ -43,11 +43,8 @@ export type V1NoteUpdateRoute = InferController<
 export type V1NoteDeleteRoute = InferController<
   (typeof import('../../app/controllers/note/delete_controller.ts'))['default']
 >
-export type V1NoteTagAddRoute = InferController<
-  (typeof import('../../app/controllers/note/tag/add_controller.ts'))['default']
->
-export type V1NoteTagRemoveRoute = InferController<
-  (typeof import('../../app/controllers/note/tag/remove_controller.ts'))['default']
+export type V1NoteTagUpdateRoute = InferController<
+  (typeof import('../../app/controllers/note/tag/update_controller.ts'))['default']
 >
 export type V1TagListRoute = InferController<
   (typeof import('../../app/controllers/tag/list_controller.ts'))['default']
@@ -121,15 +118,10 @@ export const endpoints = {
     url: '/api/v1/note/{{ noteId }}',
     method: 'DELETE',
   }),
-  V1_NOTE_TAG_ADD: endpoint<V1NoteTagAddRoute>({
+  V1_NOTE_TAG_UPDATE: endpoint<V1NoteTagUpdateRoute>({
     form: false,
-    url: '/api/v1/note/tag/add/{{ noteId }}',
-    method: 'POST',
-  }),
-  V1_NOTE_TAG_REMOVE: endpoint<V1NoteTagRemoveRoute>({
-    form: false,
-    url: '/api/v1/note/tag/remove/{{ noteId }}',
-    method: 'POST',
+    url: '/api/v1/note/tag/{{ noteId }}',
+    method: 'PUT',
   }),
   V1_TAG_LIST: endpoint<V1TagListRoute>({ form: false, url: '/api/v1/tag', method: 'GET' }),
   V1_TAG_SHOW: endpoint<V1TagShowRoute>({

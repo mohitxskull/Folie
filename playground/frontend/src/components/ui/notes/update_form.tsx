@@ -1,4 +1,12 @@
-import { Badge, Container, Group, Stack, Text } from "@mantine/core";
+import {
+  ActionIcon,
+  Badge,
+  Container,
+  Group,
+  Menu,
+  Stack,
+  Text,
+} from "@mantine/core";
 import { NoteTitleInput } from "@/components/ui/notes/title_input";
 import { LazyNoteTextEditor } from "@/components/ui/notes/lazy_text_editor";
 import { gateTan } from "@/configs/gate_tan";
@@ -12,6 +20,10 @@ import { useMemo, useState } from "react";
 import { timeAgo } from "@/lib/helpers/date";
 import LZString from "lz-string";
 import { usePreventNavigation } from "@/lib/hooks/use_prevent_navigation";
+import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
+import { ICON_SIZE } from "@folie/cobalt";
+import { useRouter } from "next/router";
+import { NoteTag } from "./tag";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
@@ -19,6 +31,8 @@ type Props = {
 };
 
 export const NoteUpdateForm = (props: Props) => {
+  const router = useRouter();
+
   const [status, setStatus] = useState<"Saved" | "Unsaved" | "Error">("Saved");
 
   usePreventNavigation(status !== "Saved", () => {
@@ -38,7 +52,7 @@ export const NoteUpdateForm = (props: Props) => {
           : values.values.body,
       });
     },
-    5000,
+    2500,
   );
 
   const { form, inputProps } = gateTan.useForm({
@@ -68,6 +82,13 @@ export const NoteUpdateForm = (props: Props) => {
     },
   });
 
+  const deleteM = gateTan.useMutation({
+    endpoint: "V1_NOTE_DELETE",
+    onSuccess: () => {
+      router.push("/app/notes");
+    },
+  });
+
   return (
     <>
       <Container pt="xl">
@@ -88,9 +109,35 @@ export const NoteUpdateForm = (props: Props) => {
                 {status}
               </Badge>
 
-              <Text c="dimmed" size="sm">
-                {timeAgo(props.note.updatedAt)}
-              </Text>
+              <Group>
+                <Text c="dimmed" size="sm">
+                  {timeAgo(props.note.updatedAt)}
+                </Text>
+
+                <Menu shadow="md" width={200} position="bottom-end">
+                  <Menu.Target>
+                    <ActionIcon variant="transparent" size="xs">
+                      <IconDotsVertical />
+                    </ActionIcon>
+                  </Menu.Target>
+
+                  <Menu.Dropdown>
+                    <Menu.Item
+                      color="red"
+                      leftSection={<IconTrash size={ICON_SIZE.SM} />}
+                      onClick={() => {
+                        deleteM.mutate({
+                          params: {
+                            noteId: props.note.id,
+                          },
+                        });
+                      }}
+                    >
+                      Delete
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
+              </Group>
             </Group>
 
             <NoteTitleInput
@@ -98,6 +145,8 @@ export const NoteUpdateForm = (props: Props) => {
               key={form.key("title")}
               disabled={false}
             />
+
+            <NoteTag note={props.note} />
           </Stack>
 
           <LazyNoteTextEditor {...inputProps("body")} key={form.key("body")} />

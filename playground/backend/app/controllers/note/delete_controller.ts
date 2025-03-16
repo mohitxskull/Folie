@@ -33,7 +33,7 @@ export default class Controller {
 
     return {
       note: note.$serialize(),
-      message: 'Note deleted successfully',
+      message: `Note "${note.title}" deleted successfully`,
     }
   })
 }

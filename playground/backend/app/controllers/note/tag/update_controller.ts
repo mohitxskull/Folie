@@ -12,6 +12,7 @@ export default class Controller {
         noteId: squid.note.schema,
       }),
       tagId: squid.tag.schema,
+      action: vine.enum(['add', 'remove']),
     })
   )
 
@@ -34,20 +35,30 @@ export default class Controller {
       })
     }
 
-    if (note.tags.length >= setting.tags.perNote) {
-      throw new ProcessingException(`Only ${setting.tags.perNote} tags allowed per note`, {
-        status: 'BAD_REQUEST',
-      })
+    const isTagPresent = (tagIdToCheck: number) => note.tags.some((tag) => tag.id === tagIdToCheck)
+
+    if (payload.action === 'add') {
+      if (note.tags.length >= setting.tags.perNote) {
+        throw new ProcessingException(`Only ${setting.tags.perNote} tags allowed per note`, {
+          status: 'BAD_REQUEST',
+        })
+      }
+
+      if (isTagPresent(payload.tagId)) {
+        throw new ProcessingException('Tag already added')
+      }
+
+      await note.related('tags').attach([payload.tagId])
+
+      return { message: 'Tag added successfully' }
+    } else {
+      if (!isTagPresent(payload.tagId)) {
+        throw new ProcessingException('Tag not found')
+      }
+
+      await note.related('tags').detach([payload.tagId])
+
+      return { message: 'Tag removed successfully' }
     }
-
-    const alreadyAdded = note.tags.some((tag) => tag.id === payload.tagId)
-
-    if (alreadyAdded) {
-      throw new ProcessingException('Tag already added')
-    }
-
-    await note.related('tags').attach([payload.tagId])
-
-    return { message: 'Tag added successfully' }
   })
 }

@@ -68,10 +68,7 @@ router
 
             router
               .group(() => {
-                router.post('add/:noteId', [() => import('#controllers/note/tag/add_controller')])
-                router.post('remove/:noteId', [
-                  () => import('#controllers/note/tag/remove_controller'),
-                ])
+                router.put(':noteId', [() => import('#controllers/note/tag/update_controller')])
               })
               .prefix('tag')
           })

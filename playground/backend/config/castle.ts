@@ -12,8 +12,6 @@ export const castle = new CastleModule({
     pivot: {
       noteTags: {
         pivotTable: (t) => t.noteTags(),
-        pivotForeignKey: 'note_id',
-        pivotRelatedForeignKey: 'tag_id',
       },
     },
   },

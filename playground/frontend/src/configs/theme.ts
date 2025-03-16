@@ -42,6 +42,6 @@ export const MantineTheme = createTheme({
   defaultRadius: "sm",
   autoContrast: true,
   primaryColor: "gray",
-  primaryShade: { dark: 0, light: 9 },
+  primaryShade: 0,
   cursorType: "pointer",
 });

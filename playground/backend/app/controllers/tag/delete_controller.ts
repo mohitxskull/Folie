@@ -33,6 +33,7 @@ export default class Controller {
 
     return {
       tag: tag.$serialize(),
+      message: `Tag "${tag.name}" deleted successfully`,
     }
   })
 }

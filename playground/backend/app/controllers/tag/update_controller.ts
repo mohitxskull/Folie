@@ -42,6 +42,6 @@ export default class Controller {
 
     await tag.save()
 
-    return { tag: tag.$serialize() }
+    return { tag: tag.$serialize(), message: `Tag "${tag.name}" updated successfully` }
   })
 }

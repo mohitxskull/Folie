@@ -96,8 +96,7 @@ export const NoteTextEditor = (props: Props) => {
           <DisableTabIndex>
             <RichTextEditor.Toolbar
               sticky
-              stickyOffset={60}
-              bg="dark.8"
+              stickyOffset={90}
               style={{
                 border: "none",
                 borderRadius: "var(--mantine-radius-sm)",
