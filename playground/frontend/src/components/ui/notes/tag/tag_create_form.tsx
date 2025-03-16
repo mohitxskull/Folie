@@ -1,17 +1,16 @@
 import { gateTan } from "@/configs/gate_tan";
-import { RightGroup, TriggeredModal } from "@folie/cobalt/components";
+import { RightGroup } from "@folie/cobalt/components";
 import { Form } from "@folie/gate-tan/components";
-import { Button, Text, Textarea, TextInput } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
+import { Button, Modal, Textarea, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
-export const TagCreateForm = (props: {
+type Props = {
   refetch: () => void;
-  onOpen?: () => void;
-  onClose?: () => void;
-}) => {
-  const [opened, { open, close }] = useDisclosure(false);
+  opened: boolean;
+  close: () => void;
+};
 
+export const TagCreateForm = (props: Props) => {
   const { form, mutation, inputProps } = gateTan.useForm({
     endpoint: "V1_TAG_CREATE",
     initialValues: {
@@ -23,7 +22,7 @@ export const TagCreateForm = (props: {
         message: updatedData.message,
       });
 
-      close();
+      props.close();
       props.refetch();
       form.reset();
     },
@@ -31,30 +30,14 @@ export const TagCreateForm = (props: {
 
   return (
     <>
-      <TriggeredModal
-        opened={opened}
-        close={() => {
+      <Modal
+        centered
+        title="Create New Tag"
+        opened={props.opened}
+        onClose={() => {
           form.reset();
-          close();
-          props.onClose?.();
+          props.close();
         }}
-        open={open}
-        target={
-          <>
-            <Text
-              size="sm"
-              fw="500"
-              c="white"
-              style={{ cursor: "pointer" }}
-              onClick={() => {
-                props.onOpen?.();
-                open();
-              }}
-            >
-              Create New
-            </Text>
-          </>
-        }
       >
         <>
           <Form mutation={mutation} form={form} submit={mutation.mutate}>
@@ -90,7 +73,7 @@ export const TagCreateForm = (props: {
             )}
           </Form>
         </>
-      </TriggeredModal>
+      </Modal>
     </>
   );
 };

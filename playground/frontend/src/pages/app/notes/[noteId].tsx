@@ -5,7 +5,7 @@ import { gateTan } from "@/configs/gate_tan";
 import { gateClient } from "@/configs/gate_client";
 import { LocalQueryLoader } from "@/components/query_loader";
 import { NoteUpdateForm } from "@/components/ui/notes/update_form";
-import { Space } from "@mantine/core";
+import { Container, Group, Skeleton, Space, Stack } from "@mantine/core";
 
 export const getServerSideProps = gateServer.checkpoint();
 
@@ -34,15 +34,40 @@ export default function Page() {
           },
         ])}
       >
-        <LocalQueryLoader query={noteQ}>
-          {({ note }) => (
-            <>
-              <NoteUpdateForm note={note} refetch={() => noteQ.refetch()} />
+        <Container pt="xl">
+          <LocalQueryLoader
+            query={noteQ}
+            isLoading={
+              <>
+                <Stack gap="xs">
+                  <Group justify="space-between">
+                    <Skeleton width={60} height={20} radius="sm" />
 
-              <Space h="xl" />
-            </>
-          )}
-        </LocalQueryLoader>
+                    <Group gap="xs">
+                      <Skeleton width={60} height={20} radius="sm" />
+
+                      <Skeleton width={20} height={20} radius="sm" />
+                    </Group>
+                  </Group>
+
+                  <Skeleton height={40} radius="sm" />
+
+                  <Skeleton width={60} height={20} radius="lg" />
+
+                  <Skeleton height={400} radius="sm" />
+                </Stack>
+              </>
+            }
+          >
+            {({ note }) => (
+              <>
+                <NoteUpdateForm note={note} refetch={() => noteQ.refetch()} />
+
+                <Space h="xl" />
+              </>
+            )}
+          </LocalQueryLoader>
+        </Container>
       </AppLayout>
     </>
   );

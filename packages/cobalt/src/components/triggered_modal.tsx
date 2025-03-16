@@ -1,8 +1,7 @@
 import { Modal, ModalProps, Stack } from '@mantine/core'
 
-type Props = {
+type Props = Omit<ModalProps, 'onClose'> & {
   children: React.ReactNode
-  modal?: ModalProps
   opened: boolean
   close: () => void
   open: () => void
@@ -10,19 +9,15 @@ type Props = {
 }
 
 export const TriggeredModal = (props: Props) => {
+  const { children, opened, close, open, target, ...rest } = props
+
   return (
     <>
-      <Modal
-        {...props.modal}
-        withCloseButton={false}
-        centered
-        opened={props.opened}
-        onClose={props.close}
-      >
-        <Stack>{props.children}</Stack>
+      <Modal {...rest} withCloseButton={false} centered opened={opened} onClose={close}>
+        <Stack>{children}</Stack>
       </Modal>
 
-      {props.target}
+      {target}
     </>
   )
 }

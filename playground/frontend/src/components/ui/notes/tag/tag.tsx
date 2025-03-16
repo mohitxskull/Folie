@@ -1,13 +1,21 @@
 import { LocalQueryLoader } from "@/components/query_loader";
 import { gateTan } from "@/configs/gate_tan";
 import { ICON_SIZE } from "@folie/cobalt";
-import { For } from "@folie/cobalt/components";
+import { askConfirmation, For } from "@folie/cobalt/components";
 import { DotProp } from "@folie/lib";
 import { V1NoteShowRoute } from "@folie/playground-backend/blueprint";
-import { Badge, Combobox, Group, Text, useCombobox } from "@mantine/core";
+import {
+  Badge,
+  Combobox,
+  Group,
+  Text,
+  Tooltip,
+  useCombobox,
+} from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useMemo } from "react";
 import { TagCreateForm } from "./tag_create_form";
+import { useDisclosure } from "@mantine/hooks";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
@@ -78,6 +86,15 @@ export const NoteTag = (props: Props) => {
     },
   });
 
+  const [tagCreateFormOpened, tagCreateFormHandlers] = useDisclosure(false, {
+    onOpen: () => {
+      combobox.closeDropdown();
+    },
+    onClose: () => {
+      combobox.openDropdown();
+    },
+  });
+
   const options = useMemo(() => {
     if (!noteTagQ.data?.data || !tagQ.data?.data) return [];
 
@@ -89,7 +106,7 @@ export const NoteTag = (props: Props) => {
     return availableTags.map((tag) => (
       <>
         <Combobox.Option value={tag.id} key={tag.id}>
-          <Text>{tag.name}</Text>
+          <Text size="sm">{tag.name}</Text>
         </Combobox.Option>
       </>
     ));
@@ -97,6 +114,12 @@ export const NoteTag = (props: Props) => {
 
   return (
     <>
+      <TagCreateForm
+        refetch={tagQ.refetch}
+        opened={tagCreateFormOpened}
+        close={tagCreateFormHandlers.close}
+      />
+
       <Group gap="xs">
         <LocalQueryLoader query={noteTagQ}>
           {({ data }) => (
@@ -104,9 +127,43 @@ export const NoteTag = (props: Props) => {
               <For each={data}>
                 {(tag) => (
                   <>
-                    <Badge variant="filled" color="dark.7">
-                      {tag.name}
-                    </Badge>
+                    <Tooltip
+                      opened={
+                        (tag.description?.length ?? 0) > 0 ? undefined : false
+                      }
+                      label={tag.description}
+                      multiline
+                      w={220}
+                      withArrow
+                    >
+                      <Badge
+                        variant="filled"
+                        color="dark.7"
+                        style={{
+                          cursor: "pointer",
+                        }}
+                        onClick={async () => {
+                          const confirmation = await askConfirmation({
+                            message: `Are you sure you want to remove tag "${tag.name}"?`,
+                            labels: {
+                              confirm: "Remove",
+                            },
+                          });
+
+                          if (confirmation) {
+                            tagM.mutate({
+                              params: {
+                                noteId: props.note.id,
+                              },
+                              action: "remove",
+                              tagId: tag.id,
+                            });
+                          }
+                        }}
+                      >
+                        {tag.name}
+                      </Badge>
+                    </Tooltip>
                   </>
                 )}
               </For>
@@ -169,15 +226,17 @@ export const NoteTag = (props: Props) => {
               {options}
 
               <Combobox.Empty>
-                <TagCreateForm
-                  refetch={tagQ.refetch}
-                  onOpen={() => {
-                    combobox.closeDropdown();
+                <Text
+                  size="sm"
+                  fw="500"
+                  c="white"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    tagCreateFormHandlers.open();
                   }}
-                  onClose={() => {
-                    combobox.openDropdown();
-                  }}
-                />
+                >
+                  Create New
+                </Text>
               </Combobox.Empty>
             </Combobox.Options>
           </Combobox.Dropdown>

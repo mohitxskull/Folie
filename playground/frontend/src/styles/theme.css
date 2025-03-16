@@ -134,3 +134,9 @@ body {
 .tiptap a {
   color: var(--mantine-color-blue-3);
 }
+
+.mantine-Combobox-dropdown {
+  @mixin dark {
+    background-color: var(--mantine-color-dark-8);
+  }
+}

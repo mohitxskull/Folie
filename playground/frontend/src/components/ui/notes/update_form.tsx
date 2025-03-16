@@ -1,12 +1,4 @@
-import {
-  ActionIcon,
-  Badge,
-  Container,
-  Group,
-  Menu,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { ActionIcon, Badge, Group, Menu, Stack, Text } from "@mantine/core";
 import { NoteTitleInput } from "@/components/ui/notes/title_input";
 import { LazyNoteTextEditor } from "@/components/ui/notes/lazy_text_editor";
 import { gateTan } from "@/configs/gate_tan";
@@ -20,10 +12,9 @@ import { useMemo, useState } from "react";
 import { timeAgo } from "@/lib/helpers/date";
 import LZString from "lz-string";
 import { usePreventNavigation } from "@/lib/hooks/use_prevent_navigation";
-import { IconDotsVertical, IconTrash } from "@tabler/icons-react";
-import { ICON_SIZE } from "@folie/cobalt";
+import { IconDotsVertical } from "@tabler/icons-react";
 import { useRouter } from "next/router";
-import { NoteTag } from "./tag";
+import { NoteTag } from "./tag/tag";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];
@@ -91,67 +82,64 @@ export const NoteUpdateForm = (props: Props) => {
 
   return (
     <>
-      <Container pt="xl">
-        <Stack>
-          <Stack gap={0}>
-            <Group justify="space-between">
-              <Badge
-                color={
-                  status === "Saved"
-                    ? "teal.5"
-                    : status === "Unsaved"
-                      ? "yellow"
-                      : "red.5"
-                }
-                radius="sm"
-                variant="light"
-              >
-                {status}
-              </Badge>
+      <Stack>
+        <Stack gap={0}>
+          <Group justify="space-between">
+            <Badge
+              color={
+                status === "Saved"
+                  ? "teal.5"
+                  : status === "Unsaved"
+                    ? "yellow"
+                    : "red.5"
+              }
+              radius="sm"
+              variant="light"
+            >
+              {status}
+            </Badge>
 
-              <Group>
-                <Text c="dimmed" size="sm">
-                  {timeAgo(props.note.updatedAt)}
-                </Text>
+            <Group>
+              <Text c="dimmed" size="sm">
+                {timeAgo(props.note.updatedAt)}
+              </Text>
 
-                <Menu shadow="md" width={200} position="bottom-end">
-                  <Menu.Target>
-                    <ActionIcon variant="transparent" size="xs">
-                      <IconDotsVertical />
-                    </ActionIcon>
-                  </Menu.Target>
+              <Menu shadow="md" width={200} position="bottom-end">
+                <Menu.Target>
+                  <ActionIcon variant="transparent" size="xs">
+                    <IconDotsVertical />
+                  </ActionIcon>
+                </Menu.Target>
 
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      color="red"
-                      leftSection={<IconTrash size={ICON_SIZE.SM} />}
-                      onClick={() => {
-                        deleteM.mutate({
-                          params: {
-                            noteId: props.note.id,
-                          },
-                        });
-                      }}
-                    >
-                      Delete
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Group>
+                <Menu.Dropdown>
+                  <Menu.Item
+                    color="red"
+                    onClick={() => {
+                      deleteM.mutate({
+                        params: {
+                          noteId: props.note.id,
+                        },
+                      });
+                    }}
+                  >
+                    Delete
+                  </Menu.Item>
+                </Menu.Dropdown>
+              </Menu>
             </Group>
+          </Group>
 
-            <NoteTitleInput
-              {...inputProps("title")}
-              key={form.key("title")}
-              disabled={false}
-            />
+          <NoteTitleInput
+            {...inputProps("title")}
+            key={form.key("title")}
+            disabled={false}
+          />
 
-            <NoteTag note={props.note} />
-          </Stack>
-
-          <LazyNoteTextEditor {...inputProps("body")} key={form.key("body")} />
+          <NoteTag note={props.note} />
         </Stack>
-      </Container>
+
+        <LazyNoteTextEditor {...inputProps("body")} key={form.key("body")} />
+      </Stack>
     </>
   );
 };
