@@ -46,20 +46,15 @@ export default defineConfig({
         text: "Packages",
         collapsed: false,
         items: [
-          {
-            text: "Cobalt",
-            link: "/packages/cobalt/",
-            collapsed: false,
+          { text: "Castle", link: "/packages/castle/",
             items: [
-              { text: "Animation", link: "/packages/cobalt/animation/" },
-            ],
+              { text: "Session Manager", link: "/packages/castle/session-manager/" },
+              { text: "Model Cache", link: "/packages/castle/model-cache/" },
+              { text: "Middleware", link: "/packages/castle/middleware/" },
+              { text: "Providers", link: "/packages/castle/providers/" },
+            ]
           },
-          { text: "Castle", link: "/packages/castle/" },
-          { text: "Dishook", link: "/packages/dishook/" },
-          { text: "Blueprint", link: "/packages/blueprint/" },
           { text: "Squid", link: "/packages/squid/" },
-          { text: "Gate", link: "/packages/gate/" },
-          { text: "CLI", link: "/packages/cli/" },
         ],
       },
     ],

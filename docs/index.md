@@ -44,11 +44,3 @@ pnpm add @folie/blueprint @folie/squid
 ```
 
 Refer to the documentation for each package to find specific usage instructions and API references.
-
-## Contributing
-
-The Folie package suite is an open-source project. Contributions are welcome!
-
-## License
-
-This project is licensed under the MIT License.

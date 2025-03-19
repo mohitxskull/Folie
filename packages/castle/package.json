@@ -19,8 +19,8 @@
     "./exception": "./build/src/exceptions/index.js",
     "./services/*": "./build/services/*.js",
     "./helpers": "./build/src/helpers/index.js",
-    "./middleware/*": "./build/middlewares/*.js",
-    "./provider/*": "./build/providers/*.js",
+    "./middlewares/*": "./build/middlewares/*.js",
+    "./providers/*": "./build/providers/*.js",
     "./validator": "./build/src/validators/index.js",
     "./miscellaneous/*": "./build/src/miscellaneous/*.js"
   },

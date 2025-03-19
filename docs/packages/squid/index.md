@@ -1,110 +1,169 @@
-# Squid
+# Squid Package
 
-*Squid* is a JavaScript package designed to generate unique and secure identifiers (UUIDs) with customizable prefixes and character sets.
+## Overview
 
-### Key Features
+The Squid package provides a robust and customizable way to generate and decode unique identifiers (UUIDs) for various entities in your application. It leverages a secret key for hashing and allows for custom configurations such as prefix, minimum length, and dictionary for encoding.
 
-* **Secure:** Leverages a cryptographically secure random number generator for creating UUIDs.
-* **Configurable:** Allows customization of prefixes, minimum length, and character set for generated UUIDs.
-* **Decodable:** Provides a method to decode generated UUIDs back to their original numeric IDs.
-* **Validation:** Enforces valid UUID format during decoding, including minimum length and prefix checks.
-* **Type Safety:** Utilizes AdonisJS `Secret` type for secure management of secret keys.
+## Installation
 
-### Installation
-
-To install *Squid* in your project using pnpm, run the following command:
+To install the Squid package, use the following command:
 
 ```bash
-pnpm add @folie/squid
+pnpm install @folie/squid
 ```
+npm
+## Usage
 
-### Usage
+### Configuration
 
-**1. Creating a Squid Instance:**
+First, you need to configure the Squid module with a secret key. This key is used to seed the hashing process.
 
-```typescript:line-numbers
-import { Secret } from '@adonisjs/core/helpers'
-import { Squid } from '@folie/squid'
+```ts
+// /config/squid.ts
 
-const secret = new Secret('your_secret_key') // Replace with your actual secret key
+import env from '#start/env'
+import { SquidModule } from '@folie/squid'
 
-const mySquid = new Squid(secret, {
-  prefix: 'my_app_', // Prefix for generated UUIDs
-  minLength: 24,    // Minimum length of the UUID (default: 22)
-  dictionary: '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', // Custom character set (default: alphanumeric + numbers)
-});
-```
+const squidModule = new SquidModule(env.get('SQUID_KEY'))
 
-**2. Generating a UUID:**
-
-The `encode` method generates a unique UUID based on the provided numeric ID:
-
-```typescript:line-numbers
-const id = 123456;
-const encodedUuid = mySquid.encode(id);
-
-console.log(encodedUuid); // Output: my_app_M3JHGGIk... (example)
-```
-
-**3. Decoding a UUID:**
-
-The `decode` method retrieves the original numeric ID from a valid encoded UUID:
-
-```typescript:line-numbers
-const decodedId = mySquid.decode(encodedUuid);
-
-console.log(decodedId); // Output: 123456
-```
-
-**4. Error Handling:**
-
-The `decode` method throws errors for invalid UUIDs, including:
-
-* Invalid length (less than the minimum allowed length)
-* Incorrect prefix
-* Invalid UUID format
-
-The error message provides details about the issue and the decoded data (if available) for easier debugging.
-
-**5. Integration with Validation libraries:**
-
-The `Squid` class offers a `schema` property that can be used with validation libraries like AdonisJS `Vine`. This allows you to define schema rules for validating incoming UUIDs within your application.
-
-```typescript:line-numbers
-import vine from '@vinejs/vine'
-import { Squid } from '@folie/squid'
-
-// Example usage with AdonisJS validation
-const schema = vine.compile(
-  vine.object({
-    userId: userSquid.schema,
-  })
-)
-
-const payload = await schema.validate({ userId: encodedUuid });
-```
-
-**6. Factory Pattern (Optional):**
-
-The `SquidFactory` class (provided for convenience) facilitates creating multiple `Squid` instances with different configurations using a shared secret key.
-
-```typescript:line-numbers
-import { SquidFactory } from '@folie/squid'
-
-const secret = Secret.value('your_secret_key');
-const factory = new SquidFactory(secret);
-
-const userSquid = factory.create({
-  prefix: 'usr',
-});
-
-const reasonSquid = factory.create({
-  prefix: 'rea',
+export const squid = squidModule.group({
+  user: {
+    prefixBase: 'usr',
+  },
+  session: {
+    prefixBase: 'ses',
+  },
+  note: {
+    prefixBase: 'not',
+  },
+  tag: {
+    prefixBase: 'tag',
+  },
 })
 ```
 
-### Security Considerations
+### Model Integration
 
-* Ensure the secret key used for generating UUIDs is kept secure and never exposed in your codebase.
-* Consider using environment variables or secure configuration management for storing the secret key.
-* Please keep in mind that with sufficient effort, someone could reverse-engineer the generated UUIDs and discover the original numeric IDs. Therefore, do not use this for sensitive information.
+You can integrate Squid with your models to generate and decode UUIDs. Below is an example of how to use Squid in a User model.
+
+```ts
+// /models/user.ts
+
+export default class User extends BaseModel {
+  static table = castle.table.user()
+
+  // Serialize =============================
+
+  static $serialize(row: User) {
+    return {
+      id: squid.user.encode(row.id),
+
+      firstName: row.firstName,
+      lastName: row.lastName,
+
+      email: row.email,
+
+      createdAt: serializeDT(row.createdAt),
+      updatedAt: serializeDT(row.updatedAt),
+      verifiedAt: serializeDT(row.verifiedAt),
+    }
+  }
+
+  // Omitted
+}
+```
+
+### Encoding and Decoding
+
+You can encode and decode numerical IDs using the Squid instance.
+
+#### Encoding
+
+```ts
+const userId = 12345
+const encodedId = squid.user.encode(userId)
+console.log(encodedId) // Output: usr_xxxxxxx
+```
+
+#### Decoding
+
+```ts
+const encodedId = 'usr_xxxxxxx'
+const userId = squid.user.decode(encodedId)
+console.log(userId) // Output: 12345
+```
+
+### Schema Validation
+
+Squid provides a schema for validating UUIDs using the `vine` library.
+
+```ts
+input = vine.compile(
+  vine.object({
+    params: vine.object({
+      userId: squid.user.schema,
+    }),
+  })
+)
+```
+
+## API Reference
+
+### SquidModule
+
+#### `constructor(secret: string)`
+
+Initializes a new instance of the SquidModule class with the provided secret key.
+
+#### `create(params: SquidParams): Squid`
+
+Creates a new Squid instance with the provided parameters.
+
+#### `group<T extends Record<string, SquidParams>>(params: T): Record<keyof T, Squid>`
+
+Creates a group of Squid instances with the provided parameters.
+
+### Squid
+
+#### `constructor(secret: Secret<string>, params: SquidParams)`
+
+Initializes a new instance of the Squid class with the provided secret and configuration parameters.
+
+#### `encode(id: number): string`
+
+Encodes a given numerical ID into a UUID string.
+
+#### `decode(uuid: string): number`
+
+Decodes a given UUID string into its original numerical ID.
+
+#### `schema: vine.Schema`
+
+Returns a schema for validating Squid UUIDs.
+
+### SquidParams
+
+Type definition for Squid configuration parameters.
+
+```ts
+export type SquidParams = {
+  prefixBase: string
+  minLength?: number
+  prefixConnector?: string
+  dictionary?: string
+}
+```
+
+## Error Handling
+
+The Squid package throws errors in the following scenarios:
+
+- If the prefix contains the connector character.
+- If the dictionary contains fewer than 5 characters or fewer than 5 unique characters.
+- If the UUID length is less than the configured minimum length.
+- If the UUID does not start with the configured prefix.
+- If the UUID is invalid or cannot be decoded.
+
+## Conclusion
+
+The Squid package provides a flexible and secure way to generate and decode unique identifiers for your application. With customizable configurations and built-in validation, it ensures that your IDs are both unique and consistent.
