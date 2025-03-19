@@ -66,11 +66,11 @@ export default class User extends BaseModel {
       key: 'metric',
       factory: async () => {
         const [notes, tags] = await Promise.all([
-          this.related('notes').query().count('* as $$total'),
-          this.related('tags').query().count('* as $$total'),
+          this.related('notes').query().count('* as total'),
+          this.related('tags').query().count('* as total'),
         ])
 
-        return { notes: notes[0].$$total, tags: tags[0].$$total }
+        return { notes: notes[0].$extras.total, tags: tags[0].$extras.total }
       },
       parser: async (p) => p,
     })

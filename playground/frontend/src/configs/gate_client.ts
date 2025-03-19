@@ -5,5 +5,5 @@ export const gateClient = new GateNextClient({
     session: "session_token",
     captcha: "captcha_token",
   },
-  paramKeys: ["userId", "noteId"] as const,
+  paramKeys: ["userId", "noteId", "tagId"] as const,
 });

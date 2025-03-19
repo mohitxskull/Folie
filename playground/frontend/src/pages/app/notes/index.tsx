@@ -19,17 +19,17 @@ import { gateServer } from "@/configs/gate_server";
 import { noteCrumbs } from "@/lib/crumbs";
 import { gateTan } from "@/configs/gate_tan";
 import { For, Show } from "@folie/cobalt/components";
-import { NoteCreateForm } from "@/components/ui/notes/create_form";
 import { timeAgo } from "@/lib/helpers/date";
 import { PaginationRange } from "@/components/pagination_range";
 import { SimplePagination } from "@/components/simple_pagination";
 import { useRouter } from "next/router";
 import { DotProp } from "@folie/lib";
 import { TagBadge } from "@/components/ui/notes/tag/badge";
-import { IconTagFilled } from "@tabler/icons-react";
+import { IconPlus, IconTagFilled } from "@tabler/icons-react";
 import { ICON_SIZE } from "@folie/cobalt";
 import { TagManageAside } from "@/components/ui/notes/tag/manage";
 import { useState } from "react";
+import { notifications } from "@mantine/notifications";
 
 export const getServerSideProps = gateServer.checkpoint();
 
@@ -55,6 +55,17 @@ export default function Page() {
     },
   });
 
+  const createM = gateTan.useMutation({
+    endpoint: "V1_NOTE_CREATE",
+    onSuccess: (updatedData) => {
+      notifications.show({
+        message: updatedData.message,
+      });
+
+      router.push(`/app/notes/${updatedData.note.id}`);
+    },
+  });
+
   return (
     <>
       <AppLayout
@@ -76,7 +87,13 @@ export default function Page() {
               <Title>Notes</Title>
 
               <Group>
-                <NoteCreateForm refetch={query.refetch} />
+                <Button
+                  leftSection={<IconPlus size={ICON_SIZE.SM} />}
+                  onClick={() => createM.mutate(undefined)}
+                  loading={createM.isPending}
+                >
+                  Create
+                </Button>
 
                 <Tooltip label="Manage Tags" position="bottom-end">
                   <Button

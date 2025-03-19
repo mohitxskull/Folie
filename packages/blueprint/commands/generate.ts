@@ -394,12 +394,12 @@ export default class BluePrintGenerate extends BaseCommand {
           .map((segment, segmentIndex) => {
             if (segment.startsWith(':')) {
               const paramName = segment.slice(1)
-              if (!/^[a-zA-Z]+$/.test(paramName)) {
+              if (!/^[a-zA-Z?]+$/.test(paramName)) {
                 throw new Error('Only letters allowed in parameter segments', {
                   cause: { segment: segmentIndex, route: route.pattern },
                 })
               }
-              return `{{ ${paramName} }}`
+              return `{{ ${paramName.replace('?', '')} }}`
             } else if (!/^[a-z0-9-]+$/i.test(segment)) {
               throw new Error(
                 'Only lowercase letters, numbers, and hyphens allowed in non-parameter segments',

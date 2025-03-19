@@ -65,9 +65,11 @@ export default class Controller {
 
     // Serialize and return the paginated results
     return serializePage(list, async (d) => {
+      const addMetric = payload.query?.properties?.metric
+
       return {
         ...d.$serialize(),
-        metric: payload.query?.properties?.metric ? await d.$metric() : null,
+        metric: addMetric ? await d.$metric() : null,
       }
     })
   })

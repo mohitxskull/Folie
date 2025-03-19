@@ -1,21 +1,10 @@
 import { setting } from '#config/setting'
-import { NoteTitleSchema } from '#validators/index'
 import { ProcessingException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
-import vine from '@vinejs/vine'
 
 export default class Controller {
-  input = vine.compile(
-    vine.object({
-      title: NoteTitleSchema,
-    })
-  )
-
   handle = handler(async ({ ctx }) => {
-    const [payload, user] = await Promise.all([
-      ctx.request.validateUsing(this.input),
-      ctx.auth.session.getUser(),
-    ])
+    const user = await ctx.auth.session.getUser()
 
     const metrics = await user.$metric()
 
@@ -24,10 +13,10 @@ export default class Controller {
     }
 
     const note = await user.related('notes').create({
-      title: payload.title,
+      title: 'Untitled',
       body: '',
     })
 
-    return { note: note.$serialize(), message: `Note "${note.title}" created successfully` }
+    return { note: note.$serialize(), message: 'Note created successfully' }
   })
 }

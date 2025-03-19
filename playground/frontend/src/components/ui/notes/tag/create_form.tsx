@@ -5,7 +5,7 @@ import { Button, Modal, Textarea, TextInput } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 
 type Props = {
-  refetch: () => void;
+  refetch?: () => void;
   opened: boolean;
   close: () => void;
 };
@@ -23,7 +23,7 @@ export const TagCreateForm = (props: Props) => {
       });
 
       props.close();
-      props.refetch();
+      props.refetch?.();
       form.reset();
     },
   });

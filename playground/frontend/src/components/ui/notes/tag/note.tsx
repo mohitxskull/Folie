@@ -7,9 +7,9 @@ import { V1NoteShowRoute } from "@folie/playground-backend/blueprint";
 import { Badge, Combobox, Group, Text, useCombobox } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { useMemo } from "react";
-import { TagCreateForm } from "./create_form";
 import { useDisclosure } from "@mantine/hooks";
 import { TagBadge } from "./badge";
+import { TagCreateForm } from "./create_form";
 
 type Props = {
   note: V1NoteShowRoute["output"]["note"];

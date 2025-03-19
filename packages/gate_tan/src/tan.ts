@@ -98,7 +98,7 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
 
         if (params.form && res?.input) {
           params.form.setValues(res.input)
-          params.form.resetDirty(res.input)
+          params.form.resetDirty()
         }
 
         if (res?.after) {

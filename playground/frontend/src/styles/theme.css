@@ -152,3 +152,9 @@ body {
     background-color: var(--mantine-color-dark-8);
   }
 }
+
+.text-hover-underline {
+  @mixin hover {
+    text-decoration: underline;
+  }
+}

@@ -14,6 +14,13 @@ export const noteCrumbs = homeCrumbs.extend([
   },
 ]);
 
+export const tagCrumbs = noteCrumbs.extend([
+  {
+    label: "Tags",
+    href: "",
+  },
+]);
+
 export const settingCrumbs = homeCrumbs.extend([
   {
     label: "Settings",

@@ -60,9 +60,9 @@ export default class Tag extends BaseModel {
     return this.$cache().get({
       key: 'metric',
       factory: async () => {
-        const notes = await this.related('notes').query().count('* as $$total')
+        const notes = await this.related('notes').query().count('* as total')
 
-        return { notes: notes[0].$$total }
+        return { notes: notes[0].$extras.total }
       },
       parser: async (p) => p,
     })
@@ -104,6 +104,4 @@ export default class Tag extends BaseModel {
   declare notes: ManyToMany<typeof Note>
 
   // Extra ======================================
-
-  declare $$total: number
 }

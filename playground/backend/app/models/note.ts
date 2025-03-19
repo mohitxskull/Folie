@@ -87,6 +87,4 @@ export default class Note extends BaseModel {
   declare tags: ManyToMany<typeof Tag>
 
   // Extra ======================================
-
-  declare $$total: number
 }
