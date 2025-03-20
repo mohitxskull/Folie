@@ -1,5 +1,11 @@
 # @folie/squid
 
+## 0.0.5
+
+### Patch Changes
+
+- Stable release
+
 ## 0.0.4
 
 ### Patch Changes

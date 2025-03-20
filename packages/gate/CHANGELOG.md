@@ -1,5 +1,14 @@
 # @folie/gate
 
+## 0.0.9
+
+### Patch Changes
+
+- Stable release
+- Updated dependencies
+  - @folie/blueprint-lib@0.0.6
+  - @folie/lib@0.0.5
+
 ## 0.0.8
 
 ### Patch Changes

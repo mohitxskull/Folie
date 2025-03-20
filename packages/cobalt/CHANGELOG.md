@@ -1,5 +1,13 @@
 # @folie/cobalt
 
+## 0.0.27
+
+### Patch Changes
+
+- Stable release
+- Updated dependencies
+  - @folie/blueprint-lib@0.0.6
+
 ## 0.0.26
 
 ### Patch Changes
