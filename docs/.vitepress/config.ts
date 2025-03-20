@@ -60,6 +60,9 @@ export default defineConfig({
       },
     ],
 
-    socialLinks: [],
+    socialLinks: [{
+      icon: "github",
+      link: "https://github.com/mohitxskull/folie"
+    }],
   },
 });
