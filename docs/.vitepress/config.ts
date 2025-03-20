@@ -54,7 +54,8 @@ export default defineConfig({
               { text: "Providers", link: "/packages/castle/providers/" },
             ]
           },
-          { text: "Squid", link: "/packages/squid/" },
+          { text: "Squid", link: "/packages/squid" },
+          { text: "Captcha", link: "/packages/captcha" },
         ],
       },
     ],

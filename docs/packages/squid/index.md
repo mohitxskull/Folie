@@ -11,10 +11,8 @@ To install the Squid package, use the following command:
 ```bash
 pnpm install @folie/squid
 ```
-npm
-## Usage
 
-### Configuration
+## Configuration
 
 First, you need to configure the Squid module with a secret key. This key is used to seed the hashing process.
 
@@ -42,7 +40,7 @@ export const squid = squidModule.group({
 })
 ```
 
-### Model Integration
+## Model Integration
 
 You can integrate Squid with your models to generate and decode UUIDs. Below is an example of how to use Squid in a User model.
 
@@ -73,11 +71,11 @@ export default class User extends BaseModel {
 }
 ```
 
-### Encoding and Decoding
+## Encoding and Decoding
 
 You can encode and decode numerical IDs using the Squid instance.
 
-#### Encoding
+### Encoding
 
 ```ts
 const userId = 12345
@@ -85,7 +83,7 @@ const encodedId = squid.user.encode(userId)
 console.log(encodedId) // Output: usr_xxxxxxx
 ```
 
-#### Decoding
+### Decoding
 
 ```ts
 const encodedId = 'usr_xxxxxxx'
@@ -93,7 +91,7 @@ const userId = squid.user.decode(encodedId)
 console.log(userId) // Output: 12345
 ```
 
-### Schema Validation
+## Schema Validation
 
 Squid provides a schema for validating UUIDs using the `vine` library.
 
@@ -141,7 +139,7 @@ Decodes a given UUID string into its original numerical ID.
 
 Returns a schema for validating Squid UUIDs.
 
-### SquidParams
+### Squid Params
 
 Type definition for Squid configuration parameters.
 
@@ -163,7 +161,3 @@ The Squid package throws errors in the following scenarios:
 - If the UUID length is less than the configured minimum length.
 - If the UUID does not start with the configured prefix.
 - If the UUID is invalid or cannot be decoded.
-
-## Conclusion
-
-The Squid package provides a flexible and secure way to generate and decode unique identifiers for your application. With customizable configurations and built-in validation, it ensures that your IDs are both unique and consistent.

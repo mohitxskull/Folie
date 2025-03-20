@@ -35,9 +35,7 @@ export default class User extends BaseModel {
 }
 ```
 
-## Usage
-
-### Example Usage of `$find` and `$findStrict`
+## Example Usage of `$find` and `$findStrict`
 
 To use the model cache, you can retrieve a cached model instance using the `$find` and `$findStrict` methods. The `$find` method retrieves the model instance from the cache or fetches it from the database if not cached. The `$findStrict` method does the same but throws an error if the instance is not found.
 
@@ -60,7 +58,7 @@ try {
 }
 ```
 
-### Caching Other Computations
+## Caching Other Computations
 
 You can cache model instances and related computations using the `$cache` method. For example, to cache a user's metrics:
 
@@ -106,11 +104,11 @@ if (user) {
 }
 ```
 
-### Custom Cache Keys
+## Custom Cache Keys
 
 You can define custom cache keys when setting up the `ModelCache` instance. In the example above, the `metric` key is used to cache user metrics.
 
-### Expiring Cache
+## Expiring Cache
 
 To expire a cache entry, you can use the `expire` method:
 

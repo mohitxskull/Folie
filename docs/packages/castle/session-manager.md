@@ -75,28 +75,7 @@ if (user) {
 To authenticate a session, use the `authenticate` method of the `SessionManager` instance. This method verifies the session token and returns the session if valid.
 
 ```ts
-import Session from 'App/Models/Session'
-import type { HttpContext } from '@adonisjs/core/http'
-
-export default class AuthMiddleware {
-  async handle(ctx: HttpContext, next: () => Promise<void>) {
-    try {
-      const session = await Session.manager.authenticate(ctx)
-      ctx.auth = { session }
-      await next()
-    } catch (error) {
-      ctx.response.unauthorized('Invalid session')
-    }
-  }
-}
-```
-
-### Middleware Example
-
-You can use the `authenticate` method in a middleware to protect routes.
-
-```ts
-import Session from 'App/Models/Session'
+import Session from '#models/session'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 

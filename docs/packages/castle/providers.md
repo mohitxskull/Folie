@@ -1,6 +1,6 @@
 # Providers
 
-## MigrationProvider
+## Migration Provider
 
 The `MigrationProvider` is responsible for automatically running database migrations every time the application starts in a web environment.
 
@@ -21,7 +21,7 @@ providers: [
    - If true, it boots the Ace commands and runs the `migration:run` command with the `--force` flag.
    - If the migration command is not found or an error occurs, it logs the error and terminates the application.
 
-## RequestValidatorProvider
+## Extended Request Validator Provider
 
 The `RequestValidatorProvider` integrates VineJS validators with AdonisJS HTTP requests, allowing you to validate request data including query parameters.
 
@@ -38,9 +38,7 @@ providers: [
 ```
 
 2. **Functionality**:
-   - Adds a `validateUsing` method to the `Request` object.
-   - This method can be used to validate request data (body, files, params, headers, cookies, and query) using VineJS validators.
-   - Supports custom error reporters and messages providers for each request.
+  - Adds queries in `query` property in `validateUsing` context.
 
 3. **Example**:
 
@@ -48,8 +46,10 @@ providers: [
 export default class Controller {
   input = vine.compile(
     vine.object({
-      name: TagNameSchema,
-      description: TagDescriptionSchema.optional(),
+      query: vine.object({
+        page: vine.number().min(1).max(100).default(1),
+        limit: vine.number().min(1).max(100).default(10),
+      }),
     })
   )
 
