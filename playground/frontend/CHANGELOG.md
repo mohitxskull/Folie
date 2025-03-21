@@ -1,5 +1,11 @@
 # @folie/playground-frontend
 
+## 0.0.3
+
+### Patch Changes
+
+- @folie/playground-backend@0.0.3
+
 ## 0.0.2
 
 ### Patch Changes

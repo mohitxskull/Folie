@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.14
+
+### Patch Changes
+
+- Exporting getBearerToken helper
+
 ## 0.0.13
 
 ### Patch Changes
