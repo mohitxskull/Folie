@@ -2,7 +2,7 @@
 import { deleteCookie } from 'cookies-next/server'
 import { Gate } from '@folie/gate'
 import { GetServerSideProps, GetServerSidePropsContext, GetServerSidePropsResult } from 'next'
-import { ApiEndpoints, EndpointKeys } from '@folie/blueprint-lib'
+import { ApiEndpoints, EndpointKeys } from '@folie/lib'
 import { CheckpointParams } from './types.js'
 import { NextServerError } from './next_server_error.js'
 

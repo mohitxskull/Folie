@@ -2,7 +2,7 @@ import { Header, Token } from './types.js'
 import axios, { type AxiosRequestConfig, AxiosInstance, AxiosResponse, isAxiosError } from 'axios'
 import qs from 'qs'
 import { GateError } from './error.js'
-import { ApiEndpoints } from '@folie/blueprint-lib'
+import { ApiEndpoints } from '@folie/lib'
 
 export class Gate<const Endpoints extends ApiEndpoints> {
   #axios: AxiosInstance

@@ -1,5 +1,15 @@
 # @folie/playground-backend
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/blueprint-lib@0.0.7
+  - @folie/gate@0.0.10
+  - @folie/lib@0.0.6
+  - @folie/castle@0.0.15
+
 ## 0.0.3
 
 ### Patch Changes

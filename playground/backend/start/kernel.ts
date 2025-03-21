@@ -24,7 +24,7 @@ server.errorHandler(() => import('#exceptions/handler'))
  */
 server.use([
   () => import('#middleware/container_bindings_middleware'),
-  () => import('@folie/castle/middleware/force_json_response_middleware'),
+  () => import('@folie/castle/middlewares/force_json_response_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
 ])
 

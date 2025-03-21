@@ -1,7 +1,7 @@
 {
   "name": "@folie/gate-tan",
   "description": "",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -60,6 +60,6 @@
     "@mantine/form": "^7.16.1"
   },
   "dependencies": {
-    "@folie/blueprint-lib": "workspace:*"
+    "@folie/lib": "workspace:*"
   }
 }

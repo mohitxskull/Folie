@@ -1,5 +1,13 @@
 # @folie/blueprint-lib
 
+## 0.0.7
+
+### Patch Changes
+
+- dependency fix
+- Updated dependencies
+  - @folie/lib@0.0.6
+
 ## 0.0.6
 
 ### Patch Changes

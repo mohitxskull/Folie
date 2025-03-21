@@ -1,5 +1,4 @@
-import { interpolate } from '@folie/lib'
-import { Endpoint, EndpointIO } from './types.js'
+import { interpolate, EndpointIO, Endpoint } from '@folie/lib'
 import qs from 'qs'
 
 export const endpoint = <IO extends EndpointIO>(params: {

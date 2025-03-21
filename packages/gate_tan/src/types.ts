@@ -1,6 +1,6 @@
 import { UseFormReturnType } from '@mantine/form'
 import { QueryKey, UseMutationOptions, UseMutationResult } from '@tanstack/react-query'
-import { ApiEndpoints, EndpointKeys, EndpointIO } from '@folie/blueprint-lib'
+import { ApiEndpoints, EndpointKeys, EndpointIO } from '@folie/lib'
 import { GateTan } from './tan.js'
 
 export type NotificationFunction = (params: { title: string; message: string }) => void

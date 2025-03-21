@@ -20,3 +20,5 @@ export {
   getHTTPStatusByKey,
   type HTTPStatusCodeKeys,
 } from './src/http_status_codes.js'
+
+export type { ApiEndpoints, Endpoint, EndpointIO, EndpointKeys } from './src/api_types.js'

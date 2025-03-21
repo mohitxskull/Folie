@@ -1,4 +1,4 @@
-import { ApiEndpoints } from '@folie/blueprint-lib'
+import { ApiEndpoints } from '@folie/lib'
 import { Gate } from '@folie/gate'
 import {
   UndefinedInitialDataOptions,

@@ -1,5 +1,13 @@
 # @folie/gate
 
+## 0.0.10
+
+### Patch Changes
+
+- dependency fix
+- Updated dependencies
+  - @folie/lib@0.0.6
+
 ## 0.0.9
 
 ### Patch Changes

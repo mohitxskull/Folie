@@ -1,7 +1,7 @@
 {
   "name": "@folie/blueprint-lib",
   "description": "",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -40,9 +40,11 @@
     "typescript": "^5.6"
   },
   "dependencies": {
-    "@vinejs/vine": "3.0.0",
     "@folie/lib": "workspace:*",
     "qs": "6.14.0"
+  },
+  "peerDependencies": {
+    "@vinejs/vine": "^3.0.0"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",
