@@ -1,4 +1,4 @@
-import { Header, Token } from './types.js'
+import { Header, GateCallOptions, Token } from './types.js'
 import axios, { type AxiosRequestConfig, AxiosInstance, AxiosResponse, isAxiosError } from 'axios'
 import qs from 'qs'
 import { GateError } from './error.js'
@@ -71,14 +71,7 @@ export class Gate<const Endpoints extends ApiEndpoints> {
     EP extends Endpoints[EK],
     IN extends EP['io']['input'],
     OUT extends EP['io']['output'],
-  >(
-    endpointKey: EK,
-    input: IN,
-    options?: {
-      token?: Token
-      headers?: Header
-    }
-  ): Promise<OUT> {
+  >(endpointKey: EK, input: IN, options?: GateCallOptions): Promise<OUT> {
     try {
       const endpoint = this.#endpoints[endpointKey]
 
@@ -125,10 +118,11 @@ export class Gate<const Endpoints extends ApiEndpoints> {
 
   async #safeCall<EK extends keyof Endpoints, EP extends Endpoints[EK]>(
     endpointKey: EK,
-    input: EP['io']['input']
+    input: EP['io']['input'],
+    options?: GateCallOptions
   ): Promise<[EP['io']['output'], null] | [null, GateError]> {
     try {
-      const res = await this.#call(endpointKey, input)
+      const res = await this.#call(endpointKey, input, options)
 
       return [res, null]
     } catch (err) {
@@ -142,8 +136,10 @@ export class Gate<const Endpoints extends ApiEndpoints> {
 
   endpoint<EK extends keyof Endpoints>(endpointKey: EK) {
     return {
-      call: (input: Endpoints[EK]['io']['input']) => this.#call(endpointKey, input),
-      safeCall: (input: Endpoints[EK]['io']['input']) => this.#safeCall(endpointKey, input),
+      call: (input: Endpoints[EK]['io']['input'], options?: GateCallOptions) =>
+        this.#call(endpointKey, input, options),
+      safeCall: (input: Endpoints[EK]['io']['input'], options?: GateCallOptions) =>
+        this.#safeCall(endpointKey, input, options),
     } as const
   }
 

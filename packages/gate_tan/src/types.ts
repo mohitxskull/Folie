@@ -1,7 +1,8 @@
 import { UseFormReturnType } from '@mantine/form'
 import { QueryKey, UseMutationOptions, UseMutationResult } from '@tanstack/react-query'
 import { ApiEndpoints, EndpointKeys, EndpointIO } from '@folie/lib'
-import { GateTan } from './tan.js'
+import type { GateTan } from './tan.js'
+import type { GateCallOptions } from '@folie/gate/types'
 
 export type NotificationFunction = (params: { title: string; message: string }) => void
 
@@ -36,7 +37,7 @@ export type CobaltUseMutationParams<
   onErrorHook?: {
     after?: () => void
   }
-}
+} & GateCallOptions
 
 export type FormInputTransformType = 'default'
 

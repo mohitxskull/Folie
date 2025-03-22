@@ -1,5 +1,13 @@
 # @folie/gate-tan
 
+## 0.0.3
+
+### Patch Changes
+
+- Added option of token and header
+- Updated dependencies
+  - @folie/gate@0.0.11
+
 ## 0.0.2
 
 ### Patch Changes

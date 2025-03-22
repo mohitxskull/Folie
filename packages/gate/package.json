@@ -1,7 +1,7 @@
 {
   "name": "@folie/gate",
   "description": "",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -13,10 +13,7 @@
   ],
   "exports": {
     ".": "./build/index.js",
-    "./types": {
-      "types": "./build/src/types/index.d.ts",
-      "default": "./build/src/types/index.js"
-    }
+    "./types": "./build/src/types.js"
   },
   "scripts": {
     "clean": "del-cli build",

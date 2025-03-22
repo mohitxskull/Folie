@@ -18,6 +18,7 @@ import {
 } from './types.js'
 import { ErrorHandler } from './error_handler.js'
 import { useCallback, useRef, useState } from 'react'
+import type { GateCallOptions } from '@folie/gate/types'
 
 export class GateTan<const Endpoints extends ApiEndpoints> {
   gate: Gate<Endpoints>
@@ -48,7 +49,11 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
     params: {
       endpoint: EK
       input?: EP['input']
-    } & Omit<UndefinedInitialDataOptions<EP['input'], Error, EP['output']>, 'queryFn' | 'queryKey'>
+    } & Omit<
+      UndefinedInitialDataOptions<EP['input'], Error, EP['output']>,
+      'queryFn' | 'queryKey'
+    > &
+      GateCallOptions
   ) => {
     const { endpoint, input, ...rest } = params
 
@@ -61,7 +66,11 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
         params: input?.params,
         query: input?.query,
       }),
-      queryFn: () => this.gate.endpoint(endpoint).call(input),
+      queryFn: () =>
+        this.gate.endpoint(endpoint).call(input, {
+          token: params.token,
+          headers: params.headers,
+        }),
     })
 
     return internalQuery
@@ -79,7 +88,11 @@ export class GateTan<const Endpoints extends ApiEndpoints> {
       ...rest,
 
       // Permanent
-      mutationFn: this.gate.endpoint(params.endpoint).call,
+      mutationFn: (input: EP['input']) =>
+        this.gate.endpoint(params.endpoint).call(input, {
+          token: params.token,
+          headers: params.headers,
+        }),
 
       onSuccess: (output, input) => {
         const res = params.onSuccess(output, input)

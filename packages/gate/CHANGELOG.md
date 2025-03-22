@@ -1,5 +1,11 @@
 # @folie/gate
 
+## 0.0.11
+
+### Patch Changes
+
+- Added option of token and header
+
 ## 0.0.10
 
 ### Patch Changes
