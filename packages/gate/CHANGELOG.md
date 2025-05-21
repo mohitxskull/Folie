@@ -1,5 +1,13 @@
 # @folie/gate
 
+## 0.0.12
+
+### Patch Changes
+
+- Improved error handling and replacing model cache with key cache
+- Updated dependencies
+  - @folie/lib@0.0.7
+
 ## 0.0.11
 
 ### Patch Changes

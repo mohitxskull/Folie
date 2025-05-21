@@ -1,5 +1,14 @@
 # @folie/gate-tan
 
+## 0.0.4
+
+### Patch Changes
+
+- Improved error handling and replacing model cache with key cache
+- Updated dependencies
+  - @folie/gate@0.0.12
+  - @folie/lib@0.0.7
+
 ## 0.0.3
 
 ### Patch Changes

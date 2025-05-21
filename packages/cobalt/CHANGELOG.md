@@ -1,5 +1,12 @@
 # @folie/cobalt
 
+## 0.0.29
+
+### Patch Changes
+
+- Improved error handling and replacing model cache with key cache
+  - @folie/blueprint-lib@0.0.8
+
 ## 0.0.28
 
 ### Patch Changes

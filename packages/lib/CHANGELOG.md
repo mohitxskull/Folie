@@ -1,5 +1,11 @@
 # @folie/lib
 
+## 0.0.7
+
+### Patch Changes
+
+- Improved error handling and replacing model cache with key cache
+
 ## 0.0.6
 
 ### Patch Changes

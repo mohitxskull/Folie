@@ -1,5 +1,13 @@
 # @folie/castle
 
+## 0.0.16
+
+### Patch Changes
+
+- Improved error handling and replacing model cache with key cache
+- Updated dependencies
+  - @folie/lib@0.0.7
+
 ## 0.0.15
 
 ### Patch Changes
