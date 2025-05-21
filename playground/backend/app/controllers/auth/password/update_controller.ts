@@ -1,7 +1,7 @@
 import { acceptablePassword } from '#helpers/acceptable_password'
 import { PasswordSchema } from '#validators/index'
 import hash from '@adonisjs/core/services/hash'
-import { ProcessingException } from '@folie/castle/exception'
+import { BadRequestException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
 
@@ -20,13 +20,13 @@ export default class Controller {
     ])
 
     if (payload.oldPassword === payload.newPassword) {
-      throw new ProcessingException('New password cannot be the same as old password', {
+      throw new BadRequestException('New password cannot be the same as old password', {
         source: 'newPassword',
       })
     }
 
     if (!(await hash.verify(user.password, payload.oldPassword))) {
-      throw new ProcessingException('Invalid password', {
+      throw new BadRequestException('Invalid password', {
         source: 'oldPassword',
       })
     }
@@ -38,7 +38,7 @@ export default class Controller {
     ])
 
     if (!passRes.result) {
-      throw new ProcessingException(passRes.reason, {
+      throw new BadRequestException(passRes.reason, {
         source: 'newPassword',
       })
     }

@@ -6,7 +6,6 @@ import cache from '@adonisjs/cache/services/main'
 import User from './user.js'
 import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
-import { ModelCache } from '@folie/castle'
 import Tag from './tag.js'
 
 export default class Note extends BaseModel {
@@ -46,12 +45,12 @@ export default class Note extends BaseModel {
 
   // Cache =============================
 
-  static $cache() {
-    return new ModelCache(Note, cache.namespace(this.table))
+  static get $cache() {
+    return cache.namespace(this.table)
   }
 
-  $cache() {
-    return Note.$cache().row(this)
+  get $cache() {
+    return Note.$cache.namespace(this.id.toString())
   }
 
   // Columns =============================

@@ -11,6 +11,7 @@ import {
   Group,
   Loader,
   Paper,
+  ScrollAreaAutosize,
   Stack,
   Text,
   TextInput,
@@ -70,7 +71,7 @@ export const TagManageAside = (props: Props) => {
           </Title>
         </Group>
       </AppShellSection>
-      <AppShellSection grow mt="md">
+      <AppShellSection mt="md">
         <Stack h="100%">
           <Flex justify="center" align="center" direction="row" gap="xs">
             <TextInput
@@ -137,32 +138,36 @@ export const TagManageAside = (props: Props) => {
 
                   <Show.Else>
                     <>
-                      <For each={data}>
-                        {(tag) => (
-                          <>
-                            <Paper
-                              component={Link}
-                              p="md"
-                              href={`/app/notes/tags/${tag.id}`}
-                              style={{
-                                cursor: "pointer",
-                              }}
-                            >
-                              <Group justify="space-between">
-                                <Title order={6} flex={1}>
-                                  <Text inherit truncate="end" maw="60%">
-                                    {tag.name}
-                                  </Text>
-                                </Title>
+                      <ScrollAreaAutosize mah="80vh" type="never">
+                        <Stack h="100%" mb="md">
+                          <For each={data}>
+                            {(tag) => (
+                              <>
+                                <Paper
+                                  component={Link}
+                                  p="md"
+                                  href={`/app/notes/tags/${tag.id}`}
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <Group justify="space-between">
+                                    <Title order={6} flex={1}>
+                                      <Text inherit truncate="end" maw="60%">
+                                        {tag.name}
+                                      </Text>
+                                    </Title>
 
-                                <Text c="dimmed" size="sm">
-                                  {tag.metric?.notes}
-                                </Text>
-                              </Group>
-                            </Paper>
-                          </>
-                        )}
-                      </For>
+                                    <Text c="dimmed" size="sm">
+                                      {tag.metric?.notes}
+                                    </Text>
+                                  </Group>
+                                </Paper>
+                              </>
+                            )}
+                          </For>
+                        </Stack>
+                      </ScrollAreaAutosize>
                     </>
                   </Show.Else>
                 </Show>

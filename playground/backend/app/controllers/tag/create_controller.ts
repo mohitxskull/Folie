@@ -1,6 +1,6 @@
 import { setting } from '#config/setting'
 import { TagDescriptionSchema, TagNameSchema } from '#validators/index'
-import { ProcessingException } from '@folie/castle/exception'
+import { ConflictException, ForbiddenException } from '@folie/castle/exception'
 import { handler, slugify } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
 
@@ -18,10 +18,10 @@ export default class Controller {
       ctx.auth.session.getUser(),
     ])
 
-    const metrics = await user.$metric()
+    const metrics = await user.$metric().get()
 
     if (metrics.notes >= setting.notes.perUser) {
-      throw new ProcessingException('Maximum notes reached')
+      throw new ForbiddenException('Maximum notes reached')
     }
 
     const slug = slugify(payload.name)
@@ -29,7 +29,9 @@ export default class Controller {
     const exist = await user.related('tags').query().where('slug', slug).first()
 
     if (exist) {
-      throw new ProcessingException('Tag already exists')
+      throw new ConflictException('Tag already exists', {
+        source: 'name',
+      })
     }
 
     const tag = await user.related('tags').create({

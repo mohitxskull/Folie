@@ -6,8 +6,8 @@ import cache from '@adonisjs/cache/services/main'
 import User from './user.js'
 import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
-import { ModelCache } from '@folie/castle'
 import Note from './note.js'
+import { KeyCache } from '@folie/castle'
 
 export default class Tag extends BaseModel {
   static table = castle.table.tag()
@@ -48,23 +48,22 @@ export default class Tag extends BaseModel {
 
   // Cache =============================
 
-  static $cache() {
-    return new ModelCache(Tag, cache.namespace(this.table), ['metric'])
+  static get $cache() {
+    return cache.namespace(this.table)
   }
 
-  $cache() {
-    return Tag.$cache().row(this)
+  get $cache() {
+    return Tag.$cache.namespace(this.id.toString())
   }
 
   $metric(this: Tag) {
-    return this.$cache().get({
+    return new KeyCache(this.$cache, {
       key: 'metric',
       factory: async () => {
         const notes = await this.related('notes').query().count('* as total')
 
-        return { notes: notes[0].$extras.total }
+        return { notes: Number(notes[0].$extras.total) }
       },
-      parser: async (p) => p,
     })
   }
 

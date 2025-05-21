@@ -7,6 +7,8 @@
 |
 */
 
+export { tryPromise } from './src/try_promise.js'
+
 export { DotProp } from './src/dot_prop.js'
 
 export { XEnum } from './src/x_enum.js'

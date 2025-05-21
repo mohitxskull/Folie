@@ -2,8 +2,8 @@ import { captcha } from '#config/captcha'
 import env from '#start/env'
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
+import { ForbiddenException } from '@folie/castle/exception'
 import vine from '@vinejs/vine'
-import { ProcessingException } from '@folie/castle/exception'
 
 const schema = vine.compile(
   vine.object({
@@ -26,10 +26,9 @@ export default class CaptchaMiddleware {
       .verify({ token: payload.headers.token, ip: ctx.request.ip() })
 
     if (!isValid) {
-      throw new ProcessingException('Invalid captcha', {
-        meta: {
+      throw new ForbiddenException('Invalid captcha', {
+        reason: {
           token: payload.headers.token,
-          ip: ctx.request.ip(),
         },
       })
     }

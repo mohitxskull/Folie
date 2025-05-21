@@ -1,6 +1,6 @@
 import { squid } from '#config/squid'
 import Tag from '#models/tag'
-import { ProcessingException } from '@folie/castle/exception'
+import { NotFoundException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
 
@@ -24,9 +24,7 @@ export default class Controller {
       .first()
 
     if (!tag) {
-      throw new ProcessingException('Tag not found', {
-        status: 'NOT_FOUND',
-      })
+      throw new NotFoundException('Tag not found')
     }
 
     return { tag: tag.$serialize() }

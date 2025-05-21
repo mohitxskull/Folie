@@ -7,8 +7,8 @@ import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
 import { acceptablePassword } from '#helpers/acceptable_password'
 import db from '@adonisjs/lucid/services/db'
-import { ProcessingException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
+import { BadRequestException, ConflictException, ForbiddenException } from '@folie/castle/exception'
 
 export default class Controller {
   input = vine.compile(
@@ -23,9 +23,7 @@ export default class Controller {
 
   handle = handler(async ({ ctx }) => {
     if (!setting.signUp.enabled) {
-      throw new ProcessingException('Sign-up is disabled', {
-        status: 'FORBIDDEN',
-      })
+      throw new ForbiddenException('Sign-up is disabled')
     }
 
     const payload = await ctx.request.validateUsing(this.input)
@@ -33,9 +31,7 @@ export default class Controller {
     const exist = await User.findBy('email', payload.email)
 
     if (exist) {
-      throw new ProcessingException('Email already exists', {
-        source: 'email',
-      })
+      throw new ConflictException('Email already exists')
     }
 
     const passRes = acceptablePassword(payload.password, [
@@ -45,7 +41,7 @@ export default class Controller {
     ])
 
     if (!passRes.result) {
-      throw new ProcessingException(passRes.reason, {
+      throw new BadRequestException(passRes.reason, {
         source: 'password',
       })
     }
@@ -59,7 +55,7 @@ export default class Controller {
           lastName: payload.lastName,
           email: payload.email,
           password: payload.password,
-          verifiedAt: setting.signUp.verification.enabled ? null : DateTime.utc(),
+          verifiedAt: setting.signUp.verification.enabled ? null : DateTime.now(),
         },
         {
           client: trx,

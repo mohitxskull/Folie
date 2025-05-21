@@ -8,7 +8,7 @@ import limiter from '@adonisjs/limiter/services/main'
 import mail from '@adonisjs/mail/services/main'
 import EmailVerificationMail from '#mails/email_verification'
 import { handler } from '@folie/castle/helpers'
-import { ProcessingException } from '@folie/castle/exception'
+import { BadRequestException, ForbiddenException, OkException } from '@folie/castle/exception'
 
 export default class Controller {
   input = vine.compile(
@@ -20,9 +20,7 @@ export default class Controller {
 
   handle = handler(async ({ ctx }) => {
     if (!setting.signIn.enabled) {
-      throw new ProcessingException('Sign-in is disabled', {
-        status: 'FORBIDDEN',
-      })
+      throw new ForbiddenException('Sign-in is disabled')
     }
 
     const payload = await ctx.request.validateUsing(this.input)
@@ -32,8 +30,8 @@ export default class Controller {
     if (!user) {
       await hash.make(payload.password)
 
-      throw new ProcessingException('Invalid credentials', {
-        meta: {
+      throw new BadRequestException('Invalid credentials', {
+        reason: {
           email: payload.email,
           message: "User doesn't exist",
         },
@@ -41,8 +39,8 @@ export default class Controller {
     }
 
     if (!(await hash.verify(user.password, payload.password))) {
-      throw new ProcessingException('Invalid credentials', {
-        meta: {
+      throw new BadRequestException('Invalid credentials', {
+        reason: {
           email: payload.email,
           message: 'Invalid password',
         },
@@ -51,7 +49,7 @@ export default class Controller {
 
     if (!user.verifiedAt) {
       if (!setting.signUp.verification.enabled) {
-        throw new ProcessingException('Email not verified', {
+        throw new ForbiddenException('Email not verified', {
           source: 'email',
         })
       }
@@ -70,7 +68,7 @@ export default class Controller {
       if (!mailRes) {
         const availableIn = await mailLimiter.availableIn(key)
 
-        throw new ProcessingException(
+        throw new ForbiddenException(
           `You have exceeded the rate limit for sending verification emails. Please try again in ${availableIn} seconds.`,
           {
             source: 'email',
@@ -78,7 +76,7 @@ export default class Controller {
         )
       }
 
-      throw new ProcessingException("We've sent you an email to verify your account.", {
+      throw new OkException("We've sent you an email to verify your account.", {
         source: 'email',
       })
     }

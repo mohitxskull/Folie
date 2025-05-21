@@ -6,9 +6,9 @@ import { CRC32 } from '../src/helpers/crc32.js'
 import { createHash } from 'node:crypto'
 import db from '@adonisjs/lucid/services/db'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
-import { ProcessingException } from '../src/exceptions/processing_exception.js'
 import { getBearerToken } from '../src/helpers/get_bearer_token.js'
 import { HttpContext } from '@adonisjs/core/http'
+import { UnauthorizedException } from '../src/exceptions/http_exceptions.js'
 
 interface SessionRow extends LucidRow {
   id: number
@@ -43,6 +43,8 @@ export class SessionManager<SessionModelG extends SessionModel> {
    */
   #maxSessions = 3
 
+  #expiresIn: string | undefined
+
   #invalidMessage = 'Not a valid session'
 
   /**
@@ -64,12 +66,31 @@ export class SessionManager<SessionModelG extends SessionModel> {
    * Returns null when unable to decode the token because of
    * invalid format or encoding.
    */
-  async #decode(value: string) {
+  async #decode(value: string): Promise<
+    | {
+        status: true
+        session: typeof session & {
+          secret: Secret<string>
+          value: Secret<string>
+        }
+      }
+    | {
+        status: false
+        reason: string
+        metadata?: Record<string, unknown>
+      }
+  > {
     /**
      * Ensure value is a string and starts with the prefix.
      */
     if (typeof value !== 'string' || !value.startsWith(`${this.#tokenPrefix}`)) {
-      return null
+      return {
+        status: false,
+        reason: 'Token not a string or invalid prefix',
+        metadata: {
+          value,
+        },
+      }
     }
 
     /**
@@ -78,13 +99,25 @@ export class SessionManager<SessionModelG extends SessionModel> {
     const token = value.replace(new RegExp(`^${this.#tokenPrefix}`), '')
 
     if (!token) {
-      return null
+      return {
+        status: false,
+        reason: 'Invalid token after prefix',
+        metadata: {
+          value,
+        },
+      }
     }
 
     const [identifier, ...tokenValue] = token.split('.')
 
     if (!identifier || tokenValue.length === 0) {
-      return null
+      return {
+        status: false,
+        reason: 'Invalid token after split',
+        metadata: {
+          value,
+        },
+      }
     }
 
     const decodedIdentifier = base64.urlDecode(identifier)
@@ -92,30 +125,48 @@ export class SessionManager<SessionModelG extends SessionModel> {
     const decodedSecret = base64.urlDecode(tokenValue.join('.'))
 
     if (!decodedIdentifier || !decodedSecret) {
-      return null
+      return {
+        status: false,
+        reason: 'Invalid token',
+        metadata: {
+          decodedIdentifier,
+          decodedSecret,
+        },
+      }
     }
 
     // Ensure the decoded identifier is a valid number
     if (Number.isNaN(Number(decodedIdentifier))) {
-      return null
+      return {
+        status: false,
+        reason: 'Invalid identifier',
+        metadata: {
+          decodedIdentifier,
+        },
+      }
     }
 
     const session = await this.sessionModel.find(Number(decodedIdentifier))
 
     if (!session) {
-      throw new ProcessingException(this.#invalidMessage, {
-        meta: {
-          reason: 'Session not found',
+      return {
+        status: false,
+        reason: 'Session not found',
+        metadata: {
+          decodedIdentifier,
         },
-      })
+      }
     }
 
     session.secret = new Secret(decodedSecret)
     session.value = this.#value(session.id, decodedSecret)
 
-    return session as typeof session & {
-      secret: Secret<string>
-      value: Secret<string>
+    return {
+      status: true,
+      session: session as typeof session & {
+        secret: Secret<string>
+        value: Secret<string>
+      },
     }
   }
 
@@ -126,7 +177,13 @@ export class SessionManager<SessionModelG extends SessionModel> {
   }
 
   #isExpired(expiresAt: DateTime<boolean>) {
-    return expiresAt < DateTime.utc()
+    if (!expiresAt.isValid) {
+      throw new Error('Invalid expiresAt', {
+        cause: expiresAt,
+      })
+    }
+
+    return expiresAt.diffNow().toMillis() < 0
   }
 
   #value(sessionId: number, secret: string) {
@@ -142,12 +199,14 @@ export class SessionManager<SessionModelG extends SessionModel> {
       tokenPrefix?: string
       secretSize?: number
       invalidMessage?: string
+      expiresIn?: string
     }
   ) {
     this.#maxSessions = options?.maxSessions || this.#maxSessions
     this.#tokenPrefix = options?.tokenPrefix || this.#tokenPrefix
     this.#secretSize = options?.secretSize || this.#secretSize
     this.#invalidMessage = options?.invalidMessage || this.#invalidMessage
+    this.#expiresIn = options?.expiresIn
   }
 
   async create(
@@ -174,9 +233,11 @@ export class SessionManager<SessionModelG extends SessionModel> {
 
       newSession.useTransaction(trx)
 
-      if (options?.expiresIn) {
-        newSession.expiresAt = DateTime.utc().plus({
-          seconds: stringHelpers.seconds.parse(options.expiresIn),
+      const expiresIn = options?.expiresIn || this.#expiresIn
+
+      if (expiresIn) {
+        newSession.expiresAt = DateTime.now().plus({
+          milliseconds: stringHelpers.milliseconds.parse(expiresIn),
         })
       }
 
@@ -215,30 +276,26 @@ export class SessionManager<SessionModelG extends SessionModel> {
     const token = getBearerToken(ctx)
 
     if (!token) {
-      throw new ProcessingException(this.#invalidMessage, {
-        meta: {
-          reason: 'Token not found in request',
-          token: typeof token,
-        },
+      throw new UnauthorizedException(this.#invalidMessage, {
+        reason: 'Token not found in request',
       })
     }
 
-    const session = await this.#decode(token)
+    const sessionResponse = await this.#decode(token)
 
-    if (!session) {
-      throw new ProcessingException(this.#invalidMessage, {
-        meta: {
-          reason: 'Session not found',
-        },
+    if (!sessionResponse.status) {
+      throw new UnauthorizedException(this.#invalidMessage, {
+        reason: sessionResponse.reason,
+        metadata: sessionResponse.metadata,
       })
     }
+
+    const session = sessionResponse.session
 
     if (session.secret) {
       if (!this.#isVerified(session.hash, session.secret)) {
-        throw new ProcessingException(this.#invalidMessage, {
-          meta: {
-            reason: 'Invalid secret',
-          },
+        throw new UnauthorizedException(this.#invalidMessage, {
+          reason: 'Invalid secret',
         })
       }
     } else {
@@ -247,10 +304,8 @@ export class SessionManager<SessionModelG extends SessionModel> {
 
     if (session.expiresAt) {
       if (this.#isExpired(session.expiresAt)) {
-        throw new ProcessingException(this.#invalidMessage, {
-          meta: {
-            reason: 'Expired session',
-          },
+        throw new UnauthorizedException(this.#invalidMessage, {
+          reason: 'Expired session',
         })
       }
     }

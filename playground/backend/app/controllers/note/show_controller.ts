@@ -1,6 +1,6 @@
 import { squid } from '#config/squid'
 import Note from '#models/note'
-import { ProcessingException } from '@folie/castle/exception'
+import { NotFoundException } from '@folie/castle/exception'
 import { handler } from '@folie/castle/helpers'
 import vine from '@vinejs/vine'
 
@@ -24,9 +24,7 @@ export default class Controller {
       .first()
 
     if (!note) {
-      throw new ProcessingException('Note not found', {
-        status: 'NOT_FOUND',
-      })
+      throw new NotFoundException('Note not found')
     }
 
     return { note: note.$serialize() }

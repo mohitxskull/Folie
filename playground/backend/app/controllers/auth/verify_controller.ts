@@ -4,7 +4,7 @@ import encryption from '@adonisjs/core/services/encryption'
 import User from '#models/user'
 import { DateTime } from 'luxon'
 import { handler } from '@folie/castle/helpers'
-import { ProcessingException } from '@folie/castle/exception'
+import { BadRequestException, ForbiddenException } from '@folie/castle/exception'
 
 export default class Controller {
   input = vine.compile(
@@ -15,9 +15,7 @@ export default class Controller {
 
   handle = handler(async ({ ctx }) => {
     if (!setting.signUp.verification.enabled) {
-      throw new ProcessingException('Email verification is disabled', {
-        status: 'FORBIDDEN',
-      })
+      throw new ForbiddenException('Email verification is disabled')
     }
 
     const payload = await ctx.request.validateUsing(this.input)
@@ -28,32 +26,26 @@ export default class Controller {
     )
 
     if (!decryptedToken) {
-      throw new ProcessingException('Invalid token', {
-        meta: {
-          reason: 'Token decryption failed',
-        },
+      throw new BadRequestException('Invalid token', {
+        reason: 'Token decryption failed',
       })
     }
 
     const user = await User.findBy('email', decryptedToken.email)
 
     if (!user) {
-      throw new ProcessingException('Invalid token', {
-        meta: {
-          reason: 'User not found',
-        },
+      throw new BadRequestException('Invalid token', {
+        reason: 'User not found',
       })
     }
 
     if (user.verifiedAt) {
-      throw new ProcessingException('Invalid token', {
-        meta: {
-          reason: 'User already verified',
-        },
+      throw new BadRequestException('Invalid token', {
+        reason: 'User already verified',
       })
     }
 
-    user.verifiedAt = DateTime.utc()
+    user.verifiedAt = DateTime.now()
 
     await user.save()
 

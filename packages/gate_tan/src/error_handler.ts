@@ -1,12 +1,11 @@
 import { UseFormReturnType } from '@mantine/form'
 import { GateError } from '@folie/gate'
-import { capitalCase } from 'case-anything'
 import { getProperty } from 'dot-prop'
 
 export const ErrorHandler = (params: {
   error: unknown
   form?: UseFormReturnType<any>
-  notification: (params: { title: string; message: string }) => void
+  notification: (params: { title?: string; message: string }) => void
 }) => {
   if (params.error instanceof GateError) {
     const errorJSON = params.error.toJSON()
@@ -14,15 +13,34 @@ export const ErrorHandler = (params: {
     if (errorJSON.response) {
       const formValues = params.form ? params.form.getValues() : {}
 
-      for (const multi of errorJSON.response.multiple) {
-        if (params.form && multi.source && getProperty(formValues, multi.source) !== undefined) {
-          params.form.setFieldError(multi.source, multi.message)
+      if (errorJSON.response.errors) {
+        for (const multi of errorJSON.response.errors) {
+          if (params.form && multi.field && getProperty(formValues, multi.field) !== undefined) {
+            params.form.setFieldError(multi.field, multi.message)
+          } else {
+            params.notification({
+              title: multi.field,
+              message: multi.message,
+            })
+          }
+        }
+      } else if (errorJSON.response.source) {
+        if (
+          params.form &&
+          errorJSON.response.source &&
+          getProperty(formValues, errorJSON.response.source) !== undefined
+        ) {
+          params.form.setFieldError(errorJSON.response.source, errorJSON.response.message)
         } else {
           params.notification({
-            title: capitalCase(errorJSON.response.title),
-            message: multi.message,
+            title: errorJSON.response.source,
+            message: errorJSON.response.message,
           })
         }
+      } else {
+        params.notification({
+          message: errorJSON.response.message,
+        })
       }
     } else {
       console.error(params.error.toJSON())

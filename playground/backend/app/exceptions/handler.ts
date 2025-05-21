@@ -1,7 +1,6 @@
 import app from '@adonisjs/core/services/app'
 import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
-import env from '#start/env'
-import { ProcessingException } from '@folie/castle/exception'
+import { parseError } from '@folie/castle/exception'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -10,16 +9,12 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    */
   protected debug = !!app.inProduction
 
-  protected shouldReport(): boolean {
-    return env.get('REPORT_ERRORS', true)
-  }
-
   /**
    * The method is used for handling errors and returning
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
-    return super.handle(ProcessingException.fromError(error), ctx)
+    return super.handle(parseError(error), ctx)
   }
 
   /**
@@ -29,6 +24,6 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
-    return super.report(ProcessingException.fromError(error), ctx)
+    return super.report(parseError(error), ctx)
   }
 }

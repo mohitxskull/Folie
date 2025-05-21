@@ -3,56 +3,61 @@ import { z } from 'zod'
 
 const ErrorResponseSchema = z.object({
   id: z.string(),
-  title: z.string(),
-  code: z.string(),
   status: z.number(),
-  multiple: z.array(
-    z.object({
-      message: z.string(),
-      source: z.string().optional(),
-      meta: z.record(z.any()).optional(),
-    })
-  ),
+  code: z.string(),
+  message: z.string(),
+  source: z.string().optional(),
+  errors: z
+    .array(
+      z.object({
+        message: z.string(),
+        field: z.string(),
+      })
+    )
+    .optional(),
 })
 
 export class GateError extends Error {
   #response?: z.infer<typeof ErrorResponseSchema>
 
-  #trace?: string[]
-
   constructor(
     message: string,
     options?: {
       cause?: unknown
-      stack?: string
       response?: z.infer<typeof ErrorResponseSchema>
+      stack?: string
     }
   ) {
     super(message, { cause: options?.cause })
 
     this.name = 'GateError'
 
-    Object.setPrototypeOf(this, new.target.prototype)
-
     this.#response = options?.response
 
-    let stack = options?.stack || this.stack
+    if (options?.stack) {
+      this.stack = options.stack
+    } else {
+      const ErrorConstructor = this.constructor as typeof GateError
 
-    if (!stack) {
-      Error.captureStackTrace(this, this.constructor)
-      stack = this.stack
+      if ('captureStackTrace' in Error) {
+        Error.captureStackTrace(this, ErrorConstructor)
+      }
     }
+  }
 
-    if (stack) {
-      this.#trace = stack.split('\n').map((line) => line.trim())
-    }
+  get [Symbol.toStringTag]() {
+    return this.constructor.name
+  }
+
+  toString() {
+    return `${this.name}: ${this.message}`
   }
 
   toJSON() {
     return {
       name: this.name,
       message: this.message,
-      trace: this.#trace,
+      stack: this.stack,
       cause: this.cause,
       response: this.#response,
     }

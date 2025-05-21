@@ -14,7 +14,7 @@ export const boot = async () => {
       password: 'master$master',
       firstName: 'Skull',
       lastName: 'Dot',
-      verifiedAt: DateTime.utc(),
+      verifiedAt: DateTime.now(),
     }
   )
 

@@ -38,14 +38,13 @@ export default defineConfig({
     () => import('@adonisjs/core/providers/vinejs_provider'),
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
-    () => import('#providers/boot_provider'),
-    () => import('@folie/castle/providers/migration_provider'),
     () => import('@folie/castle/providers/request_validator_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/limiter/limiter_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),
     () => import('@adonisjs/cache/cache_provider'),
     () => import('@adonisjs/mail/mail_provider'),
+    () => import('#providers/boot_provider'),
   ],
 
   /*

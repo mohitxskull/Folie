@@ -6,9 +6,10 @@ import { GateTan } from "@folie/gate-tan";
 export const gateTan = new GateTan({
   gate,
   endpoints,
-  notification: (params) =>
+  notification: (params) => {
     notifications.show({
       title: params.title,
       message: params.message,
-    }),
+    });
+  },
 });

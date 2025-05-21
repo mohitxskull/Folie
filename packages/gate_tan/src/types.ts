@@ -4,7 +4,7 @@ import { ApiEndpoints, EndpointKeys, EndpointIO } from '@folie/lib'
 import type { GateTan } from './tan.js'
 import type { GateCallOptions } from '@folie/gate/types'
 
-export type NotificationFunction = (params: { title: string; message: string }) => void
+export type NotificationFunction = (params: { title?: string; message: string }) => void
 
 export type CobaltUseMutationParams<
   Endpoints extends ApiEndpoints,

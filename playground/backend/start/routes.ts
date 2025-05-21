@@ -10,7 +10,7 @@
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 import { signInThrottle, signUpThrottle, throttle } from './limiter.js'
-import { ProcessingException } from '@folie/castle/exception'
+import { NotFoundException } from '@folie/castle/exception'
 
 router
   .group(() => {
@@ -99,13 +99,10 @@ router
 
 router
   .any('*', (ctx) => {
-    throw new ProcessingException('Route not found', {
-      status: 'NOT_FOUND',
-      meta: {
-        public: {
-          route: ctx.request.url(),
-          method: ctx.request.method(),
-        },
+    throw new NotFoundException('Route not found', {
+      metadata: {
+        method: ctx.request.method(),
+        url: ctx.request.url(),
       },
     })
   })

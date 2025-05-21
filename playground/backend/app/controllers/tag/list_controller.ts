@@ -69,7 +69,7 @@ export default class Controller {
 
       return {
         ...d.$serialize(),
-        metric: addMetric ? await d.$metric() : null,
+        metric: addMetric ? await d.$metric().get() : null,
       }
     })
   })

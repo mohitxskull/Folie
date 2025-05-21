@@ -29,6 +29,6 @@ export const DateSchema = (callback?: (v: VineDate) => VineDate) => {
   const base = vine.date({ formats: ['iso8601'] })
 
   return (callback ? callback(base) : base).transform((value) => {
-    return DateTime.fromJSDate(value).toUTC()
+    return DateTime.fromJSDate(value).toLocal()
   })
 }

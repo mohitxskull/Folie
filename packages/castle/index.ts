@@ -9,4 +9,4 @@
 
 export { CastleModule } from './modules/castle.js'
 export { SessionManager } from './modules/session_manager.js'
-export { ModelCache } from './modules/model_cache.js'
+export { KeyCache } from './modules/key_cache.js'
