@@ -76,7 +76,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
       }
     | {
         status: false
-        reason: string
+        message: string
         metadata?: Record<string, unknown>
       }
   > {
@@ -86,7 +86,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (typeof value !== 'string' || !value.startsWith(`${this.#tokenPrefix}`)) {
       return {
         status: false,
-        reason: 'Token not a string or invalid prefix',
+        message: 'Token not a string or invalid prefix',
         metadata: {
           value,
         },
@@ -101,7 +101,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (!token) {
       return {
         status: false,
-        reason: 'Invalid token after prefix',
+        message: 'Invalid token after prefix',
         metadata: {
           value,
         },
@@ -113,7 +113,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (!identifier || tokenValue.length === 0) {
       return {
         status: false,
-        reason: 'Invalid token after split',
+        message: 'Invalid token after split',
         metadata: {
           value,
         },
@@ -127,7 +127,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (!decodedIdentifier || !decodedSecret) {
       return {
         status: false,
-        reason: 'Invalid token',
+        message: 'Invalid token',
         metadata: {
           decodedIdentifier,
           decodedSecret,
@@ -139,7 +139,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (Number.isNaN(Number(decodedIdentifier))) {
       return {
         status: false,
-        reason: 'Invalid identifier',
+        message: 'Invalid identifier',
         metadata: {
           decodedIdentifier,
         },
@@ -151,7 +151,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     if (!session) {
       return {
         status: false,
-        reason: 'Session not found',
+        message: 'Session not found',
         metadata: {
           decodedIdentifier,
         },
@@ -285,8 +285,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
 
     if (!sessionResponse.status) {
       throw new UnauthorizedException(this.#invalidMessage, {
-        reason: sessionResponse.reason,
-        metadata: sessionResponse.metadata,
+        reason: sessionResponse,
       })
     }
 

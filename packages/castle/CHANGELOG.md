@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.17
+
+### Patch Changes
+
+- leaking critical information fix
+
 ## 0.0.16
 
 ### Patch Changes
