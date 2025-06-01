@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.18
+
+### Patch Changes
+
+- Fixed the extend
+
 ## 0.0.17
 
 ### Patch Changes
