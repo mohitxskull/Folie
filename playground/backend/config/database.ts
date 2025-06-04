@@ -1,6 +1,29 @@
 import env from '#start/env'
 import app from '@adonisjs/core/services/app'
 import { defineConfig } from '@adonisjs/lucid'
+import { createPivotReference, createTableReference } from '@folie/castle/helpers'
+
+const tableRef = createTableReference({
+  user: 'users',
+  session: 'sessions',
+  note: 'notes',
+  tag: 'tags',
+  noteTags: 'note_tags',
+})
+
+const pivotRef = createPivotReference(
+  {
+    noteTags: {
+      pivotTable: (t) => t.noteTags(),
+    },
+  },
+  tableRef
+)
+
+export const dbRef = {
+  table: tableRef,
+  pivot: pivotRef,
+}
 
 const dbConfig = defineConfig({
   connection: env.get('DB_TYPE'),

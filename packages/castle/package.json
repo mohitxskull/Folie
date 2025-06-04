@@ -1,7 +1,7 @@
 {
   "name": "@folie/castle",
   "description": "",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -17,12 +17,11 @@
     "./types/castle": "./build/src/types/castle.js",
     "./column": "./build/src/columns/index.js",
     "./exception": "./build/src/exceptions/index.js",
-    "./services/*": "./build/services/*.js",
+    "./services/*": "./build/src/services/*.js",
     "./helpers": "./build/src/helpers/index.js",
-    "./middlewares/*": "./build/middlewares/*.js",
-    "./providers/*": "./build/providers/*.js",
-    "./validator": "./build/src/validators/index.js",
-    "./miscellaneous/*": "./build/src/miscellaneous/*.js"
+    "./middlewares/*": "./build/src/middlewares/*.js",
+    "./providers/*": "./build/src/providers/*.js",
+    "./validator": "./build/src/validators/index.js"
   },
   "scripts": {
     "clean": "del-cli build",

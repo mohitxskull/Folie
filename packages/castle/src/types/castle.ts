@@ -15,9 +15,6 @@ export type PivotOptions = {
   meta?: any
 }
 
-export type ExtendedPivotOptions<Table extends Record<string, string>> = Omit<
-  PivotOptions,
-  'pivotTable'
-> & {
-  pivotTable: (table: Record<keyof Table, (column?: string) => string>) => string
+export type ExtendedPivotOptions<TKeys extends string> = Omit<PivotOptions, 'pivotTable'> & {
+  pivotTable: (table: Record<TKeys, (column?: string) => string>) => string
 }

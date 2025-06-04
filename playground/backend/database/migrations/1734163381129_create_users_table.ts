@@ -1,8 +1,8 @@
-import { castle } from '#config/castle'
+import { dbRef } from '#config/database'
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = castle.table.user()
+  protected tableName = dbRef.table.user()
 
   async up() {
     this.schema.createTable(this.tableName, (t) => {

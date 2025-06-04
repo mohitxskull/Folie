@@ -4,12 +4,12 @@ import type { BelongsTo, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import User from './user.js'
-import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
 import Tag from './tag.js'
+import { dbRef } from '#config/database'
 
 export default class Note extends BaseModel {
-  static table = castle.table.note()
+  static table = dbRef.table.note()
 
   // Serialize =============================
 
@@ -82,7 +82,7 @@ export default class Note extends BaseModel {
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @manyToMany(() => Tag, castle.pivot.noteTags)
+  @manyToMany(() => Tag, dbRef.pivot.noteTags)
   declare tags: ManyToMany<typeof Tag>
 
   // Extra ======================================

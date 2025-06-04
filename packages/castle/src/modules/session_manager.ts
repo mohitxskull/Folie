@@ -2,35 +2,41 @@ import { base64, safeEqual, Secret } from '@adonisjs/core/helpers'
 import stringHelpers from '@adonisjs/core/helpers/string'
 import { LucidModel, LucidRow } from '@adonisjs/lucid/types/model'
 import { DateTime } from 'luxon'
-import { CRC32 } from '../src/helpers/crc32.js'
+import { CRC32 } from '../helpers/crc32.js'
 import { createHash } from 'node:crypto'
 import db from '@adonisjs/lucid/services/db'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
-import { getBearerToken } from '../src/helpers/get_bearer_token.js'
+import { getBearerToken } from '../helpers/get_bearer_token.js'
 import { HttpContext } from '@adonisjs/core/http'
-import { UnauthorizedException } from '../src/exceptions/http_exceptions.js'
+import { UnauthorizedException } from '../exceptions/http_exceptions.js'
 
-interface SessionRow extends LucidRow {
-  id: number
+type RequiredSessionProperties = {
+  id: number | string
   hash: string
-  userId: number
+  userId: number | string
   value: Secret<string> | null
   secret: Secret<string> | null
-  createdAt: DateTime
-  updatedAt: DateTime
   expiresAt: DateTime | null
-  usedAt: DateTime | null
 }
 
-type ExtendedSessionModel = LucidModel & {
-  new (): SessionRow
+type ExtendedSessionModel<
+  T extends LucidRow & RequiredSessionProperties = LucidRow & RequiredSessionProperties,
+> = LucidModel & {
+  new (): T
 }
 
-interface SessionModel extends ExtendedSessionModel {
-  new (): SessionRow
+interface SessionModel<
+  T extends LucidRow & RequiredSessionProperties = LucidRow & RequiredSessionProperties,
+> extends ExtendedSessionModel<T> {
+  new (): T
 }
 
-export class SessionManager<SessionModelG extends SessionModel> {
+export class SessionManager<
+  TSession extends LucidRow & RequiredSessionProperties = LucidRow & RequiredSessionProperties,
+  SessionModelG extends SessionModel<TSession> = SessionModel<TSession>,
+> {
+  #sessionModel: SessionModelG
+
   #tokenPrefix = 'oat_'
 
   /**
@@ -69,7 +75,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
   async #decode(value: string): Promise<
     | {
         status: true
-        session: typeof session & {
+        session: TSession & {
           secret: Secret<string>
           value: Secret<string>
         }
@@ -146,7 +152,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
       }
     }
 
-    const session = await this.sessionModel.find(Number(decodedIdentifier))
+    const session = await this.#sessionModel.find(Number(decodedIdentifier))
 
     if (!session) {
       return {
@@ -186,14 +192,14 @@ export class SessionManager<SessionModelG extends SessionModel> {
     return expiresAt.diffNow().toMillis() < 0
   }
 
-  #value(sessionId: number, secret: string) {
+  #value(sessionId: number | string, secret: string) {
     return new Secret(
       `${this.#tokenPrefix}${base64.urlEncode(String(sessionId))}.${base64.urlEncode(secret)}`
     )
   }
 
   constructor(
-    private readonly sessionModel: SessionModelG,
+    sessionModel: SessionModelG,
     options?: {
       maxSessions?: number
       tokenPrefix?: string
@@ -202,6 +208,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
       expiresIn?: string
     }
   ) {
+    this.#sessionModel = sessionModel
     this.#maxSessions = options?.maxSessions || this.#maxSessions
     this.#tokenPrefix = options?.tokenPrefix || this.#tokenPrefix
     this.#secretSize = options?.secretSize || this.#secretSize
@@ -214,12 +221,17 @@ export class SessionManager<SessionModelG extends SessionModel> {
       id: number
     },
     options?: { expiresIn?: string | number; client?: TransactionClientContract }
-  ) {
+  ): Promise<
+    TSession & {
+      secret: Secret<string>
+      value: Secret<string>
+    }
+  > {
     const trx = options?.client || (await db.transaction())
 
     try {
       // Deleting last session if max reached
-      const activeSessions = await this.sessionModel
+      const activeSessions = await this.#sessionModel
         .query({ client: trx })
         .where('user_id', user.id)
         .orderBy('created_at', 'desc')
@@ -229,7 +241,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
         await activeSessions.pop()?.delete()
       }
 
-      const newSession = new this.sessionModel()
+      const newSession = new this.#sessionModel()
 
       newSession.useTransaction(trx)
 
@@ -272,7 +284,7 @@ export class SessionManager<SessionModelG extends SessionModel> {
     }
   }
 
-  async authenticate(ctx: HttpContext) {
+  async authenticate(ctx: HttpContext): Promise<TSession> {
     const token = getBearerToken(ctx)
 
     if (!token) {

@@ -6,13 +6,13 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 import { squid } from '#config/squid'
 import cache from '@adonisjs/cache/services/main'
 import Note from './note.js'
-import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
 import Tag from './tag.js'
 import { KeyCache } from '@folie/castle'
+import { dbRef } from '#config/database'
 
 export default class User extends BaseModel {
-  static table = castle.table.user()
+  static table = dbRef.table.user()
 
   // Serialize =============================
 

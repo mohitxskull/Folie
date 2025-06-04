@@ -1,5 +1,5 @@
 import { defineConfig, store, drivers } from '@adonisjs/cache'
-import { superjson } from '@folie/castle/miscellaneous/super_json'
+import { superjson } from '@folie/castle/helpers'
 
 const cacheConfig = defineConfig({
   default: 'default',

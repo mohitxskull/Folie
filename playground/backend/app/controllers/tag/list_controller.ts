@@ -4,7 +4,7 @@ import { handler, serializePage } from '@folie/castle/helpers'
 import Tag from '#models/tag'
 import { squid } from '#config/squid'
 import { TagNameSchema } from '#validators/index'
-import { castle } from '#config/castle'
+import { dbRef } from '#config/database'
 
 export default class Controller {
   // Define input validation schema
@@ -49,7 +49,7 @@ export default class Controller {
       const noteId = payload.query.filter.noteId
 
       listQuery = listQuery.andWhereHas('notes', (query) => {
-        query.where(castle.table.note('id'), noteId)
+        query.where(dbRef.table.note('id'), noteId)
       })
     }
 

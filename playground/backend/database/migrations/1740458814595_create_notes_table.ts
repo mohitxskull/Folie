@@ -1,8 +1,8 @@
-import { castle } from '#config/castle'
+import { dbRef } from '#config/database'
 import { BaseSchema } from '@adonisjs/lucid/schema'
 
 export default class extends BaseSchema {
-  protected tableName = castle.table.note()
+  protected tableName = dbRef.table.note()
 
   async up() {
     this.schema.createTable(this.tableName, (t) => {
@@ -10,7 +10,7 @@ export default class extends BaseSchema {
 
       t.integer('user_id')
         .unsigned()
-        .references(castle.table.user('id'))
+        .references(dbRef.table.user('id'))
         .notNullable()
         .onDelete('CASCADE')
 

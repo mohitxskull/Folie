@@ -7,6 +7,6 @@
 |
 */
 
-export { CastleModule } from './modules/castle.js'
-export { SessionManager } from './modules/session_manager.js'
-export { KeyCache } from './modules/key_cache.js'
+export { SessionManager } from './src/modules/session_manager.js'
+export { KeyCache } from './src/modules/key_cache.js'
+export { Holder, HolderFactory, HolderSyncer } from './src/modules/holder.js'

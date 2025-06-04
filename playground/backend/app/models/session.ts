@@ -3,15 +3,15 @@ import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
 import User from './user.js'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { squid } from '#config/squid'
-import { castle } from '#config/castle'
 import { serializeDT } from '@folie/castle/helpers'
 import { Secret } from '@adonisjs/core/helpers'
 import { SessionManager } from '@folie/castle'
+import { dbRef } from '#config/database'
 
 export default class Session extends BaseModel {
-  static table = castle.table.session()
+  static table = dbRef.table.session()
 
-  static manager = new SessionManager(Session)
+  static manager = new SessionManager<Session, typeof Session>(Session)
 
   // ====================================
 
