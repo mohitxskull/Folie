@@ -1,5 +1,12 @@
 # @folie/playground-backend
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/castle@0.0.21
+
 ## 0.0.10
 
 ### Patch Changes

@@ -141,18 +141,24 @@ export class SessionManager<
       }
     }
 
-    // Ensure the decoded identifier is a valid number
-    if (Number.isNaN(Number(decodedIdentifier))) {
-      return {
-        status: false,
-        message: 'Invalid identifier',
-        metadata: {
-          decodedIdentifier,
-        },
+    const isAllNumber = /^\d+$/.test(decodedIdentifier)
+
+    if (isAllNumber) {
+      // Ensure the decoded identifier is a valid number
+      if (Number.isNaN(Number(decodedIdentifier))) {
+        return {
+          status: false,
+          message: 'Invalid identifier',
+          metadata: {
+            decodedIdentifier,
+          },
+        }
       }
     }
 
-    const session = await this.#sessionModel.find(Number(decodedIdentifier))
+    const session = await this.#sessionModel.find(
+      isAllNumber ? Number(decodedIdentifier) : decodedIdentifier
+    )
 
     if (!session) {
       return {

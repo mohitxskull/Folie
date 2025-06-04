@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.21
+
+### Patch Changes
+
+- fixed session manager
+
 ## 0.0.20
 
 ### Patch Changes
