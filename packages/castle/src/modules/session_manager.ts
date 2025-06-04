@@ -218,7 +218,7 @@ export class SessionManager<
 
   async create(
     user: LucidRow & {
-      id: number
+      id: number | string
     },
     options?: { expiresIn?: string | number; client?: TransactionClientContract }
   ): Promise<
