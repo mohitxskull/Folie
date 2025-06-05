@@ -1,6 +1,6 @@
 import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
-import { ValidationError } from '../types/processing_exception.js'
+import { ValidationError } from '../types/index.js'
 
 export class CastleException extends Exception {
   declare metadata?: Record<string, unknown>

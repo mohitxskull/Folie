@@ -1,5 +1,11 @@
 # @folie/lib
 
+## 0.0.8
+
+### Patch Changes
+
+- Moved packages
+
 ## 0.0.7
 
 ### Patch Changes

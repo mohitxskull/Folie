@@ -1,5 +1,5 @@
 import { LucidModel, ModelAssignOptions, ModelAttributes } from '@adonisjs/lucid/types/model'
-import { MakePropsDynamic, resolveDynamicProps } from '../helpers/dynamic_props.js'
+import { MakePropsDynamic, resolveDynamicProps } from '@folie/lib'
 
 export class Holder<T extends LucidModel> {
   #getInstance: (options?: ModelAssignOptions) => Promise<InstanceType<T>>

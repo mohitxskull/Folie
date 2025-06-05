@@ -1,8 +1,8 @@
 import { InternalServerErrorException, UnprocessableEntityException } from './http_exceptions.js'
 import { CastleException } from './castle_exception.js'
 import { errors } from '@vinejs/vine'
-import { ValidationError } from '../types/processing_exception.js'
 import { Exception } from '@adonisjs/core/exceptions'
+import { ValidationError } from '../types/index.js'
 
 export const parseError = (error: unknown) => {
   if (error instanceof CastleException) {

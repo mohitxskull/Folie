@@ -1,5 +1,11 @@
 # @folie/cobalt
 
+## 0.0.30
+
+### Patch Changes
+
+- @folie/blueprint-lib@0.0.9
+
 ## 0.0.29
 
 ### Patch Changes

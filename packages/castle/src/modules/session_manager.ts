@@ -2,13 +2,13 @@ import { base64, safeEqual, Secret } from '@adonisjs/core/helpers'
 import stringHelpers from '@adonisjs/core/helpers/string'
 import { LucidModel, LucidRow } from '@adonisjs/lucid/types/model'
 import { DateTime } from 'luxon'
-import { CRC32 } from '../helpers/crc32.js'
 import { createHash } from 'node:crypto'
 import db from '@adonisjs/lucid/services/db'
 import { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import { getBearerToken } from '../helpers/get_bearer_token.js'
 import { HttpContext } from '@adonisjs/core/http'
 import { UnauthorizedException } from '../exceptions/http_exceptions.js'
+import { CRC32 } from '@folie/lib'
 
 type RequiredSessionProperties = {
   id: number | string

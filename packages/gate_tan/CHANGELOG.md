@@ -1,5 +1,13 @@
 # @folie/gate-tan
 
+## 0.0.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/lib@0.0.8
+  - @folie/gate@0.0.13
+
 ## 0.0.4
 
 ### Patch Changes
