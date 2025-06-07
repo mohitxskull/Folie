@@ -25,6 +25,12 @@ const fieldPath = (field: FieldContext, path: (string | number)[]) => {
   return [rootPath, ...path].join('.')
 }
 
+const extractMeta = (issue: z.ZodIssue) => {
+  const { code, message, path, fatal, ...meta } = issue
+
+  return meta
+}
+
 const vineZod = vine.createRule((value: unknown, schema: VineZodSchema, field: FieldContext) => {
   if (!vine.helpers.isObject(value) && !vine.helpers.isArray(value)) {
     field.report(
@@ -40,10 +46,15 @@ const vineZod = vine.createRule((value: unknown, schema: VineZodSchema, field: F
   if (!result.success) {
     for (const issue of result.error.issues) {
       field.getFieldPath()
-      field.report(issue.message, stringHelpers.camelCase(issue.code), {
-        ...field,
-        getFieldPath: () => fieldPath(field, issue.path),
-      })
+      field.report(
+        issue.message,
+        stringHelpers.camelCase(issue.code),
+        {
+          ...field,
+          getFieldPath: () => fieldPath(field, issue.path),
+        },
+        extractMeta(issue)
+      )
     }
     return
   }

@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.29
+
+### Patch Changes
+
+- Added meta
+
 ## 0.0.28
 
 ### Patch Changes
