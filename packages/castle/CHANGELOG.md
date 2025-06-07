@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.26
+
+### Patch Changes
+
+- added vine-zod
+
 ## 0.0.25
 
 ### Patch Changes
