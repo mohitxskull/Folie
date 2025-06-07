@@ -2,7 +2,7 @@ import vine, { Vine } from '@vinejs/vine'
 import { FieldContext } from '@vinejs/vine/types'
 import { BaseLiteralType, symbols } from '@vinejs/vine'
 import type { FieldOptions, Validation } from '@vinejs/vine/types'
-import { z } from 'zod'
+import { z, ZodIssueCode } from 'zod'
 import { ApplicationService } from '@adonisjs/core/types'
 
 type VineZodSchema = z.ZodType
@@ -26,7 +26,7 @@ const fieldPath = (field: FieldContext, path: (string | number)[]) => {
 
 const vineZod = vine.createRule((value: unknown, schema: VineZodSchema, field: FieldContext) => {
   if (!vine.helpers.isObject(value) && !vine.helpers.isArray(value)) {
-    field.report('The {{ field }} must be an object or array', 'vine-zod', field)
+    field.report('The {{ field }} must be an object or array', ZodIssueCode.invalid_type, field)
     return
   }
 
@@ -35,7 +35,7 @@ const vineZod = vine.createRule((value: unknown, schema: VineZodSchema, field: F
   if (!result.success) {
     for (const error of result.error.issues) {
       field.getFieldPath()
-      field.report(error.message, 'vine-zod', {
+      field.report(error.message, error.code, {
         ...field,
         getFieldPath: () => fieldPath(field, error.path),
       })
