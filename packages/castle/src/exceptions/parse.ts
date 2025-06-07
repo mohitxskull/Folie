@@ -20,11 +20,11 @@ export const parseError = (error: unknown) => {
       status: error.status,
       code: error.code,
       help: error.help,
-      cause: error.cause,
+      cause: error,
     })
   } else if (error instanceof SyntaxError) {
     return new InternalServerErrorException(error.message, {
-      cause: error.cause,
+      cause: error,
     })
   } else {
     return new InternalServerErrorException(undefined, {

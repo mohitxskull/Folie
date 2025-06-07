@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.25
+
+### Patch Changes
+
+- Fix
+
 ## 0.0.24
 
 ### Patch Changes
