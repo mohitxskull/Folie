@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.23
+
+### Patch Changes
+
+- handling syntax error
+
 ## 0.0.22
 
 ### Patch Changes
