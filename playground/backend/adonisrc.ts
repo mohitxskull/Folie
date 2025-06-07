@@ -39,6 +39,7 @@ export default defineConfig({
     () => import('@adonisjs/cors/cors_provider'),
     () => import('@adonisjs/lucid/database_provider'),
     () => import('@folie/castle/providers/request_validator_provider'),
+    () => import('@folie/castle/providers/vine_zod_schema_provider'),
     () => import('@adonisjs/bouncer/bouncer_provider'),
     () => import('@adonisjs/limiter/limiter_provider'),
     () => import('@adonisjs/core/providers/edge_provider'),
