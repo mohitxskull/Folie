@@ -14,16 +14,16 @@ export const parseError = (error: unknown) => {
       errors: messages,
     })
   } else if (error instanceof Exception) {
+    // Don't add stack, adonisjs will automatically print the stack
+    // of error which is causing it
     return new CastleException(error.message, {
       status: error.status,
       code: error.code,
       help: error.help,
       cause: error.cause,
-      stack: error.stack,
     })
   } else if (error instanceof SyntaxError) {
     return new InternalServerErrorException(error.message, {
-      stack: error.stack,
       cause: error.cause,
     })
   } else {
