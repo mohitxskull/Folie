@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.30
+
+### Patch Changes
+
+- Additions in key cache
+
 ## 0.0.29
 
 ### Patch Changes
