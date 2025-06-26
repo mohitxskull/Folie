@@ -1,21 +1,37 @@
 import { ColumnOptions } from '@adonisjs/lucid/types/model'
 
-export const JSONColumn = (options?: Partial<ColumnOptions>): Partial<ColumnOptions> => ({
-  prepare: (value: any) => {
-    if (!value) {
-      return null
+export const JSONColumn = (
+  options?: Partial<
+    ColumnOptions & {
+      serializer?: {
+        serialize(value: any): string
+        deserialize(value: any): any
+      }
     }
+  >
+): Partial<ColumnOptions> => {
+  const { serializer, ...restOptions } = options || {}
 
-    return JSON.stringify(value)
-  },
+  const serialize = serializer?.serialize || JSON.stringify
+  const deserialize = serializer?.deserialize || JSON.parse
 
-  consume: (value: any) => {
-    if (!value) {
-      return null
-    }
+  return {
+    prepare: (value: any) => {
+      if (!value) {
+        return null
+      }
 
-    return JSON.parse(value)
-  },
+      return serialize(value)
+    },
 
-  ...options,
-})
+    consume: (value: any) => {
+      if (!value) {
+        return null
+      }
+
+      return deserialize(value)
+    },
+
+    ...restOptions,
+  }
+}

@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.31
+
+### Patch Changes
+
+- Pass serializer in json column
+
 ## 0.0.30
 
 ### Patch Changes
