@@ -3,6 +3,8 @@ import { HttpContext } from '@adonisjs/core/http'
 import { ValidationError } from '../types/index.js'
 
 export class CastleException extends Exception {
+  readonly parent = 'CastleException'
+
   declare metadata?: Record<string, unknown>
   declare reason?: unknown
   declare source?: string
@@ -51,6 +53,18 @@ export class CastleException extends Exception {
       ctx.logger.error({ err: error, ip: ctx.request.ip() }, error.message)
     } else {
       ctx.logger.info({ err: error, ip: ctx.request.ip() }, error.message)
+    }
+  }
+
+  toJSON() {
+    return {
+      status: this.status,
+      code: this.code,
+      message: this.message,
+      help: this.help,
+      metadata: this.metadata,
+      errors: this.errors,
+      source: this.source,
     }
   }
 }

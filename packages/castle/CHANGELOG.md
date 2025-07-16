@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.32
+
+### Patch Changes
+
+- Exception identification functions
+
 ## 0.0.31
 
 ### Patch Changes

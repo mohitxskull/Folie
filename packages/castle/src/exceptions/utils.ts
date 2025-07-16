@@ -32,3 +32,28 @@ export const parseError = (error: unknown) => {
     })
   }
 }
+
+export const isException = (value: unknown): value is Exception => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    value instanceof Error &&
+    'name' in value &&
+    typeof (value as Exception).name === 'string' &&
+    value.name === 'Exception'
+  )
+}
+
+export const isCastleException = (value: unknown): value is CastleException => {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    value instanceof Error &&
+    'parent' in value &&
+    typeof (value as CastleException).parent === 'string' &&
+    value.parent === 'CastleException' &&
+    'name' in value &&
+    typeof (value as CastleException).name === 'string' &&
+    value.name.endsWith('Exception')
+  )
+}
