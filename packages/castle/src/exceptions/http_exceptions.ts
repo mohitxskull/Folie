@@ -295,3 +295,9 @@ export class NetworkAuthenticationRequiredException extends CastleException {
   static code = 'E_NETWORK_AUTHENTICATION_REQUIRED'
   static message = 'The client needs to authenticate to gain network access'
 }
+
+export class TemporaryInternalServerException extends CastleException {
+  static status = 520
+  static code = 'E_TEMPORARY_INTERNAL_SERVER_ERROR'
+  static message = 'The server encountered an temporary internal server error'
+}

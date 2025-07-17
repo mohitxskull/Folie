@@ -23,7 +23,11 @@ export class CastleException extends Exception {
       errors?: ValidationError[]
     }
   ) {
-    super(message, options)
+    super(message, {
+      cause: options?.cause,
+      code: options?.code,
+      status: options?.status,
+    })
 
     this.metadata = options?.metadata
     this.reason = options?.reason
@@ -65,6 +69,8 @@ export class CastleException extends Exception {
       metadata: this.metadata,
       errors: this.errors,
       source: this.source,
+      cause: this.cause,
+      stack: this.stack,
     }
   }
 }
