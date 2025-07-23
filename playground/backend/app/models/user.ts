@@ -114,7 +114,9 @@ export default class User extends BaseModel {
 
   // Relations =============================
 
-  @hasMany(() => Session)
+  @hasMany(() => Session, {
+    foreignKey: 'ownerId',
+  })
   declare sessions: HasMany<typeof Session>
 
   @hasMany(() => Note)

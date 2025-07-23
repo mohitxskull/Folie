@@ -56,7 +56,9 @@ export default class Session extends BaseModel {
   @column()
   declare ownerId: number
 
-  @belongsTo(() => User)
+  @belongsTo(() => User, {
+    foreignKey: 'ownerId',
+  })
   declare owner: BelongsTo<typeof User>
 
   async getOwner(this: Session) {
