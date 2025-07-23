@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.34
+
+### Patch Changes
+
+- Changed userId property name to ownerId in session manager module
+
 ## 0.0.33
 
 ### Patch Changes

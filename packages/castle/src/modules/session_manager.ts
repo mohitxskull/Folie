@@ -13,7 +13,7 @@ import { CRC32 } from '@folie/lib'
 type RequiredSessionProperties = {
   id: number | string
   hash: string
-  userId: number | string
+  ownerId: number | string
   value: Secret<string> | null
   secret: Secret<string> | null
   expiresAt: DateTime | null
@@ -45,7 +45,7 @@ export class SessionManager<
   #secretSize = 64
 
   /**
-   * The maximum number of sessions per user.
+   * The maximum number of sessions per owner.
    */
   #maxSessions = 3
 
@@ -223,7 +223,7 @@ export class SessionManager<
   }
 
   async create(
-    user: LucidRow & {
+    owner: LucidRow & {
       id: number | string
     },
     options?: { expiresIn?: string | number; client?: TransactionClientContract }
@@ -239,7 +239,7 @@ export class SessionManager<
       // Deleting last session if max reached
       const activeSessions = await this.#sessionModel
         .query({ client: trx })
-        .where('user_id', user.id)
+        .where('owner_id', owner.id)
         .orderBy('created_at', 'desc')
         .limit(this.#maxSessions + 1)
 
@@ -262,7 +262,7 @@ export class SessionManager<
       const seed = this.#seed()
 
       newSession.hash = seed.hash
-      newSession.userId = user.id
+      newSession.ownerId = owner.id
       newSession.secret = seed.secret
 
       await newSession.save()

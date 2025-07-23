@@ -15,7 +15,7 @@ export default class Controller {
   handle = handler(async ({ ctx }) => {
     const [payload, user] = await Promise.all([
       ctx.request.validateUsing(this.input),
-      ctx.auth.session.getUser(),
+      ctx.auth.session.getOwner(),
     ])
 
     const metrics = await user.$metric().get()

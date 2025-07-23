@@ -28,7 +28,7 @@ export default class Controller {
   handle = handler(async ({ ctx }) => {
     const payload = await ctx.request.validateUsing(this.input)
 
-    const { userId } = ctx.auth.session
+    const { ownerId: userId } = ctx.auth.session
 
     // Start building the query to fetch tags
     let listQuery = Note.query().where('userId', userId)

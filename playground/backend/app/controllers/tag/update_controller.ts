@@ -19,7 +19,7 @@ export default class Controller {
   handle = handler(async ({ ctx }) => {
     const payload = await ctx.request.validateUsing(this.input)
 
-    const { userId } = ctx.auth.session
+    const { ownerId: userId } = ctx.auth.session
 
     const tag = await Tag.query()
       .where('id', payload.params.tagId)

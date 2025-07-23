@@ -37,7 +37,7 @@ export default class Session extends BaseModel {
     return {
       id: this.id,
       hash: this.hash,
-      userId: this.userId,
+      userId: this.ownerId,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt,
       expiresAt: this.expiresAt,
@@ -54,15 +54,15 @@ export default class Session extends BaseModel {
   declare hash: string
 
   @column()
-  declare userId: number
+  declare ownerId: number
 
   @belongsTo(() => User)
-  declare user: BelongsTo<typeof User>
+  declare owner: BelongsTo<typeof User>
 
-  async getUser(this: Session) {
-    await this.load('user')
+  async getOwner(this: Session) {
+    await this.load('owner')
 
-    return this.user
+    return this.owner
   }
 
   @column.dateTime({ autoCreate: true })

@@ -10,7 +10,7 @@ export default class extends BaseSchema {
 
       t.string('hash').notNullable()
 
-      t.integer('user_id')
+      t.integer('owner_id')
         .unsigned()
         .references(dbRef.table.user('id'))
         .notNullable()

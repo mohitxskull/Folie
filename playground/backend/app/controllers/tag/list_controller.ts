@@ -39,7 +39,7 @@ export default class Controller {
     // Validate the request input
     const payload = await ctx.request.validateUsing(this.input)
 
-    const { userId } = ctx.auth.session
+    const { ownerId: userId } = ctx.auth.session
 
     // Start building the query to fetch tags
     let listQuery = Tag.query().where('userId', userId)
