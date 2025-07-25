@@ -1,5 +1,15 @@
 # @folie/playground-frontend
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/gate-tan@0.0.6
+  - @folie/gate@0.0.14
+  - @folie/playground-backend@0.0.26
+  - @folie/gate-next@0.0.6
+
 ## 0.0.25
 
 ### Patch Changes

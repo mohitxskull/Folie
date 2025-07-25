@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.36
+
+### Patch Changes
+
+- Improved the castle exception class
+
 ## 0.0.35
 
 ### Patch Changes

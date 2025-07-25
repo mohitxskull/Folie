@@ -7,13 +7,16 @@ const ErrorResponseSchema = z.object({
   code: z.string(),
   message: z.string(),
   source: z.string().optional(),
-  errors: z
-    .array(
-      z.object({
-        message: z.string(),
-        field: z.string(),
-      })
-    )
+  metadata: z
+    .union([
+      z.record(z.string(), z.unknown()),
+      z.array(
+        z.object({
+          message: z.string(),
+          field: z.string(),
+        })
+      ),
+    ])
     .optional(),
 })
 

@@ -13,8 +13,8 @@ export const ErrorHandler = (params: {
     if (errorJSON.response) {
       const formValues = params.form ? params.form.getValues() : {}
 
-      if (errorJSON.response.errors) {
-        for (const multi of errorJSON.response.errors) {
+      if (errorJSON.response.metadata && Array.isArray(errorJSON.response.metadata)) {
+        for (const multi of errorJSON.response.metadata) {
           if (params.form && multi.field && getProperty(formValues, multi.field) !== undefined) {
             params.form.setFieldError(multi.field, multi.message)
           } else {

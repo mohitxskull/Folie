@@ -1,5 +1,12 @@
 # @folie/gate-next
 
+## 0.0.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/gate@0.0.14
+
 ## 0.0.5
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @folie/gate-tan
 
+## 0.0.6
+
+### Patch Changes
+
+- Improved the castle exception class
+- Updated dependencies
+  - @folie/gate@0.0.14
+
 ## 0.0.5
 
 ### Patch Changes
