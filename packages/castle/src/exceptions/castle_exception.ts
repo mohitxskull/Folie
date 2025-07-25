@@ -2,6 +2,17 @@ import { Exception } from '@adonisjs/core/exceptions'
 import { HttpContext } from '@adonisjs/core/http'
 import { ValidationError } from '../types/index.js'
 
+type CastleExceptionOptionsT = ErrorOptions & {
+  status?: number
+  code?: string
+  metadata?: Record<string, unknown>
+  reason?: unknown
+  source?: string
+  help?: string
+  stack?: string
+  errors?: ValidationError[]
+}
+
 export class CastleException extends Exception {
   readonly parent = 'CastleException'
 
@@ -10,19 +21,10 @@ export class CastleException extends Exception {
   declare source?: string
   declare errors?: ValidationError[]
 
-  constructor(
-    message?: string,
-    options?: ErrorOptions & {
-      status?: number
-      code?: string
-      metadata?: Record<string, unknown>
-      reason?: unknown
-      source?: string
-      help?: string
-      stack?: string
-      errors?: ValidationError[]
-    }
-  ) {
+  constructor(rawMessage?: string | CastleExceptionOptionsT, rawOptions?: CastleExceptionOptionsT) {
+    const message = typeof rawMessage === 'string' ? rawMessage : undefined
+    const options = typeof rawMessage === 'string' ? rawOptions : rawMessage
+
     super(message, {
       cause: options?.cause,
       code: options?.code,
