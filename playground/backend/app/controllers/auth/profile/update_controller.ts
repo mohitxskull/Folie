@@ -5,8 +5,8 @@ import vine from '@vinejs/vine'
 export default class Controller {
   input = vine.compile(
     vine.object({
-      firstName: NameSchema.optional(),
-      lastName: NameSchema.optional(),
+      firstName: NameSchema().optional(),
+      lastName: NameSchema().optional(),
     })
   )
 

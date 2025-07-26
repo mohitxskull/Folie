@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.37
+
+### Patch Changes
+
+- Returning the new instance every time
+
 ## 0.0.36
 
 ### Patch Changes

@@ -13,8 +13,8 @@ import { BadRequestException, ForbiddenException, OkException } from '@folie/cas
 export default class Controller {
   input = vine.compile(
     vine.object({
-      email: GmailSchema,
-      password: PasswordSchema,
+      email: GmailSchema(),
+      password: PasswordSchema(),
     })
   )
 

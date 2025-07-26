@@ -10,14 +10,14 @@ export default class Controller {
     vine.object({
       query: vine
         .object({
-          page: PageSchema.optional(),
-          limit: LimitSchema.optional(),
+          page: PageSchema().optional(),
+          limit: LimitSchema().optional(),
 
           order: OrderSchema('createdAt', 'updatedAt', 'title', 'id').optional(),
 
           filter: vine
             .object({
-              value: NoteTitleSchema.optional(),
+              value: NoteTitleSchema().optional(),
             })
             .optional(),
         })

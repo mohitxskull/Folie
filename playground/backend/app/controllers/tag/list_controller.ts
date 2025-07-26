@@ -12,8 +12,8 @@ export default class Controller {
     vine.object({
       query: vine
         .object({
-          page: PageSchema.optional(),
-          limit: LimitSchema.optional(),
+          page: PageSchema().optional(),
+          limit: LimitSchema().optional(),
 
           // Allow ordering by these fields
           order: OrderSchema('createdAt', 'updatedAt', 'name', 'id').optional(),
@@ -21,7 +21,7 @@ export default class Controller {
           filter: vine
             .object({
               noteId: squid.note.schema.optional(),
-              value: TagNameSchema.optional(),
+              value: TagNameSchema().optional(),
             })
             .optional(),
 

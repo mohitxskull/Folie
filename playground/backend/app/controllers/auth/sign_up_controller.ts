@@ -13,11 +13,11 @@ import { BadRequestException, ConflictException, ForbiddenException } from '@fol
 export default class Controller {
   input = vine.compile(
     vine.object({
-      firstName: NameSchema,
-      lastName: NameSchema,
-      email: GmailSchema,
-      password: PasswordSchema,
-      confirmPassword: PasswordSchema.sameAs('password'),
+      firstName: NameSchema(),
+      lastName: NameSchema(),
+      email: GmailSchema(),
+      password: PasswordSchema(),
+      confirmPassword: PasswordSchema().sameAs('password'),
     })
   )
 

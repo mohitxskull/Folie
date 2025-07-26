@@ -7,8 +7,8 @@ import vine from '@vinejs/vine'
 export default class Controller {
   input = vine.compile(
     vine.object({
-      name: TagNameSchema,
-      description: TagDescriptionSchema.optional(),
+      name: TagNameSchema(),
+      description: TagDescriptionSchema().optional(),
     })
   )
 

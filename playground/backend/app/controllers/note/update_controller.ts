@@ -11,8 +11,8 @@ export default class Controller {
       params: vine.object({
         noteId: squid.note.schema,
       }),
-      title: NoteTitleSchema.optional(),
-      body: NoteBodySchema.optional(),
+      title: NoteTitleSchema().optional(),
+      body: NoteBodySchema().optional(),
     })
   )
 

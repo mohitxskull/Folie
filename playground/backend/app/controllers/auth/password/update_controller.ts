@@ -8,8 +8,8 @@ import vine from '@vinejs/vine'
 export default class Controller {
   input = vine.compile(
     vine.object({
-      oldPassword: PasswordSchema,
-      newPassword: PasswordSchema,
+      oldPassword: PasswordSchema(),
+      newPassword: PasswordSchema(),
     })
   )
 

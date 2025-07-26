@@ -151,5 +151,6 @@ export class Squid {
       .minLength(this.finalMinLength)
       .startsWith(this.prefix)
       .transform(this.decode.bind(this))
+      .clone()
   }
 }

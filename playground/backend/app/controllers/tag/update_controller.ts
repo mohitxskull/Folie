@@ -11,8 +11,8 @@ export default class Controller {
       params: vine.object({
         tagId: squid.tag.schema,
       }),
-      name: TagNameSchema.optional(),
-      description: TagDescriptionSchema.optional(),
+      name: TagNameSchema().optional(),
+      description: TagDescriptionSchema().optional(),
     })
   )
 

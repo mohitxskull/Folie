@@ -13,7 +13,7 @@ export default class Controller {
       params: vine.object({
         noteId: squid.note.schema,
       }),
-      tagId: squid.tag.schema,
+      tagId: squid.tag.schema.clone(),
       action: vine.enum(['add', 'remove']),
     })
   )

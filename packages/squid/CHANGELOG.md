@@ -1,5 +1,11 @@
 # @folie/squid
 
+## 0.0.6
+
+### Patch Changes
+
+- Returning the new instance every time
+
 ## 0.0.5
 
 ### Patch Changes
