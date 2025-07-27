@@ -1,5 +1,18 @@
 # @folie/blueprint
 
+## 0.0.7
+
+### Patch Changes
+
+- Refactor blueprint generation to support detached types
+
+  - Add detached_types.ts file generation for endpoint types
+  - Update schema.ts to import types from detached_types.ts
+  - Refactor internal path helpers for clarity and flexibility
+  - Add config options for detached, typechecking, linting, formatting
+  - Update endpoint form param to be optional with default false
+  - Update config schema validation for new options
+
 ## 0.0.6
 
 ### Patch Changes

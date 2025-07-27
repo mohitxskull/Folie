@@ -4,7 +4,7 @@ import qs from 'qs'
 export const endpoint = <IO extends EndpointIO>(params: {
   url: string
   method: string
-  form: boolean
+  form?: boolean
 }): Endpoint<IO> =>
   ({
     url: (options?) => {
@@ -17,6 +17,6 @@ export const endpoint = <IO extends EndpointIO>(params: {
       return url
     },
     method: params.method,
-    form: params.form,
+    form: params.form ?? false,
     io: {} as IO,
   }) as const

@@ -1,6 +1,6 @@
 import { BaseCommand, flags } from '@adonisjs/core/ace'
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import { Project, QuoteKind } from 'ts-morph'
+import { CodeBlockWriter, Node, Project, QuoteKind } from 'ts-morph'
 import { fileURLToPath } from 'node:url'
 import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs'
 import { RouteJSON } from '@adonisjs/core/types/http'
@@ -17,19 +17,24 @@ export default class BluePrintGenerate extends BaseCommand {
   static description = 'Generate API blueprint from routes'
 
   @flags.boolean({
-    default: true,
+    showNegatedVariantInHelp: true,
   })
-  declare formatting: boolean
+  declare formatting: boolean | undefined
 
   @flags.boolean({
-    default: true,
+    showNegatedVariantInHelp: true,
   })
-  declare typechecking: boolean
+  declare typechecking: boolean | undefined
 
   @flags.boolean({
-    default: true,
+    showNegatedVariantInHelp: true,
   })
-  declare linting: boolean
+  declare linting: boolean | undefined
+
+  @flags.boolean({
+    showNegatedVariantInHelp: true,
+  })
+  declare detached: boolean | undefined
 
   static options: CommandOptions = {
     startApp: true,
@@ -44,22 +49,52 @@ export default class BluePrintGenerate extends BaseCommand {
       )
     }
 
-    return rawConfig
+    return {
+      ...rawConfig,
+      detached: this.detached ?? rawConfig.detached ?? true,
+      typechecking: this.typechecking ?? rawConfig.typechecking ?? true,
+      linting: this.linting ?? rawConfig.linting ?? true,
+      formatting: this.formatting ?? rawConfig.formatting ?? true,
+      output: rawConfig.output ?? 'blueprint',
+    } satisfies Config
   }
+
+  // ==================================
 
   #getRootPath = (path: string) => fileURLToPath(new URL(path, this.app.appRoot))
 
-  #getClientPath = (path?: string) =>
-    this.#getRootPath(`./${this.#config().output ?? 'blueprint'}/${path || ''}`)
-
-  #getSchemaPath = (group?: string) => this.#getClientPath(`${group || ''}/schema.ts`)
-
-  #getReferencePath = () => this.#getClientPath('reference.ts')
-
   #getRelativePath = (from: string, to: string) => slash(relative(from, to))
 
+  #attachExtension = (path: string) => (extension: 'js' | 'ts') => `${path}.${extension}`
+
+  #getOutputFolderPath = (path?: string) =>
+    this.#getRootPath(`./${this.#config().output}/${path || ''}`)
+
+  #getOutputFolderGroupFilePath = (group: string, file: string) =>
+    this.#getOutputFolderPath(`${group}/${file}`)
+
+  // ==================================
+
+  #referenceFilePath = this.#attachExtension('reference')
+  #schemaFilePath = this.#attachExtension('schema')
+  #typesFilePath = this.#attachExtension('types')
+  #detachedTypesFilePath = this.#attachExtension('detached_types')
+
+  #getSchemaFilePath = (group: string) =>
+    this.#getOutputFolderGroupFilePath(group, this.#schemaFilePath('ts'))
+
+  #getTypesFilePath = (group: string) =>
+    this.#getOutputFolderGroupFilePath(group, this.#typesFilePath('ts'))
+
+  #getDetachedTypesFilePath = (group: string) =>
+    this.#getOutputFolderGroupFilePath(group, this.#detachedTypesFilePath('ts'))
+
+  #getReferenceFilePath = () => this.#getOutputFolderPath(this.#referenceFilePath('ts'))
+
+  // ==================================
+
   #prepareDestination() {
-    const directory = this.#getClientPath()
+    const directory = this.#getOutputFolderPath()
 
     if (existsSync(directory)) {
       const files = readdirSync(directory)
@@ -73,6 +108,8 @@ export default class BluePrintGenerate extends BaseCommand {
       mkdirSync(directory, { recursive: true })
     }
   }
+
+  // ==================================
 
   #getMethod(methods: string[]) {
     let result = 'GET'
@@ -201,81 +238,186 @@ export default class BluePrintGenerate extends BaseCommand {
     runningCommand.completed()
   }
 
-  async #writeSchemaFile(group: string, endpoints: Endpoint[]) {
-    const file = this.#project.createSourceFile(this.#getSchemaPath(group), '', { overwrite: true })
+  #project = new Project({
+    manipulationSettings: { quoteKind: QuoteKind.Single, useTrailingCommas: true },
+    tsConfigFilePath: this.#getRootPath('tsconfig.json'),
+  })
 
-    if (!file) throw new Error('Unable to create the schema.ts file')
+  #writeBanner(writer: CodeBlockWriter) {
+    writer.writeLine(`/*`)
+    writer.writeLine(` * This is an auto-generated file. Changes made to this file will be lost.`)
+    writer.writeLine(' * Run `nr ace blueprint:generate` to update it.')
+    writer.writeLine(` */`)
+  }
 
-    const referenceFilePath = this.#getRelativePath(
-      this.#getClientPath(group),
-      this.#getClientPath('reference.ts')
+  async #writeTypesFile(group: string, endpoints: Endpoint[]) {
+    const referenceFilePath = this.#getReferenceFilePath()
+
+    if (!existsSync(referenceFilePath)) {
+      throw new Error(`Reference file ${referenceFilePath} does not exist`)
+    }
+
+    const typesFilePath = this.#getTypesFilePath(group)
+
+    const typesSourceFile = this.#project.createSourceFile(typesFilePath, '', {
+      overwrite: true,
+    })
+
+    const relativeReferenceFilePath = this.#getRelativePath(
+      this.#getOutputFolderPath(group),
+      referenceFilePath
     )
 
-    file.removeText().insertText(0, (writer) => {
-      writer.writeLine(`/// <reference path="${referenceFilePath}" />`)
+    typesSourceFile.removeText().insertText(0, (typesSourceFileWriter) => {
+      typesSourceFileWriter.writeLine(`/// <reference path="${relativeReferenceFilePath}" />`)
 
-      writer.newLine()
+      typesSourceFileWriter.newLine()
 
-      writer.writeLine(`import { InferController, endpoint } from '@folie/blueprint-lib'`)
+      typesSourceFileWriter.writeLine(`import { InferController } from '@folie/blueprint-lib'`)
 
-      writer.newLine()
+      typesSourceFileWriter.newLine()
 
-      writer.writeLine(`/*`)
-      writer.writeLine(` * This is an auto-generated file. Changes made to this file will be lost.`)
-      writer.writeLine(' * Run `nr ace blueprint:generate` to update it.')
-      writer.writeLine(` */`)
+      this.#writeBanner(typesSourceFileWriter)
 
-      writer.newLine()
+      typesSourceFileWriter.newLine()
 
       endpoints.forEach((route) => {
-        writer.writeLine(
+        typesSourceFileWriter.writeLine(
           `export type ${route.name.type} = InferController<(typeof import('${route.controller.relative}'))['default']>`
         )
+        typesSourceFileWriter.newLine()
       })
+    })
 
-      writer.newLine()
+    await typesSourceFile.save()
+  }
 
-      writer
+  async #writeDetachedTypesFile(group: string) {
+    const typesFilePath = this.#getTypesFilePath(group)
+
+    if (!existsSync(typesFilePath)) {
+      throw new Error(`Types file ${typesFilePath} does not exist`)
+    }
+
+    const detachedTypesFilePath = this.#getDetachedTypesFilePath(group)
+
+    const typesSourceFile = this.#project.getSourceFile(typesFilePath)
+
+    if (!typesSourceFile) {
+      throw new Error(`Types source file ${typesFilePath} does not exist`)
+    }
+
+    const detachedTypeSourceFile = this.#project.createSourceFile(detachedTypesFilePath, '', {
+      overwrite: true,
+    })
+
+    detachedTypeSourceFile.removeText().insertText(0, (detachedTypeSourceFileWriter) => {
+      this.#writeBanner(detachedTypeSourceFileWriter)
+
+      detachedTypeSourceFileWriter.newLine()
+
+      typesSourceFile.forEachDescendant((node) => {
+        if (Node.isTypeAliasDeclaration(node)) {
+          const name = node.getName()
+          const type = node.getType()
+          const typeString = type.getText(node)
+
+          detachedTypeSourceFileWriter.writeLine(`export type ${name} = ${typeString}`)
+          detachedTypeSourceFileWriter.newLine()
+        }
+      })
+    })
+
+    await detachedTypeSourceFile.save()
+  }
+
+  async #writeSchemaFile(group: string, endpoints: Endpoint[]) {
+    const referenceFilePath = this.#getReferenceFilePath()
+
+    if (!existsSync(referenceFilePath)) {
+      throw new Error(`Reference file ${referenceFilePath} does not exist`)
+    }
+
+    const typesFilePath = this.#getTypesFilePath(group)
+
+    if (!existsSync(typesFilePath)) {
+      throw new Error(`Types file ${typesFilePath} does not exist`)
+    }
+
+    const detachedTypesFilePath = this.#getDetachedTypesFilePath(group)
+
+    if (!existsSync(detachedTypesFilePath)) {
+      throw new Error(`Detached types file ${detachedTypesFilePath} does not exist`)
+    }
+
+    const schemaFilePath = this.#getSchemaFilePath(group)
+
+    const schemaSourceFile = this.#project.createSourceFile(schemaFilePath, '', {
+      overwrite: true,
+    })
+
+    const config = this.#config()
+
+    const typesFileName = config.detached
+      ? this.#detachedTypesFilePath('js')
+      : this.#typesFilePath('js')
+
+    schemaSourceFile.removeText().insertText(0, (schemaSourceFileWriter) => {
+      schemaSourceFileWriter.writeLine(`import type * as Types from './${typesFileName}'`)
+
+      schemaSourceFileWriter.writeLine(`import { endpoint } from '@folie/blueprint-lib'`)
+
+      schemaSourceFileWriter.newLine()
+
+      this.#writeBanner(schemaSourceFileWriter)
+
+      schemaSourceFileWriter.newLine()
+
+      schemaSourceFileWriter.writeLine(`export type * from './${typesFileName}'`)
+
+      schemaSourceFileWriter.newLine()
+
+      schemaSourceFileWriter
         .write('export const endpoints = ')
         .inlineBlock(() => {
           endpoints.forEach((route) => {
-            writer.writeLine(
-              `${route.name.key}: endpoint<${route.name.type}>({ form: ${route.form}, url: '${route.path}', method: '${route.method}' }),`
+            schemaSourceFileWriter.writeLine(
+              `${route.name.key}: endpoint<Types.${route.name.type}>({ ${route.form ? 'form: true,' : ''} url: '${route.path}', method: '${route.method}' }),`
             )
           })
         })
         .write(' as const')
     })
 
-    await file.save()
+    await schemaSourceFile.save()
   }
 
   async #writeReferenceFile() {
-    const path = this.#getReferencePath()
+    const referenceFilePath = this.#getReferenceFilePath()
 
-    if (existsSync(path)) {
+    if (existsSync(referenceFilePath)) {
       return
     }
 
-    const file = this.#project.createSourceFile(path, '', { overwrite: true })
-
-    const rcFilePath = this.#getRelativePath(dirname(path), this.#getRootPath('adonisrc.ts'))
-
-    file.removeText().insertText(0, (writer) => {
-      writer.writeLine(`/// <reference path="${rcFilePath}" />`)
-
-      writer.newLine()
-
-      writer.writeLine(`/* Add the other required types here */`)
+    const referenceSourceFile = this.#project.createSourceFile(referenceFilePath, '', {
+      overwrite: true,
     })
 
-    await file.save()
-  }
+    const relativeRCFilePath = this.#getRelativePath(
+      dirname(referenceFilePath),
+      this.#getRootPath('adonisrc.ts')
+    )
 
-  #project = new Project({
-    manipulationSettings: { quoteKind: QuoteKind.Single, useTrailingCommas: true },
-    tsConfigFilePath: this.#getRootPath('tsconfig.json'),
-  })
+    referenceSourceFile.removeText().insertText(0, (referenceSourceFileWriter) => {
+      referenceSourceFileWriter.writeLine(`/// <reference path="${relativeRCFilePath}" />`)
+
+      referenceSourceFileWriter.newLine()
+
+      referenceSourceFileWriter.writeLine(`/* Add the other required types here */`)
+    })
+
+    await referenceSourceFile.save()
+  }
 
   async run() {
     const config = this.#config()
@@ -364,7 +506,7 @@ export default class BluePrintGenerate extends BaseCommand {
         }
 
         const relativePath = this.#getRelativePath(
-          this.#getClientPath(group),
+          this.#getOutputFolderPath(group),
           routeSourceFile.getFilePath()
         )
 
@@ -521,6 +663,10 @@ export default class BluePrintGenerate extends BaseCommand {
         continue
       }
 
+      await this.#writeTypesFile(group, groupEndpoints)
+
+      await this.#writeDetachedTypesFile(group)
+
       await this.#writeSchemaFile(group, groupEndpoints)
 
       processingGroup.completed()
@@ -534,7 +680,7 @@ export default class BluePrintGenerate extends BaseCommand {
       message: 'Formatting client file',
       command: {
         main: 'prettier',
-        args: ['--write', this.#getClientPath()],
+        args: ['--write', this.#getOutputFolderPath()],
       },
       active: this.formatting,
     })
