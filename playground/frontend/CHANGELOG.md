@@ -1,5 +1,20 @@
 # @folie/playground-frontend
 
+## 0.0.30
+
+### Patch Changes
+
+- @folie/playground-backend@0.0.30
+
+## 0.0.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/blueprint-lib@0.0.11
+  - @folie/cobalt@0.0.32
+  - @folie/playground-backend@0.0.29
+
 ## 0.0.28
 
 ### Patch Changes

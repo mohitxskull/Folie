@@ -18,21 +18,29 @@ export default class BluePrintGenerate extends BaseCommand {
 
   @flags.boolean({
     showNegatedVariantInHelp: true,
+    description:
+      "Enables automatic formatting of generated files using the project's formatter. Ensures code style consistency in output.",
   })
   declare formatting: boolean | undefined
 
   @flags.boolean({
     showNegatedVariantInHelp: true,
+    description:
+      'Runs TypeScript type checking on generated files. Helps catch type errors before files are written.',
   })
   declare typechecking: boolean | undefined
 
   @flags.boolean({
     showNegatedVariantInHelp: true,
+    description:
+      'Applies linting rules to generated files. Ensures code adheres to project linting standards.',
   })
   declare linting: boolean | undefined
 
   @flags.boolean({
     showNegatedVariantInHelp: true,
+    description:
+      'Generates types in a separate, detached file rather than inline. Useful for projects that prefer isolated type definitions.',
   })
   declare detached: boolean | undefined
 

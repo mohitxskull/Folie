@@ -63,5 +63,6 @@ export const endpoints = {
     url: '/api/v1/tag/{{ tagId }}',
     method: 'DELETE',
   }),
+  V1_HEALTH: endpoint<Types.V1HealthRoute>({ url: '/api/v1/health', method: 'GET' }),
   V1_PING: endpoint<Types.V1PingRoute>({ url: '/api/v1/ping', method: 'GET' }),
 } as const

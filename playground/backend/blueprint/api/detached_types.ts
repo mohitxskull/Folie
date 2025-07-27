@@ -29,9 +29,9 @@ export type V1AuthSignUpRoute = {
   output: { message: string }
   input: {
     email: string
-    password: string
     firstName: string
     lastName: string
+    password: string
     confirmPassword: string
   }
 }
@@ -151,9 +151,9 @@ export type V1NoteUpdateRoute = {
     message: string
   }
   input: {
+    params: { noteId: string }
     title?: string | null | undefined
     body?: string | null | undefined
-    params: { noteId: string }
   }
 }
 
@@ -252,7 +252,7 @@ export type V1TagCreateRoute = {
     }
     message: string
   }
-  input: { description?: string | null | undefined; name: string }
+  input: { name: string; description?: string | null | undefined }
 }
 
 export type V1TagUpdateRoute = {
@@ -269,9 +269,9 @@ export type V1TagUpdateRoute = {
     message: string
   }
   input: {
+    params: { tagId: string }
     name?: string | null | undefined
     description?: string | null | undefined
-    params: { tagId: string }
   }
 }
 
@@ -289,6 +289,32 @@ export type V1TagDeleteRoute = {
     message: string
   }
   input: { params: { tagId: string } }
+}
+
+export type V1HealthRoute = {
+  output: {
+    report: {
+      isHealthy: boolean
+      status: 'ok' | 'warning' | 'error'
+      finishedAt: Date
+      debugInfo: {
+        pid: number
+        ppid?: number | undefined
+        uptime: number
+        version: string
+        platform: string
+      }
+      checks: {
+        isCached: boolean
+        name: string
+        message: string
+        status: 'ok' | 'warning' | 'error'
+        finishedAt: Date
+        meta?: { [x: string]: any } | undefined
+      }[]
+    }
+  }
+  input: undefined
 }
 
 export type V1PingRoute = { output: { message: string }; input: undefined }

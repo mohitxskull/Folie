@@ -79,6 +79,10 @@ export type V1TagDeleteRoute = InferController<
   (typeof import('../../app/controllers/tag/delete_controller.ts'))['default']
 >
 
+export type V1HealthRoute = InferController<
+  (typeof import('../../app/controllers/health_controller.ts'))['default']
+>
+
 export type V1PingRoute = InferController<
   (typeof import('../../app/controllers/ping_controller.ts'))['default']
 >

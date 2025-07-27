@@ -1,5 +1,11 @@
 # @folie/blueprint
 
+## 0.0.8
+
+### Patch Changes
+
+- Add descriptions for CLI flags and config options
+
 ## 0.0.7
 
 ### Patch Changes
