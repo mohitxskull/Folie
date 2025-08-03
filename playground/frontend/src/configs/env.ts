@@ -1,8 +1,7 @@
-import { createEnv } from "@t3-oss/env-nextjs";
 import { z } from "zod";
 
-export const env = createEnv({
-  client: {
+export const env = z
+  .object({
     NEXT_PUBLIC_CAPTCHA_PUBLIC_KEY: z.string().min(1),
 
     NEXT_PUBLIC_BACKEND_URL: z
@@ -16,15 +15,9 @@ export const env = createEnv({
       .enum(["development", "production"])
       .optional()
       .default("production"),
-  },
-
-  runtimeEnv: {
+  })
+  .parse({
     NEXT_PUBLIC_CAPTCHA_PUBLIC_KEY: process.env.NEXT_PUBLIC_CAPTCHA_PUBLIC_KEY,
     NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
     NEXT_PUBLIC_NODE_ENV: process.env.NEXT_PUBLIC_NODE_ENV,
-  },
-
-  isServer: typeof window === "undefined",
-  emptyStringAsUndefined: false,
-  skipValidation: !!process.env.SKIP_ENV_VALIDATION,
-});
+  });

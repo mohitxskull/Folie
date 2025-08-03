@@ -1,21 +1,21 @@
 import { UseQueryResult } from '@tanstack/react-query'
 
-export type QueryLoaderProps<OUT> = {
+export type QueryLoaderBaseProps<OUT> = {
   children: (data: NonNullable<OUT>) => React.ReactNode
   conditions?: (data: NonNullable<OUT>) => React.ReactNode
   query: UseQueryResult<OUT, unknown>
-  isLoading?: React.ReactNode
-  isError?: React.ReactNode
+  loading?: React.ReactNode
+  error?: React.ReactNode
   noData?: React.ReactNode
 }
 
-export const QueryLoader = <OUT,>(props: QueryLoaderProps<OUT>) => {
+export const QueryLoaderBase = <OUT,>(props: QueryLoaderBaseProps<OUT>) => {
   if (props.query.isLoading) {
-    return props.isLoading ?? 'Loading...'
+    return props.loading ?? 'Loading...'
   }
 
   if (props.query.isError) {
-    return props.isError ?? 'Error'
+    return props.error ?? 'Error'
   }
 
   const { data } = props.query

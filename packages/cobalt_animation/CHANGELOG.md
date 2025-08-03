@@ -1,5 +1,11 @@
 # @folie/cobalt-animation
 
+## 0.0.8
+
+### Patch Changes
+
+- upgrade mantine and other dependencies
+
 ## 0.0.7
 
 ### Patch Changes

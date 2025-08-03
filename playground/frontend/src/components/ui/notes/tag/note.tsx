@@ -1,4 +1,4 @@
-import { LocalQueryLoader } from "@/components/query_loader";
+import { QueryLoader } from "@/components/query_loader";
 import { gateTan } from "@/configs/gate_tan";
 import { ICON_SIZE } from "@folie/cobalt";
 import { For } from "@folie/cobalt/components";
@@ -117,7 +117,7 @@ export const NoteTag = (props: Props) => {
       />
 
       <Group gap="xs">
-        <LocalQueryLoader query={noteTagQ}>
+        <QueryLoader query={noteTagQ}>
           {({ data }) => (
             <>
               <For each={data}>
@@ -140,7 +140,7 @@ export const NoteTag = (props: Props) => {
               </For>
             </>
           )}
-        </LocalQueryLoader>
+        </QueryLoader>
 
         <Combobox
           store={combobox}

@@ -6,7 +6,7 @@ type Props = Omit<ModalProps, 'onClose' | 'fullScreen' | 'withCloseButton'> & {
   center: React.ReactNode
 }
 
-export const NavigationLoadingBase = (props: Props) => {
+export const FullScreenLoadingBase = (props: Props) => {
   const { opened, children, center, bg, ...rest } = props
 
   return (

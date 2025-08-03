@@ -1,12 +1,8 @@
 import "@mantine/tiptap/styles.css";
 
 import { useUncontrolled } from "@mantine/hooks";
-import { useEditor, BubbleMenu } from "@tiptap/react";
-import {
-  RichTextEditor,
-  Link,
-  useRichTextEditorContext,
-} from "@mantine/tiptap";
+import { useEditor } from "@tiptap/react";
+import { RichTextEditor, Link } from "@mantine/tiptap";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import Highlight from "@tiptap/extension-highlight";
@@ -14,28 +10,12 @@ import Underline from "@tiptap/extension-underline";
 import TextAlign from "@tiptap/extension-text-align";
 import Superscript from "@tiptap/extension-superscript";
 import SubScript from "@tiptap/extension-subscript";
-import { Group, InputError, Paper, Stack } from "@mantine/core";
+import { InputError, Stack } from "@mantine/core";
 import { DisableTabIndex } from "@/components/disable_tab_index";
 import { all, createLowlight } from "lowlight";
 import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
-import { IconCodeDots } from "@tabler/icons-react";
 
 const lowlight = createLowlight(all);
-
-// ============================================
-
-const ToggleCodeBlockControl = () => {
-  const { editor } = useRichTextEditorContext();
-  return (
-    <RichTextEditor.Control
-      onClick={() => editor?.chain().focus().toggleCodeBlock().run()}
-      aria-label="Insert star emoji"
-      title="Insert star emoji"
-    >
-      <IconCodeDots stroke={1.5} size={16} />
-    </RichTextEditor.Control>
-  );
-};
 
 // ============================================
 
@@ -124,32 +104,6 @@ export const NoteTextEditor = (props: Props) => {
               </RichTextEditor.ControlsGroup>
             </RichTextEditor.Toolbar>
           </DisableTabIndex>
-
-          {editor && (
-            <BubbleMenu editor={editor}>
-              <Paper p="xs">
-                <Group gap="xs">
-                  <RichTextEditor.ControlsGroup>
-                    <RichTextEditor.Bold />
-                    <RichTextEditor.Italic />
-                    <RichTextEditor.Underline />
-                    <RichTextEditor.Strikethrough />
-                    <RichTextEditor.ClearFormatting />
-                    <RichTextEditor.Highlight />
-                    <RichTextEditor.Code />
-                    <ToggleCodeBlockControl />
-                  </RichTextEditor.ControlsGroup>
-
-                  <RichTextEditor.ControlsGroup>
-                    <RichTextEditor.H1 />
-                    <RichTextEditor.H2 />
-                    <RichTextEditor.H3 />
-                    <RichTextEditor.H4 />
-                  </RichTextEditor.ControlsGroup>
-                </Group>
-              </Paper>
-            </BubbleMenu>
-          )}
 
           {props.error && <InputError mt="md">{props.error}</InputError>}
 

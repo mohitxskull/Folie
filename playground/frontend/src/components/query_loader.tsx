@@ -1,10 +1,13 @@
-import { QueryLoaderProps, QueryLoader } from "@folie/cobalt/components";
+import {
+  QueryLoaderBase,
+  QueryLoaderBaseProps,
+} from "@folie/cobalt/components";
 import { Alert } from "@mantine/core";
 
-export const LocalQueryLoader = <OUT,>(props: QueryLoaderProps<OUT>) => {
+export const QueryLoader = <OUT,>(props: QueryLoaderBaseProps<OUT>) => {
   return (
-    <QueryLoader
-      isError={
+    <QueryLoaderBase
+      error={
         <Alert color="red.5" variant="light">
           Error
         </Alert>

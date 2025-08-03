@@ -1,5 +1,11 @@
 # @folie/cobalt
 
+## 0.0.33
+
+### Patch Changes
+
+- upgrade mantine and other dependencies
+
 ## 0.0.32
 
 ### Patch Changes

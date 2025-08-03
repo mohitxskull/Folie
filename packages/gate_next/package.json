@@ -1,7 +1,7 @@
 {
   "name": "@folie/gate-next",
   "description": "",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -44,7 +44,7 @@
   },
   "peerDependencies": {
     "@folie/gate": "workspace:*",
-    "next": "15"
+    "next": "15.x"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",

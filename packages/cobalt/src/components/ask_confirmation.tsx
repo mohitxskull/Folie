@@ -12,6 +12,8 @@ type Props = Omit<
     confirm?: string
     cancel?: string
   }
+  confirmProps?: any
+  cancelProps?: any
 }
 
 export const askConfirmation = (props: Props): Promise<boolean> => {
@@ -35,7 +37,7 @@ export const askConfirmation = (props: Props): Promise<boolean> => {
         cancel: labels?.cancel || 'Cancel',
       },
       confirmProps: {
-        loading: loading,
+        loading,
         color: 'red.9',
         ...confirmProps,
       },

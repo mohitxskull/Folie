@@ -1,5 +1,5 @@
 import { AppLayout } from "@/components/layout/app";
-import { LocalQueryLoader } from "@/components/query_loader";
+import { QueryLoader } from "@/components/query_loader";
 import {
   Button,
   Center,
@@ -15,7 +15,6 @@ import {
   Title,
   Tooltip,
 } from "@mantine/core";
-import { gateServer } from "@/configs/gate_server";
 import { noteCrumbs } from "@/lib/crumbs";
 import { gateTan } from "@/configs/gate_tan";
 import { For, Show } from "@folie/cobalt/components";
@@ -30,8 +29,7 @@ import { ICON_SIZE } from "@folie/cobalt";
 import { TagManageAside } from "@/components/ui/notes/tag/manage";
 import { useState } from "react";
 import { notifications } from "@mantine/notifications";
-
-export const getServerSideProps = gateServer.checkpoint();
+import { Protected } from "@/components/protected";
 
 export default function Page() {
   const router = useRouter();
@@ -68,181 +66,183 @@ export default function Page() {
 
   return (
     <>
-      <AppLayout
-        crumbs={noteCrumbs.get()}
-        aside={{
-          state: tagManageState,
-          setState: setTagManageState,
-          children: (
-            <TagManageAside
-              state={tagManageState}
-              setState={setTagManageState}
-            />
-          ),
-        }}
-      >
-        <Container pt="xl">
-          <Stack>
-            <Group justify="space-between">
-              <Title>Notes</Title>
+      <Protected>
+        <AppLayout
+          crumbs={noteCrumbs.get()}
+          aside={{
+            state: tagManageState,
+            setState: setTagManageState,
+            children: (
+              <TagManageAside
+                state={tagManageState}
+                setState={setTagManageState}
+              />
+            ),
+          }}
+        >
+          <Container pt="xl">
+            <Stack>
+              <Group justify="space-between">
+                <Title>Notes</Title>
 
-              <Group>
-                <Button
-                  leftSection={<IconPlus size={ICON_SIZE.SM} />}
-                  onClick={() => createM.mutate(undefined)}
-                  loading={createM.isPending}
-                >
-                  Create
-                </Button>
-
-                <Tooltip label="Manage Tags" position="bottom-end">
+                <Group>
                   <Button
-                    px="xs"
-                    variant="outline"
-                    onClick={() => setTagManageState(!tagManageState)}
+                    leftSection={<IconPlus size={ICON_SIZE.SM} />}
+                    onClick={() => createM.mutate(undefined)}
+                    loading={createM.isPending}
                   >
-                    <IconTagFilled size={ICON_SIZE.SM} />
+                    Create
                   </Button>
-                </Tooltip>
+
+                  <Tooltip label="Manage Tags" position="bottom-end">
+                    <Button
+                      px="xs"
+                      variant="outline"
+                      onClick={() => setTagManageState(!tagManageState)}
+                    >
+                      <IconTagFilled size={ICON_SIZE.SM} />
+                    </Button>
+                  </Tooltip>
+                </Group>
               </Group>
-            </Group>
 
-            <TextInput
-              minLength={1}
-              maxLength={100}
-              description='Use "tag:" to search by tag, or enter keywords to search by note title'
-              placeholder="Search notes..."
-              value={DotProp.lookup(body, "query.filter.value", "")}
-              onChange={(e) => {
-                const newValue = e.currentTarget.value;
+              <TextInput
+                minLength={1}
+                maxLength={100}
+                description='Use "tag:" to search by tag, or enter keywords to search by note title'
+                placeholder="Search notes..."
+                value={DotProp.lookup(body, "query.filter.value", "")}
+                onChange={(e) => {
+                  const newValue = e.currentTarget.value;
 
-                setBody({
-                  query: {
-                    ...body.query,
-                    filter: newValue !== "" ? { value: newValue } : undefined,
-                  },
-                });
-              }}
-            />
+                  setBody({
+                    query: {
+                      ...body.query,
+                      filter: newValue !== "" ? { value: newValue } : undefined,
+                    },
+                  });
+                }}
+              />
 
-            <Divider />
+              <Divider />
 
-            <LocalQueryLoader
-              query={query}
-              isLoading={
-                <>
-                  <Center h="100vh">
-                    <Loader />
-                  </Center>
-                </>
-              }
-            >
-              {({ data, meta }) => (
-                <>
-                  <Show>
-                    <Show.When isTrue={data.length === 0}>
-                      <>
-                        <Center h="50vh">
-                          <Text fs="italic" fw="bold">
-                            {(() => {
-                              const filterValue = DotProp.lookup(
-                                body,
-                                "query.filter.value",
-                                "",
-                              );
-
-                              if (filterValue !== "") {
-                                return `No notes found for "${filterValue}"`;
-                              } else {
-                                return `"No notes found."`;
-                              }
-                            })()}
-                          </Text>
-                        </Center>
-                      </>
-                    </Show.When>
-
-                    <Show.Else>
-                      <>
-                        <For each={data}>
-                          {(note) => (
-                            <>
-                              <Paper
-                                p="md"
-                                onClick={() =>
-                                  router.push(`/app/notes/${note.id}`)
-                                }
-                                style={{
-                                  cursor: "pointer",
-                                }}
-                              >
-                                <Stack>
-                                  <Group justify="space-between">
-                                    <Title order={4} flex={1}>
-                                      <Text inherit truncate="end" maw="60%">
-                                        {note.title}
-                                      </Text>
-                                    </Title>
-
-                                    <Text c="dimmed" size="sm">
-                                      {timeAgo(note.updatedAt)}
-                                    </Text>
-                                  </Group>
-
-                                  {note.tags.length > 0 && (
-                                    <Group gap="xs">
-                                      <For each={note.tags}>
-                                        {(tag) => (
-                                          <>
-                                            <TagBadge
-                                              color="dark.9"
-                                              tag={tag}
-                                            />
-                                          </>
-                                        )}
-                                      </For>
-                                    </Group>
-                                  )}
-                                </Stack>
-                              </Paper>
-                            </>
-                          )}
-                        </For>
-
-                        <Group justify="space-between">
-                          <PaginationRange
-                            page={DotProp.lookup(body, "query.page", 1)}
-                            limit={DotProp.lookup(body, "query.limit", 10)}
-                            total={meta.total}
-                          />
-
-                          <SimplePagination
-                            page={DotProp.lookup(body, "query.page", 1)}
-                            limit={DotProp.lookup(body, "query.limit", 10)}
-                            total={meta.total}
-                            onChange={(page) => {
-                              setBody(
-                                DotProp.assignOrOmit(
+              <QueryLoader
+                query={query}
+                loading={
+                  <>
+                    <Center h="100vh">
+                      <Loader />
+                    </Center>
+                  </>
+                }
+              >
+                {({ data, meta }) => (
+                  <>
+                    <Show>
+                      <Show.When isTrue={data.length === 0}>
+                        <>
+                          <Center h="50vh">
+                            <Text fs="italic" fw="bold">
+                              {(() => {
+                                const filterValue = DotProp.lookup(
                                   body,
-                                  "query.page",
-                                  page,
-                                  1,
-                                ),
-                              );
-                            }}
-                          />
-                        </Group>
+                                  "query.filter.value",
+                                  "",
+                                );
 
-                        <Space h="xl" />
-                      </>
-                    </Show.Else>
-                  </Show>
-                </>
-              )}
-            </LocalQueryLoader>
-          </Stack>
-        </Container>
-      </AppLayout>
+                                if (filterValue !== "") {
+                                  return `No notes found for "${filterValue}"`;
+                                } else {
+                                  return `"No notes found."`;
+                                }
+                              })()}
+                            </Text>
+                          </Center>
+                        </>
+                      </Show.When>
+
+                      <Show.Else>
+                        <>
+                          <For each={data}>
+                            {(note) => (
+                              <>
+                                <Paper
+                                  p="md"
+                                  onClick={() =>
+                                    router.push(`/app/notes/${note.id}`)
+                                  }
+                                  style={{
+                                    cursor: "pointer",
+                                  }}
+                                >
+                                  <Stack>
+                                    <Group justify="space-between">
+                                      <Title order={4} flex={1}>
+                                        <Text inherit truncate="end" maw="60%">
+                                          {note.title}
+                                        </Text>
+                                      </Title>
+
+                                      <Text c="dimmed" size="sm">
+                                        {timeAgo(note.updatedAt)}
+                                      </Text>
+                                    </Group>
+
+                                    {note.tags.length > 0 && (
+                                      <Group gap="xs">
+                                        <For each={note.tags}>
+                                          {(tag) => (
+                                            <>
+                                              <TagBadge
+                                                color="dark.9"
+                                                tag={tag}
+                                              />
+                                            </>
+                                          )}
+                                        </For>
+                                      </Group>
+                                    )}
+                                  </Stack>
+                                </Paper>
+                              </>
+                            )}
+                          </For>
+
+                          <Group justify="space-between">
+                            <PaginationRange
+                              page={DotProp.lookup(body, "query.page", 1)}
+                              limit={DotProp.lookup(body, "query.limit", 10)}
+                              total={meta.total}
+                            />
+
+                            <SimplePagination
+                              page={DotProp.lookup(body, "query.page", 1)}
+                              limit={DotProp.lookup(body, "query.limit", 10)}
+                              total={meta.total}
+                              onChange={(page) => {
+                                setBody(
+                                  DotProp.assignOrOmit(
+                                    body,
+                                    "query.page",
+                                    page,
+                                    1,
+                                  ),
+                                );
+                              }}
+                            />
+                          </Group>
+
+                          <Space h="xl" />
+                        </>
+                      </Show.Else>
+                    </Show>
+                  </>
+                )}
+              </QueryLoader>
+            </Stack>
+          </Container>
+        </AppLayout>
+      </Protected>
     </>
   );
 }

@@ -1,7 +1,7 @@
 {
   "name": "@folie/gate-tan",
   "description": "",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -56,8 +56,8 @@
   },
   "peerDependencies": {
     "@folie/gate": "workspace:*",
-    "@tanstack/react-query": "^5.52.2",
-    "@mantine/form": "^7.16.1"
+    "@tanstack/react-query": "5.x",
+    "@mantine/form": "8.x"
   },
   "dependencies": {
     "@folie/lib": "workspace:*"

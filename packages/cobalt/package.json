@@ -1,7 +1,7 @@
 {
   "name": "@folie/cobalt",
   "description": "",
-  "version": "0.0.32",
+  "version": "0.0.33",
   "engines": {
     "node": ">=20.6.0"
   },
@@ -49,17 +49,17 @@
     "typescript": "^5.6"
   },
   "peerDependencies": {
-    "@mantine/core": "^7.17",
-    "@mantine/dates": "^7.17",
-    "@mantine/form": "^7.17",
-    "@mantine/hooks": "^7.17",
-    "@mantine/modals": "^7.17",
-    "@mantine/notifications": "^7.17",
-    "@mantine/nprogress": "^7.17",
-    "@tabler/icons-react": "^3.26.0",
-    "dayjs": "^1.11.13",
-    "react": "19",
-    "react-dom": "19"
+    "@mantine/core": "8.x",
+    "@mantine/dates": "8.x",
+    "@mantine/form": "8.x",
+    "@mantine/hooks": "8.x",
+    "@mantine/modals": "8.x",
+    "@mantine/notifications": "8.x",
+    "@mantine/nprogress": "8.x",
+    "@tabler/icons-react": "^3.x.x",
+    "dayjs": "^1.11.x",
+    "react": "19.x.x",
+    "react-dom": "19.x.x"
   },
   "author": "MohitXSkull, Folie",
   "license": "Apache-2.0",

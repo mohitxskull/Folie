@@ -1,7 +1,7 @@
 export { HeadScript } from './head_script.js'
 
-export { QueryLoader } from './query_loader.js'
-export type { QueryLoaderProps } from './query_loader.js'
+export { QueryLoaderBase } from './query_loader_base.js'
+export type { QueryLoaderBaseProps } from './query_loader_base.js'
 
 export { For } from './for.js'
 export { If } from './if.js'
@@ -10,7 +10,7 @@ export { Show } from './show.js'
 
 export { FormWrapper } from './form_wrapper.js'
 export { LeftGroup, RightGroup } from './group.js'
-export { NavigationLoadingBase } from './navigation_loading_base.js'
+export { FullScreenLoadingBase } from './full_screen_loading_base.js'
 export { PageContainer } from './page_container.js'
 export { PageHeader } from './page_header.js'
 export { TriggeredModal } from './triggered_modal.js'

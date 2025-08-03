@@ -143,12 +143,12 @@ export class GateNextServer<
         const res = await callback({ session, ctx, api: this.api })
 
         return res
-      } catch (error) {
-        const e = NextServerError.fromError(error)
+      } catch (unknownError) {
+        const nextError = NextServerError.fromError(unknownError)
 
-        e.report()
+        nextError.report()
 
-        return e.handle<T>()
+        return nextError.handle<T>()
       }
     }
   }

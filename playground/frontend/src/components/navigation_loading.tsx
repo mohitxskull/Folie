@@ -1,6 +1,6 @@
 import { setting } from "@/configs/setting";
 import { Breathing } from "@folie/cobalt-animation";
-import { NavigationLoadingBase } from "@folie/cobalt/components";
+import { FullScreenLoadingBase } from "@folie/cobalt/components";
 import { Title } from "@mantine/core";
 
 type Props = {
@@ -11,7 +11,7 @@ type Props = {
 export const NavigationLoading = (props: Props) => {
   return (
     <>
-      <NavigationLoadingBase
+      <FullScreenLoadingBase
         opened={props.opened}
         bg="var(--mantine-color-dark-9)"
         center={
@@ -26,7 +26,7 @@ export const NavigationLoading = (props: Props) => {
         }
       >
         {props.children}
-      </NavigationLoadingBase>
+      </FullScreenLoadingBase>
     </>
   );
 };

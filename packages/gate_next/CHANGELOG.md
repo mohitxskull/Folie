@@ -1,5 +1,11 @@
 # @folie/gate-next
 
+## 0.0.7
+
+### Patch Changes
+
+- upgrade mantine and other dependencies
+
 ## 0.0.6
 
 ### Patch Changes

@@ -1,4 +1,4 @@
-import { LocalQueryLoader } from "@/components/query_loader";
+import { QueryLoader } from "@/components/query_loader";
 import { gateTan } from "@/configs/gate_tan";
 import { For, Show } from "@folie/cobalt/components";
 import { DotProp } from "@folie/lib";
@@ -101,9 +101,9 @@ export const TagManageAside = (props: Props) => {
             </ActionIcon>
           </Flex>
 
-          <LocalQueryLoader
+          <QueryLoader
             query={query}
-            isLoading={
+            loading={
               <>
                 <Center h="100%">
                   <Loader />
@@ -173,7 +173,7 @@ export const TagManageAside = (props: Props) => {
                 </Show>
               </>
             )}
-          </LocalQueryLoader>
+          </QueryLoader>
         </Stack>
       </AppShellSection>
     </>

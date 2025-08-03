@@ -1,5 +1,15 @@
 # @folie/playground-frontend
 
+## 0.0.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @folie/cobalt-animation@0.0.8
+  - @folie/gate-next@0.0.7
+  - @folie/gate-tan@0.0.7
+  - @folie/cobalt@0.0.33
+
 ## 0.0.30
 
 ### Patch Changes
