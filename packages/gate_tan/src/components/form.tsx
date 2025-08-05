@@ -1,7 +1,7 @@
 import { Stack, StackProps } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { UseMutationResult } from '@tanstack/react-query'
-import React from 'react'
+import React, { FormEvent } from 'react'
 
 const Form = <
   MUTATION extends Omit<UseMutationResult<any, any, any, any>, 'mutate' | 'mutateAsync'>,
@@ -12,7 +12,7 @@ const Form = <
   form: FORM
 
   children: (params: { loading: boolean; dirty: boolean }) => React.ReactNode
-  submit: (input: INPUT) => void
+  submit: (input: INPUT, event?: FormEvent<HTMLFormElement>) => void
 
   props?: {
     stack?: StackProps
@@ -24,8 +24,8 @@ const Form = <
     <>
       <form
         ref={props.ref}
-        onSubmit={props.form.onSubmit((values) => {
-          props.submit(values)
+        onSubmit={props.form.onSubmit((values, event) => {
+          props.submit(values, event)
         })}
       >
         <Stack {...props.props?.stack}>

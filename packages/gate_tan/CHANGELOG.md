@@ -1,5 +1,11 @@
 # @folie/gate-tan
 
+## 0.0.8
+
+### Patch Changes
+
+- Pass form event to submit function
+
 ## 0.0.7
 
 ### Patch Changes
