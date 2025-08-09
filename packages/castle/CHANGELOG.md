@@ -1,5 +1,11 @@
 # @folie/castle
 
+## 0.0.38
+
+### Patch Changes
+
+- Validate date transformation and handle invalid dates
+
 ## 0.0.37
 
 ### Patch Changes

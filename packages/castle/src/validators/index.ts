@@ -34,7 +34,15 @@ export const DateSchema = (callback?: (v: VineDate) => VineDate) => {
 
   return (callback ? callback(base) : base)
     .transform((value) => {
-      return DateTime.fromJSDate(value).toLocal()
+      const dateTime = DateTime.fromJSDate(value).toLocal()
+
+      if (!dateTime.isValid) {
+        throw new Error('Invalid date', {
+          cause: dateTime,
+        })
+      }
+
+      return dateTime
     })
     .clone()
 }
