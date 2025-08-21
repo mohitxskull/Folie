@@ -154,7 +154,10 @@ export default class BluePrintGenerate extends BaseCommand {
       })
     }
 
-    return fileName.replace('_controller.ts', '').split('_')
+    return fileName
+      .replace('_controller.ts', '')
+      .split('_')
+      .map((word) => stringHelpers.snakeCase(word))
   }
 
   async #groupRoutes(routes: RouteJSON[]) {
@@ -528,11 +531,13 @@ export default class BluePrintGenerate extends BaseCommand {
           }
         }
 
-        spacedPath.push(...this.#getConstructorAction(relativePath))
+        const constructorAction = this.#getConstructorAction(relativePath)
 
-        const joinedSpacedPath = [
-          ...new Set(spacedPath.map((s) => stringHelpers.snakeCase(s))),
-        ].join(' ')
+        if (!spacedPath.join('_').endsWith(constructorAction.join('_'))) {
+          spacedPath.push(...constructorAction)
+        }
+
+        const joinedSpacedPath = spacedPath.map((s) => stringHelpers.snakeCase(s)).join(' ')
 
         const parsedSpacedPath = config.key ? config.key(joinedSpacedPath) : joinedSpacedPath
 

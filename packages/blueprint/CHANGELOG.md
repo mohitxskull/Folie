@@ -1,5 +1,11 @@
 # @folie/blueprint
 
+## 0.0.9
+
+### Patch Changes
+
+- Fix snake case handling in route path generation
+
 ## 0.0.8
 
 ### Patch Changes
